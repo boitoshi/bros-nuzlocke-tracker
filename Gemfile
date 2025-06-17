@@ -65,6 +65,7 @@ end
 # Additional gems for the application
 gem 'devise'              # ユーザー認証
 gem 'bootstrap', '~> 5.2' # 見た目をかわいく
+gem 'dartsass-sprockets'  # BootstrapのためのSassエンジン
 gem 'jquery-rails'        # jQuery
 gem 'image_processing'    # 画像処理
 
