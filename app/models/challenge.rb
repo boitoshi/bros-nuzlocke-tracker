@@ -1,5 +1,6 @@
 class Challenge < ApplicationRecord
   belongs_to :user
+  has_many :pokemons, dependent: :destroy
 
   # ステータスの定義
   enum status: {
@@ -51,5 +52,48 @@ class Challenge < ApplicationRecord
     when 'failed' then 'bg-danger'
     else 'bg-secondary'
     end
+  end
+
+  # ポケモン管理メソッド
+  def party_pokemon
+    pokemons.party_members.alive_pokemon.limit(6)
+  end
+
+  def alive_pokemon
+    pokemons.alive_pokemon
+  end
+
+  def dead_pokemon
+    pokemons.dead_pokemon
+  end
+
+  def boxed_pokemon
+    pokemons.boxed_pokemon
+  end
+
+  def total_caught
+    pokemons.count
+  end
+
+  def total_dead
+    dead_pokemon.count
+  end
+
+  def survival_rate
+    return 0 if total_caught == 0
+    ((total_caught - total_dead).to_f / total_caught * 100).round(1)
+  end
+
+  def party_slots_available
+    6 - party_pokemon.count
+  end
+
+  def can_add_to_party?
+    party_slots_available > 0
+  end
+
+  # チャレンジ作成時にエリアデータを自動生成
+  def create_areas_for_game
+    Area.create_default_areas_for_game(game_title)
   end
 end

@@ -10,9 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_17_154655) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_17_155806) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "areas", force: :cascade do |t|
+    t.string "name"
+    t.string "area_type"
+    t.string "game_title"
+    t.integer "order_index"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "challenges", force: :cascade do |t|
     t.string "name"
@@ -24,6 +33,25 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_17_154655) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_challenges_on_user_id"
+  end
+
+  create_table "pokemons", force: :cascade do |t|
+    t.string "nickname"
+    t.string "species"
+    t.integer "level"
+    t.string "nature"
+    t.string "ability"
+    t.integer "status"
+    t.datetime "caught_at"
+    t.datetime "died_at"
+    t.text "experience"
+    t.boolean "in_party"
+    t.bigint "challenge_id", null: false
+    t.bigint "area_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["area_id"], name: "index_pokemons_on_area_id"
+    t.index ["challenge_id"], name: "index_pokemons_on_challenge_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -39,4 +67,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_17_154655) do
   end
 
   add_foreign_key "challenges", "users"
+  add_foreign_key "pokemons", "areas", on_delete: :nullify
+  add_foreign_key "pokemons", "challenges"
 end

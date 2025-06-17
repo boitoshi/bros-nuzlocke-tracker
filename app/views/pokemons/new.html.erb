@@ -1,0 +1,106 @@
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-success text-white">
+          <h2 class="mb-0">🐾 新しいポケモンを捕獲</h2>
+          <small><%= @challenge.name %> - <%= @challenge.game_title_display %></small>
+        </div>
+        <div class="card-body">
+          <%= form_with model: [@challenge, @pokemon], local: true, class: "row g-3" do |form| %>
+            <% if @pokemon.errors.any? %>
+              <div class="col-12">
+                <div class="alert alert-danger">
+                  <h5>エラーが発生しました:</h5>
+                  <ul class="mb-0">
+                    <% @pokemon.errors.full_messages.each do |message| %>
+                      <li><%= message %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              </div>
+            <% end %>
+
+            <div class="col-md-6">
+              <%= form.label :species, "ポケモンの種類", class: "form-label" %>
+              <%= form.text_field :species, class: "form-control", placeholder: "例: ピカチュウ、フシギダネ" %>
+              <div class="form-text">捕獲したポケモンの種類を入力してください</div>
+            </div>
+
+            <div class="col-md-6">
+              <%= form.label :nickname, "愛称（ニックネーム）", class: "form-label" %>
+              <%= form.text_field :nickname, class: "form-control", placeholder: "例: でんきちゃん、みどりん" %>
+              <div class="form-text">大切な仲間に愛称をつけましょう 💕</div>
+            </div>
+
+            <div class="col-md-4">
+              <%= form.label :level, "レベル", class: "form-label" %>
+              <%= form.number_field :level, class: "form-control", min: 1, max: 100, placeholder: "5" %>
+            </div>
+
+            <div class="col-md-4">
+              <%= form.label :nature, "性格", class: "form-label" %>
+              <%= form.select :nature, 
+                  options_for_select([['性格を選択', '']] + Pokemon::NATURES.map { |n| [n, n] }), 
+                  {}, 
+                  { class: "form-select" } %>
+            </div>
+
+            <div class="col-md-4">
+              <%= form.label :ability, "特性", class: "form-label" %>
+              <%= form.text_field :ability, class: "form-control", placeholder: "例: せいでんき" %>
+            </div>
+
+            <div class="col-12">
+              <%= form.label :area_id, "捕獲場所", class: "form-label" %>
+              <%= form.select :area_id, 
+                  options_for_select([['捕獲場所を選択', '']] + @areas.map { |area| [area.display_name, area.id] }), 
+                  {}, 
+                  { class: "form-select" } %>
+              <div class="form-text">どこで出会ったかを記録しましょう</div>
+            </div>
+
+            <div class="col-12">
+              <%= form.label :experience, "思い出・エピソード", class: "form-label" %>
+              <%= form.text_area :experience, class: "form-control", rows: 3, 
+                  placeholder: "捕獲時のエピソードや思い出を記録しましょう。例: 最初のポケモン！とても元気で可愛い♪" %>
+              <div class="form-text">この子との出会いを大切に記録してください ✨</div>
+            </div>
+
+            <div class="col-12">
+              <div class="form-check">
+                <%= form.check_box :in_party, class: "form-check-input" %>
+                <%= form.label :in_party, "すぐにパーティに加える", class: "form-check-label" %>
+                <% if @challenge.party_slots_available == 0 %>
+                  <small class="text-muted">（パーティが満員のため選択できません）</small>
+                <% else %>
+                  <small class="text-muted">（パーティ空き枠: <%= @challenge.party_slots_available %>匹）</small>
+                <% end %>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h6 class="card-title">📜 ナズロックルール確認</h6>
+                  <ul class="mb-0 small">
+                    <li>各エリア・ルートで<strong>最初に出会ったポケモンのみ</strong>捕獲可能</li>
+                    <li>捕獲したポケモンには<strong>必ず愛称</strong>をつける</li>
+                    <li>HPが0になったら<strong>「死亡」とみなし</strong>、リリースまたはボックス封印</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <%= link_to "キャンセル", challenge_pokemons_path(@challenge), class: "btn btn-secondary me-md-2" %>
+                <%= form.submit "捕獲完了！", class: "btn btn-success btn-lg" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

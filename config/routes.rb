@@ -1,7 +1,18 @@
 Rails.application.routes.draw do
   devise_for :users
   
-  resources :challenges
+  resources :challenges do
+    resources :pokemons do
+      member do
+        patch :toggle_party
+        patch :mark_as_dead
+        patch :mark_as_boxed
+      end
+      collection do
+        get :party
+      end
+    end
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

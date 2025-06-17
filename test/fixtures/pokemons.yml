@@ -1,0 +1,29 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  nickname: MyString
+  species: MyString
+  level: 1
+  nature: MyString
+  ability: MyString
+  status: 1
+  caught_at: 2025-06-17 15:56:01
+  died_at: 2025-06-17 15:56:01
+  experience: MyText
+  in_party: false
+  challenge: one
+  area: one
+
+two:
+  nickname: MyString
+  species: MyString
+  level: 1
+  nature: MyString
+  ability: MyString
+  status: 1
+  caught_at: 2025-06-17 15:56:01
+  died_at: 2025-06-17 15:56:01
+  experience: MyText
+  in_party: false
+  challenge: two
+  area: two
