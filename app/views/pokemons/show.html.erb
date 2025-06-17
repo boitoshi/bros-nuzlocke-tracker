@@ -1,2 +1,209 @@
-<h1>Pokemons#show</h1>
-<p>Find me in app/views/pokemons/show.html.erb</p>
+<div class="container my-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1>🐾 <%= @pokemon.nickname %></h1>
+      <small class="text-muted">
+        <%= @challenge.name %> - <%= @challenge.game_title_display %>
+      </small>
+    </div>
+    <div>
+      <%= link_to "ポケモン一覧", challenge_pokemons_path(@challenge), class: "btn btn-outline-primary me-2" %>
+      <%= link_to "編集", edit_challenge_pokemon_path(@challenge, @pokemon), class: "btn btn-warning" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- メイン情報カード -->
+    <div class="col-lg-8">
+      <div class="card shadow mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h4 class="mb-0">
+            <%= @pokemon.nickname %>
+            <small class="text-muted">(<%= @pokemon.species %>)</small>
+          </h4>
+          <span class="badge <%= @pokemon.status_badge_class %> fs-6">
+            <%= @pokemon.status_icon %> <%= @pokemon.status_display %>
+          </span>
+        </div>
+        
+        <div class="card-body">
+          <!-- 基本情報 -->
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <h5 class="border-bottom pb-2 mb-3">📊 基本情報</h5>
+              <div class="row">
+                <div class="col-sm-6 mb-2">
+                  <strong>レベル:</strong> <%= @pokemon.level %>
+                </div>
+                <div class="col-sm-6 mb-2">
+                  <strong>性格:</strong> <%= @pokemon.nature.present? ? @pokemon.nature : '不明' %>
+                </div>
+                <div class="col-sm-6 mb-2">
+                  <strong>性別:</strong> <%= @pokemon.gender.present? ? @pokemon.gender : '不明' %>
+                </div>
+                <div class="col-sm-6 mb-2">
+                  <strong>タイプ:</strong> <%= @pokemon.pokemon_type.present? ? @pokemon.pokemon_type : '不明' %>
+                </div>
+              </div>
+              
+              <% if @pokemon.ability.present? %>
+                <div class="mt-3">
+                  <strong>特性:</strong> <%= @pokemon.ability %>
+                </div>
+              <% end %>
+            </div>
+            
+            <div class="col-md-6">
+              <h5 class="border-bottom pb-2 mb-3">📍 出身・捕獲情報</h5>
+              <% if @pokemon.area %>
+                <p><strong>出身エリア:</strong> <%= @pokemon.area.display_name %></p>
+              <% end %>
+              <p><strong>捕獲日:</strong> <%= @pokemon.caught_at.strftime('%Y年%m月%d日') %></p>
+              <p><strong>生存日数:</strong> <%= @pokemon.survival_days %>日</p>
+              
+              <% if @pokemon.died_at %>
+                <p class="text-danger">
+                  <strong>💀 死亡日:</strong> <%= @pokemon.died_at.strftime('%Y年%m月%d日') %>
+                </p>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- メモ欄 -->
+          <% if @pokemon.notes.present? %>
+            <div class="border-top pt-3">
+              <h5 class="mb-3">📝 メモ</h5>
+              <div class="bg-light p-3 rounded">
+                <%= simple_format(@pokemon.notes) %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- アクションパネル -->
+    <div class="col-lg-4">
+      <div class="card shadow mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">⚡ クイックアクション</h5>
+        </div>
+        <div class="card-body">
+          <% unless @pokemon.dead? %>
+            <!-- パーティ管理 -->
+            <div class="mb-3">
+              <h6 class="text-muted mb-2">👥 パーティ管理</h6>
+              <% if @pokemon.in_party? %>
+                <%= button_to "パーティから外す", toggle_party_challenge_pokemon_path(@challenge, @pokemon), 
+                    method: :patch,
+                    class: "btn btn-outline-warning w-100 mb-2",
+                    confirm: "#{@pokemon.display_name}をパーティから外しますか？" %>
+              <% elsif @pokemon.alive? && @challenge.can_add_to_party? %>
+                <%= button_to "パーティに参加", toggle_party_challenge_pokemon_path(@challenge, @pokemon), 
+                    method: :patch,
+                    class: "btn btn-success w-100 mb-2" %>
+              <% elsif @pokemon.alive? %>
+                <button class="btn btn-secondary w-100 mb-2" disabled>パーティが満員</button>
+              <% end %>
+            </div>
+
+            <!-- 状態変更 -->
+            <div class="mb-3">
+              <h6 class="text-muted mb-2">🔄 状態変更</h6>
+              <% if @pokemon.alive? %>
+                <%= button_to "ボックスに預ける", mark_as_boxed_challenge_pokemon_path(@challenge, @pokemon), 
+                    method: :patch,
+                    class: "btn btn-outline-secondary w-100 mb-2",
+                    confirm: "#{@pokemon.display_name}をボックスに預けますか？" %>
+              <% elsif @pokemon.boxed? %>
+                <%= button_to "アクティブに戻す", toggle_party_challenge_pokemon_path(@challenge, @pokemon), 
+                    method: :patch,
+                    class: "btn btn-outline-success w-100 mb-2" %>
+              <% end %>
+              
+              <% if @pokemon.alive? || @pokemon.boxed? %>
+                <%= button_to "💀 死亡マーク", mark_as_dead_challenge_pokemon_path(@challenge, @pokemon), 
+                    method: :patch,
+                    class: "btn btn-outline-danger w-100",
+                    confirm: "#{@pokemon.display_name}が死亡しました。本当によろしいですか？この操作は取り消せません。" %>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-center text-muted">
+              <i style="font-size: 3rem;">🕊️</i>
+              <p class="mt-2 mb-0">安らかに眠っています</p>
+              <small>追悼の意を込めて</small>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- 統計情報 -->
+      <div class="card shadow">
+        <div class="card-header">
+          <h5 class="mb-0">📈 統計情報</h5>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-6">
+              <div class="border-end">
+                <h6 class="text-primary"><%= @pokemon.level %></h6>
+                <small class="text-muted">現在レベル</small>
+              </div>
+            </div>
+            <div class="col-6">
+              <h6 class="text-success"><%= @pokemon.survival_days %></h6>
+              <small class="text-muted">
+                <% if @pokemon.dead? %>
+                  享年（日）
+                <% else %>
+                  生存日数
+                <% end %>
+              </small>
+            </div>
+          </div>
+          
+          <hr class="my-3">
+          
+          <div class="text-center">
+            <% if @pokemon.in_party? %>
+              <span class="badge bg-primary mb-2">パーティメンバー</span><br>
+            <% end %>
+            <small class="text-muted">
+              捕獲から<%= time_ago_in_words(@pokemon.caught_at) %>経過
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 危険なアクション -->
+  <% unless @pokemon.dead? %>
+    <div class="row mt-4">
+      <div class="col-12">
+        <div class="card border-danger">
+          <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">⚠️ 危険なアクション</h5>
+          </div>
+          <div class="card-body">
+            <p class="mb-3">
+              <strong>注意:</strong> 以下のアクションは慎重に行ってください。一度実行すると取り消すことができません。
+            </p>
+            <div class="d-flex gap-2">
+              <%= button_to "💀 このポケモンが戦闘不能になった", mark_as_dead_challenge_pokemon_path(@challenge, @pokemon), 
+                  method: :patch,
+                  class: "btn btn-danger",
+                  confirm: "#{@pokemon.display_name}が戦闘不能になりました。\n\nナズロックルールに従い、このポケモンは使用不可となります。\n本当によろしいですか？\n\nこの操作は取り消せません。" %>
+              
+              <%= link_to "🗑️ ポケモンを削除", challenge_pokemon_path(@challenge, @pokemon), 
+                  method: :delete,
+                  class: "btn btn-outline-danger",
+                  confirm: "#{@pokemon.display_name}のデータを完全に削除します。\n\n注意: この操作は取り消せません。本当に削除しますか？" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

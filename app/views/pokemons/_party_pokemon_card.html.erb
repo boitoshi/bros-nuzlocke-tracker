@@ -1,0 +1,57 @@
+<div class="card h-100 border-primary">
+  <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <span class="badge bg-light text-primary">位置 <%= position %></span>
+    <span class="badge bg-success">
+      <%= pokemon.status_icon %> <%= pokemon.status_display %>
+    </span>
+  </div>
+  
+  <div class="card-body">
+    <h5 class="card-title text-primary">
+      <%= pokemon.nickname %>
+      <small class="text-muted">(<%= pokemon.species %>)</small>
+    </h5>
+    
+    <div class="row mb-2">
+      <div class="col-6">
+        <strong>レベル:</strong> <%= pokemon.level %>
+      </div>
+      <div class="col-6">
+        <strong>性格:</strong> <%= pokemon.nature.present? ? pokemon.nature : '不明' %>
+      </div>
+    </div>
+    
+    <% if pokemon.ability.present? %>
+      <p class="mb-2"><strong>特性:</strong> <%= pokemon.ability %></p>
+    <% end %>
+    
+    <% if pokemon.area %>
+      <p class="mb-2">
+        <strong>出身:</strong> <%= pokemon.area.display_name %>
+      </p>
+    <% end %>
+    
+    <div class="d-flex justify-content-between align-items-center">
+      <small class="text-muted">
+        生存日数: <%= pokemon.survival_days %>日
+      </small>
+    </div>
+  </div>
+  
+  <div class="card-footer bg-transparent">
+    <div class="d-flex gap-1">
+      <%= link_to "詳細", challenge_pokemon_path(@challenge, pokemon), 
+          class: "btn btn-outline-primary btn-sm flex-fill" %>
+      <%= button_to "外す", toggle_party_challenge_pokemon_path(@challenge, pokemon), 
+          method: :patch,
+          class: "btn btn-outline-warning btn-sm",
+          confirm: "#{pokemon.display_name}をパーティから外しますか？",
+          title: "パーティから外す" %>
+      <%= button_to "💀", mark_as_dead_challenge_pokemon_path(@challenge, pokemon), 
+          method: :patch,
+          class: "btn btn-outline-danger btn-sm",
+          confirm: "#{pokemon.display_name}が死亡しました。本当によろしいですか？",
+          title: "死亡マーク" %>
+    </div>
+  </div>
+</div>

@@ -1,2 +1,146 @@
-<h1>Pokemons#index</h1>
-<p>Find me in app/views/pokemons/index.html.erb</p>
+<div class="container my-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1>🐾 ポケモン図鑑</h1>
+      <small class="text-muted"><%= @challenge.name %> - <%= @challenge.game_title_display %></small>
+    </div>
+    <div>
+      <%= link_to "パーティ管理", challenge_pokemons_party_path(@challenge), class: "btn btn-primary me-2" %>
+      <%= link_to "新しい仲間を捕獲", new_challenge_pokemon_path(@challenge), class: "btn btn-success" %>
+    </div>
+  </div>
+
+  <!-- 統計サマリー -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title text-primary">🎯 総捕獲数</h5>
+          <h2 class="text-primary"><%= @pokemons.count %></h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title text-success">💚 生存中</h5>
+          <h2 class="text-success"><%= @alive_pokemon.count %></h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title text-danger">💀 死亡</h5>
+          <h2 class="text-danger"><%= @dead_pokemon.count %></h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center">
+        <div class="card-body">
+          <h5 class="card-title text-secondary">📦 ボックス</h5>
+          <h2 class="text-secondary"><%= @boxed_pokemon.count %></h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <% if @pokemons.empty? %>
+    <!-- 空の状態 -->
+    <div class="text-center py-5">
+      <div class="mb-4">
+        <i style="font-size: 4rem; color: #6c757d;">🐾</i>
+      </div>
+      <h3 class="text-muted mb-3">まだポケモンを捕獲していません</h3>
+      <p class="text-muted mb-4">最初の仲間と出会って、ナズロックの旅を始めましょう！</p>
+      <%= link_to "最初の仲間を捕獲", new_challenge_pokemon_path(@challenge), class: "btn btn-success btn-lg" %>
+    </div>
+  <% else %>
+    <!-- パーティメンバー -->
+    <% if @party_pokemon.any? %>
+      <div class="mb-5">
+        <div class="card shadow">
+          <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">👥 現在のパーティ (<%= @party_pokemon.count %>/6)</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <% @party_pokemon.each do |pokemon| %>
+                <div class="col-lg-4 col-md-6 mb-3">
+                  <%= render 'pokemon_card', pokemon: pokemon, show_party_status: false %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- 生存中のポケモン（控え） -->
+    <% if @alive_pokemon.any? %>
+      <div class="mb-5">
+        <div class="card shadow">
+          <div class="card-header bg-success text-white">
+            <h3 class="mb-0">💚 生存中のポケモン (<%= @alive_pokemon.count %>匹)</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <% @alive_pokemon.each do |pokemon| %>
+                <div class="col-lg-4 col-md-6 mb-3">
+                  <%= render 'pokemon_card', pokemon: pokemon, show_party_status: true %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- ボックスのポケモン -->
+    <% if @boxed_pokemon.any? %>
+      <div class="mb-5">
+        <div class="card shadow">
+          <div class="card-header bg-secondary text-white">
+            <h3 class="mb-0">📦 ボックスのポケモン (<%= @boxed_pokemon.count %>匹)</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <% @boxed_pokemon.each do |pokemon| %>
+                <div class="col-lg-4 col-md-6 mb-3">
+                  <%= render 'pokemon_card', pokemon: pokemon, show_party_status: true %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- 死亡したポケモン（追悼） -->
+    <% if @dead_pokemon.any? %>
+      <div class="mb-5">
+        <div class="card shadow border-danger">
+          <div class="card-header bg-danger text-white">
+            <h3 class="mb-0">💀 安らかに眠るポケモン (<%= @dead_pokemon.count %>匹)</h3>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-warning">
+              <p class="mb-0">
+                <strong>追悼:</strong> これらのポケモンたちは勇敢に戦い、この世を去りました。
+                彼らの思い出と功績を忘れずに、旅を続けましょう。 🕊️
+              </p>
+            </div>
+            <div class="row">
+              <% @dead_pokemon.each do |pokemon| %>
+                <div class="col-lg-4 col-md-6 mb-3">
+                  <%= render 'pokemon_card', pokemon: pokemon, show_party_status: false, memorial: true %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>

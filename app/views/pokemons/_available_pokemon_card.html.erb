@@ -1,0 +1,52 @@
+<div class="card h-100">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span class="badge <%= pokemon.status_badge_class %>">
+      <%= pokemon.status_icon %> <%= pokemon.status_display %>
+    </span>
+    <small class="text-muted">
+      捕獲: <%= pokemon.caught_at.strftime('%m/%d') %>
+    </small>
+  </div>
+  
+  <div class="card-body">
+    <h6 class="card-title">
+      <%= pokemon.nickname %>
+      <small class="text-muted">(<%= pokemon.species %>)</small>
+    </h6>
+    
+    <div class="row mb-2">
+      <div class="col-6">
+        <small><strong>Lv:</strong> <%= pokemon.level %></small>
+      </div>
+      <div class="col-6">
+        <small><strong>性格:</strong> <%= pokemon.nature.present? ? pokemon.nature : '?' %></small>
+      </div>
+    </div>
+    
+    <% if pokemon.area %>
+      <p class="mb-2 small">
+        <strong>出身:</strong> <%= pokemon.area.display_name %>
+      </p>
+    <% end %>
+  </div>
+  
+  <div class="card-footer bg-transparent">
+    <div class="d-flex gap-1">
+      <%= link_to "詳細", challenge_pokemon_path(@challenge, pokemon), 
+          class: "btn btn-outline-primary btn-sm flex-fill" %>
+      <% if @challenge.can_add_to_party? %>
+        <%= button_to "参加", toggle_party_challenge_pokemon_path(@challenge, pokemon), 
+            method: :patch,
+            class: "btn btn-success btn-sm",
+            title: "パーティに参加" %>
+      <% else %>
+        <button class="btn btn-secondary btn-sm" disabled title="パーティが満員です">満員</button>
+      <% end %>
+      <%= button_to "📦", mark_as_boxed_challenge_pokemon_path(@challenge, pokemon), 
+          method: :patch,
+          class: "btn btn-outline-secondary btn-sm",
+          confirm: "#{pokemon.display_name}をボックスに預けますか？",
+          title: "ボックスに預ける" %>
+    </div>
+  </div>
+</div>

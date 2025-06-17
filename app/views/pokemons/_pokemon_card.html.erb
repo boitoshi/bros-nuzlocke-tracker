@@ -1,0 +1,95 @@
+<%
+  # デフォルト値を設定
+  show_party_status = local_assigns.fetch(:show_party_status, true)
+  memorial = local_assigns.fetch(:memorial, false)
+  card_class = memorial ? "card h-100 border-danger" : "card h-100"
+  card_opacity = memorial ? "opacity-75" : ""
+%>
+
+<div class="<%= card_class %> <%= card_opacity %>">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span class="badge <%= pokemon.status_badge_class %>">
+      <%= pokemon.status_icon %> <%= pokemon.status_display %>
+    </span>
+    <% if show_party_status && pokemon.in_party? %>
+      <span class="badge bg-primary">パーティ</span>
+    <% end %>
+    <small class="text-muted">
+      <%= pokemon.caught_at.strftime('%m/%d') %>
+    </small>
+  </div>
+  
+  <div class="card-body">
+    <h6 class="card-title">
+      <%= pokemon.nickname %>
+      <small class="text-muted">(<%= pokemon.species %>)</small>
+    </h6>
+    
+    <div class="row mb-2">
+      <div class="col-6">
+        <small><strong>レベル:</strong> <%= pokemon.level %></small>
+      </div>
+      <div class="col-6">
+        <small><strong>性格:</strong> <%= pokemon.nature.present? ? pokemon.nature : '不明' %></small>
+      </div>
+    </div>
+    
+    <% if pokemon.ability.present? %>
+      <p class="mb-2 small"><strong>特性:</strong> <%= pokemon.ability %></p>
+    <% end %>
+    
+    <% if pokemon.area %>
+      <p class="mb-2 small">
+        <strong>出身:</strong> <%= pokemon.area.display_name %>
+      </p>
+    <% end %>
+    
+    <% if memorial && pokemon.died_at %>
+      <p class="mb-2 small text-danger">
+        <strong>🕊️ 享年:</strong> <%= pokemon.survival_days %>日
+      </p>
+    <% else %>
+      <p class="mb-2 small">
+        <strong>生存:</strong> <%= pokemon.survival_days %>日
+      </p>
+    <% end %>
+  </div>
+  
+  <div class="card-footer bg-transparent">
+    <div class="d-flex gap-1">
+      <%= link_to "詳細", challenge_pokemon_path(@challenge, pokemon), 
+          class: "btn btn-outline-primary btn-sm flex-fill" %>
+      
+      <% unless memorial %>
+        <% if pokemon.alive? %>
+          <% if show_party_status %>
+            <% if pokemon.in_party? %>
+              <%= button_to "外す", toggle_party_challenge_pokemon_path(@challenge, pokemon), 
+                  method: :patch,
+                  class: "btn btn-outline-warning btn-sm",
+                  title: "パーティから外す" %>
+            <% elsif @challenge.can_add_to_party? %>
+              <%= button_to "参加", toggle_party_challenge_pokemon_path(@challenge, pokemon), 
+                  method: :patch,
+                  class: "btn btn-success btn-sm",
+                  title: "パーティに参加" %>
+            <% end %>
+          <% end %>
+          
+          <%= button_to "💀", mark_as_dead_challenge_pokemon_path(@challenge, pokemon), 
+              method: :patch,
+              class: "btn btn-outline-danger btn-sm",
+              confirm: "#{pokemon.display_name}が死亡しました。本当によろしいですか？",
+              title: "死亡マーク" %>
+        <% elsif pokemon.boxed? %>
+          <%= button_to "復帰", toggle_party_challenge_pokemon_path(@challenge, pokemon), 
+              method: :patch,
+              class: "btn btn-outline-success btn-sm",
+              title: "アクティブに戻す" %>
+        <% end %>
+      <% else %>
+        <small class="text-muted align-self-center">安らかに...</small>
+      <% end %>
+    </div>
+  </div>
+</div>

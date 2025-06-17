@@ -1,2 +1,121 @@
-<h1>Pokemons#party</h1>
-<p>Find me in app/views/pokemons/party.html.erb</p>
+<div class="container my-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1>👥 パーティ管理</h1>
+      <small class="text-muted"><%= @challenge.name %> - <%= @challenge.game_title_display %></small>
+    </div>
+    <div>
+      <%= link_to "ポケモン一覧", challenge_pokemons_path(@challenge), class: "btn btn-outline-primary me-2" %>
+      <%= link_to "新しい仲間を捕獲", new_challenge_pokemon_path(@challenge), class: "btn btn-success" %>
+    </div>
+  </div>
+
+  <!-- 現在のパーティ -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0">🛡️ 現在のパーティ (<%= @party_pokemon.count %>/6)</h3>
+        </div>
+        <div class="card-body">
+          <% if @party_pokemon.any? %>
+            <div class="row">
+              <% @party_pokemon.each_with_index do |pokemon, index| %>
+                <div class="col-lg-4 col-md-6 mb-3">
+                  <%= render 'party_pokemon_card', pokemon: pokemon, position: index + 1 %>
+                </div>
+              <% end %>
+              
+              <!-- 空きスロットの表示 -->
+              <% (6 - @party_pokemon.count).times do |i| %>
+                <div class="col-lg-4 col-md-6 mb-3">
+                  <div class="card border-dashed h-100" style="border: 2px dashed #dee2e6; min-height: 200px;">
+                    <div class="card-body d-flex align-items-center justify-content-center text-muted">
+                      <div class="text-center">
+                        <i class="bi bi-plus-circle-dotted" style="font-size: 3rem;"></i>
+                        <p class="mt-2 mb-0">空きスロット</p>
+                        <small>位置 <%= @party_pokemon.count + i + 1 %></small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-center py-5">
+              <div class="mb-4">
+                <i style="font-size: 4rem; color: #6c757d;">👥</i>
+              </div>
+              <h4 class="text-muted mb-3">パーティが空です</h4>
+              <p class="text-muted mb-4">仲間を捕獲してパーティに加えましょう！</p>
+              <%= link_to "最初の仲間を捕獲", new_challenge_pokemon_path(@challenge), class: "btn btn-success btn-lg" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 控えのポケモン -->
+  <% if @available_pokemon.any? %>
+    <div class="row">
+      <div class="col-12">
+        <div class="card shadow">
+          <div class="card-header bg-success text-white">
+            <h3 class="mb-0">🏠 控えのポケモン (<%= @available_pokemon.count %>匹)</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <% @available_pokemon.each do |pokemon| %>
+                <div class="col-lg-4 col-md-6 mb-3">
+                  <%= render 'available_pokemon_card', pokemon: pokemon %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      <h5>💡 ヒント</h5>
+      <p class="mb-0">現在控えにいるポケモンはいません。新しいポケモンを捕獲するか、パーティから外すと控えに回ります。</p>
+    </div>
+  <% end %>
+
+  <!-- パーティ戦略のヒント -->
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">⚔️ パーティ編成のコツ</h5>
+        </div>
+        <div class="card-body">
+          <ul class="mb-0">
+            <li>タイプバランスを考慮する</li>
+            <li>レベルの偏りに注意</li>
+            <li>役割分担を明確にする</li>
+            <li>弱点をカバーし合う</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">📊 現在の状況</h5>
+        </div>
+        <div class="card-body">
+          <% if @party_pokemon.any? %>
+            <p><strong>平均レベル:</strong> <%= (@party_pokemon.sum(:level) / @party_pokemon.count.to_f).round(1) %></p>
+            <p><strong>最高レベル:</strong> <%= @party_pokemon.maximum(:level) %></p>
+            <p><strong>最低レベル:</strong> <%= @party_pokemon.minimum(:level) %></p>
+            <p class="mb-0"><strong>レベル差:</strong> <%= @party_pokemon.maximum(:level) - @party_pokemon.minimum(:level) %></p>
+          <% else %>
+            <p class="text-muted mb-0">パーティが空のため統計なし</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
