@@ -1,0 +1,62 @@
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h2 class="mb-0">🎮 新しいナズロックチャレンジ</h2>
+        </div>
+        <div class="card-body">
+          <%= form_with model: @challenge, local: true, class: "row g-3" do |form| %>
+            <% if @challenge.errors.any? %>
+              <div class="col-12">
+                <div class="alert alert-danger">
+                  <h5>エラーが発生しました:</h5>
+                  <ul class="mb-0">
+                    <% @challenge.errors.full_messages.each do |message| %>
+                      <li><%= message %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              </div>
+            <% end %>
+
+            <div class="col-12">
+              <%= form.label :name, "チャレンジ名", class: "form-label" %>
+              <%= form.text_field :name, class: "form-control", placeholder: "例: 初めてのナズロック、リベンジチャレンジ" %>
+              <div class="form-text">あなたのチャレンジに名前をつけて思い出に残しましょう！</div>
+            </div>
+
+            <div class="col-12">
+              <%= form.label :game_title, "ゲームタイトル", class: "form-label" %>
+              <%= form.select :game_title, 
+                  options_for_select([['ゲームを選択してください', '']] + Challenge::GAME_TITLES), 
+                  {}, 
+                  { class: "form-select" } %>
+              <div class="form-text">挑戦するポケモンゲームを選択してください</div>
+            </div>
+
+            <div class="col-12">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title">📜 ナズロックルール（基本）</h5>
+                  <ul class="mb-0">
+                    <li><strong>1匹ずつのみ捕獲:</strong> 各エリア・ルートで最初に出会ったポケモンのみ捕獲可能</li>
+                    <li><strong>愛称必須:</strong> 捕獲したポケモンには必ず愛称をつける</li>
+                    <li><strong>ひんし=リリース:</strong> HPが0になったポケモンは「死亡」とみなし、リリースまたはボックス封印</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <%= link_to "キャンセル", challenges_path, class: "btn btn-secondary me-md-2" %>
+                <%= form.submit "チャレンジ開始！", class: "btn btn-success btn-lg" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

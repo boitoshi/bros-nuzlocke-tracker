@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  game_title: MyString
+  status: 1
+  started_at: 2025-06-17 15:46:55
+  completed_at: 2025-06-17 15:46:55
+  user: one
+
+two:
+  name: MyString
+  game_title: MyString
+  status: 1
+  started_at: 2025-06-17 15:46:55
+  completed_at: 2025-06-17 15:46:55
+  user: two
