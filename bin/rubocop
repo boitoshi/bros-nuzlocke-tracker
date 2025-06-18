@@ -6,3 +6,6 @@ require "bundler/setup"
 ARGV.unshift("--config", File.expand_path("../.rubocop.yml", __dir__))
 
 load Gem.bin_path("rubocop", "rubocop")
+
+# より安全な修正（安全な修正のみ適用）
+rubocop --safe-auto-correct
