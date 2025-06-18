@@ -1,0 +1,18 @@
+current directory: /home/runner/work/bros-nuzlocke-tracker/bros-nuzlocke-tracker/vendor/bundle/ruby/3.4.0/gems/racc-1.8.1/ext/racc/cparse
+/opt/hostedtoolcache/Ruby/3.4.4/x64/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /home/runner/work/bros-nuzlocke-tracker/bros-nuzlocke-tracker/vendor/bundle/ruby/3.4.0/gems/racc-1.8.1/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20250618-2062-2iqcfo sitelibdir\=./.gem.20250618-2062-2iqcfo clean
+
+current directory: /home/runner/work/bros-nuzlocke-tracker/bros-nuzlocke-tracker/vendor/bundle/ruby/3.4.0/gems/racc-1.8.1/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20250618-2062-2iqcfo sitelibdir\=./.gem.20250618-2062-2iqcfo
+compiling cparse.c
+linking shared-object racc/cparse.so
+
+current directory: /home/runner/work/bros-nuzlocke-tracker/bros-nuzlocke-tracker/vendor/bundle/ruby/3.4.0/gems/racc-1.8.1/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20250618-2062-2iqcfo sitelibdir\=./.gem.20250618-2062-2iqcfo install
+/usr/bin/install -c -m 0755 cparse.so ./.gem.20250618-2062-2iqcfo/racc
+
+current directory: /home/runner/work/bros-nuzlocke-tracker/bros-nuzlocke-tracker/vendor/bundle/ruby/3.4.0/gems/racc-1.8.1/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20250618-2062-2iqcfo sitelibdir\=./.gem.20250618-2062-2iqcfo clean

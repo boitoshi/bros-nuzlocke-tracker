@@ -1,0 +1,19 @@
+current directory: /home/runner/work/bros-nuzlocke-tracker/bros-nuzlocke-tracker/vendor/bundle/ruby/3.4.0/gems/stringio-3.1.7/ext/stringio
+/opt/hostedtoolcache/Ruby/3.4.4/x64/bin/ruby extconf.rb
+checking for rb_io_mode_t in ruby/io.h... no
+creating Makefile
+
+current directory: /home/runner/work/bros-nuzlocke-tracker/bros-nuzlocke-tracker/vendor/bundle/ruby/3.4.0/gems/stringio-3.1.7/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20250618-2062-eak1bc sitelibdir\=./.gem.20250618-2062-eak1bc clean
+
+current directory: /home/runner/work/bros-nuzlocke-tracker/bros-nuzlocke-tracker/vendor/bundle/ruby/3.4.0/gems/stringio-3.1.7/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20250618-2062-eak1bc sitelibdir\=./.gem.20250618-2062-eak1bc
+compiling stringio.c
+linking shared-object stringio.so
+
+current directory: /home/runner/work/bros-nuzlocke-tracker/bros-nuzlocke-tracker/vendor/bundle/ruby/3.4.0/gems/stringio-3.1.7/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20250618-2062-eak1bc sitelibdir\=./.gem.20250618-2062-eak1bc install
+/usr/bin/install -c -m 0755 stringio.so ./.gem.20250618-2062-eak1bc
+
+current directory: /home/runner/work/bros-nuzlocke-tracker/bros-nuzlocke-tracker/vendor/bundle/ruby/3.4.0/gems/stringio-3.1.7/ext/stringio
+make DESTDIR\= sitearchdir\=./.gem.20250618-2062-eak1bc sitelibdir\=./.gem.20250618-2062-eak1bc clean

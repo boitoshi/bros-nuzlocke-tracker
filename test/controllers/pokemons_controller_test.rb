@@ -27,14 +27,14 @@ class PokemonsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create pokemon" do
     assert_difference("Pokemon.count") do
-      post challenge_pokemons_url(@challenge), params: { 
-        pokemon: { 
-          nickname: "Test Pokemon", 
-          species: "Pikachu", 
+      post challenge_pokemons_url(@challenge), params: {
+        pokemon: {
+          nickname: "Test Pokemon",
+          species: "Pikachu",
           level: 5,
           area_id: areas(:one).id,
-          caught_at: Time.current 
-        } 
+          caught_at: Time.current
+        }
       }
     end
     assert_redirected_to challenge_pokemon_url(@challenge, Pokemon.last)
@@ -46,8 +46,8 @@ class PokemonsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update pokemon" do
-    patch challenge_pokemon_url(@challenge, @pokemon), params: { 
-      pokemon: { nickname: "Updated Pokemon" } 
+    patch challenge_pokemon_url(@challenge, @pokemon), params: {
+      pokemon: { nickname: "Updated Pokemon" }
     }
     assert_redirected_to challenge_pokemon_url(@challenge, @pokemon)
   end
