@@ -73,7 +73,7 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    url: <%= ENV.fetch("DATABASE_URL") %>
+    url: <%= ENV.fetch("DATABASE_URL", "postgresql://localhost/bros_nuzlocke_tracker_production") %>
   cache:
     <<: *primary_production
     database: bros_nuzlocke_tracker_production_cache

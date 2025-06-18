@@ -4,10 +4,12 @@ services:
     name: bros-nuzlocke-tracker-web
     env: ruby
     plan: starter
-    buildCommand: "bundle install && yarn install && SECRET_KEY_BASE=dummy RAILS_ENV=production ./bin/rails assets:precompile && ./bin/rails db:migrate"
-    startCommand: "./bin/rails server -p $PORT -e $RAILS_ENV"
+    buildCommand: "bundle install && yarn install && RAILS_SERVE_STATIC_FILES=true SECRET_KEY_BASE=dummy RAILS_ENV=production NODE_ENV=production DISABLE_SPRING=1 ./bin/rails assets:precompile"
+    startCommand: "./bin/rails db:migrate && ./bin/rails server -p $PORT -e $RAILS_ENV"
     envVars:
       - key: RAILS_ENV
+        value: production
+      - key: NODE_ENV
         value: production
       - key: RAILS_SERVE_STATIC_FILES
         value: true

@@ -3,6 +3,9 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # Skip database initialization for assets precompilation
+  config.assets.initialize_on_precompile = false if ENV["SECRET_KEY_BASE"] == "dummy"
+
   # Code is not reloaded between requests.
   config.enable_reloading = false
 
@@ -19,7 +22,8 @@ Rails.application.configure do
   # config.assets.css_compressor = :sass
 
   # Do not fall back to assets pipeline if a precompiled asset is missed.
-  config.assets.compile = false
+  # Set to true for Render deployment to allow fallback compilation
+  config.assets.compile = true
 
   # Asset digests allow you to set far-future HTTP expiration dates on all assets,
   # yet still be able to expire them through the digest params.
