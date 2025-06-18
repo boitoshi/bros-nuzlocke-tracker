@@ -281,7 +281,7 @@
   new Chart(monthlyCtx, {
     type: 'line',
     data: {
-      labels: <%= raw @monthly_challenges_data.keys.map(&:strftime).map { |d| d.strftime('%Y年%m月') }.to_json %>,
+      labels: <%= raw @monthly_challenges_data.keys.map { |d| d.strftime('%Y年%m月') }.to_json %>,
       datasets: [{
         label: 'チャレンジ開始数',
         data: <%= raw @monthly_challenges_data.values.to_json %>,

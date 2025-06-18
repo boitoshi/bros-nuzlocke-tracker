@@ -92,7 +92,7 @@ class RulesController < ApplicationController
   end
 
   def rules_params
-    params.require(:rules).permit!
+    params.require(:rules).permit(rules: [ :enabled, :custom_value, :description ])
   end
 
   def custom_rule_params

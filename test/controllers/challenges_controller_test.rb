@@ -1,38 +1,50 @@
 require "test_helper"
 
 class ChallengesControllerTest < ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
+
+  setup do
+    @user = users(:one)
+    @challenge = challenges(:one)
+    sign_in @user
+  end
+
   test "should get index" do
-    get challenges_index_url
+    get challenges_url
     assert_response :success
   end
 
   test "should get show" do
-    get challenges_show_url
+    get challenge_url(@challenge)
     assert_response :success
   end
 
   test "should get new" do
-    get challenges_new_url
+    get new_challenge_url
     assert_response :success
   end
 
-  test "should get create" do
-    get challenges_create_url
-    assert_response :success
+  test "should create challenge" do
+    assert_difference("Challenge.count") do
+      post challenges_url, params: { challenge: { name: "Test Challenge", game_title: "red" } }
+    end
+    assert_redirected_to challenge_url(Challenge.last)
   end
 
   test "should get edit" do
-    get challenges_edit_url
+    get edit_challenge_url(@challenge)
     assert_response :success
   end
 
-  test "should get update" do
-    get challenges_update_url
-    assert_response :success
+  test "should update challenge" do
+    patch challenge_url(@challenge), params: { challenge: { name: "Updated Challenge" } }
+    assert_redirected_to challenge_url(@challenge)
   end
 
-  test "should get destroy" do
-    get challenges_destroy_url
-    assert_response :success
+  test "should destroy challenge" do
+    assert_difference("Challenge.count", -1) do
+      delete challenge_url(@challenge)
+    end
+    assert_redirected_to challenges_url
   end
 end

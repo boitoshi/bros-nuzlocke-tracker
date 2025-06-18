@@ -1,29 +1,29 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  nickname: MyString
-  species: MyString
-  level: 1
-  nature: MyString
-  ability: MyString
-  status: 1
-  caught_at: 2025-06-17 15:56:01
-  died_at: 2025-06-17 15:56:01
-  experience: MyText
-  in_party: false
+  nickname: "ピカ"
+  species: "ピカチュウ"
+  level: 5
+  nature: "がんばりや"
+  ability: "せいでんき"
+  status: 0
+  caught_at: <%= 1.week.ago %>
+  died_at: null
+  experience: "初めてのポケモン"
+  in_party: true
   challenge: one
   area: one
 
 two:
-  nickname: MyString
-  species: MyString
-  level: 1
-  nature: MyString
-  ability: MyString
-  status: 1
-  caught_at: 2025-06-17 15:56:01
-  died_at: 2025-06-17 15:56:01
-  experience: MyText
+  nickname: "フシギ"
+  species: "フシギダネ"
+  level: 8
+  nature: "ひかえめ"
+  ability: "しんりょく"
+  status: 0
+  caught_at: <%= 5.days.ago %>
+  died_at: null
+  experience: "草タイプの頼れる仲間"
   in_party: false
   challenge: two
   area: two

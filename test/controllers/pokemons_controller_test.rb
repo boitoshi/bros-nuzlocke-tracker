@@ -1,43 +1,66 @@
 require "test_helper"
 
 class PokemonsControllerTest < ActionDispatch::IntegrationTest
+  include Devise::Test::IntegrationHelpers
+
+  setup do
+    @user = users(:one)
+    @challenge = challenges(:one)
+    @pokemon = pokemons(:one)
+    sign_in @user
+  end
+
   test "should get index" do
-    get pokemons_index_url
+    get challenge_pokemons_url(@challenge)
     assert_response :success
   end
 
   test "should get show" do
-    get pokemons_show_url
+    get challenge_pokemon_url(@challenge, @pokemon)
     assert_response :success
   end
 
   test "should get new" do
-    get pokemons_new_url
+    get new_challenge_pokemon_url(@challenge)
     assert_response :success
   end
 
-  test "should get create" do
-    get pokemons_create_url
-    assert_response :success
+  test "should create pokemon" do
+    assert_difference("Pokemon.count") do
+      post challenge_pokemons_url(@challenge), params: { 
+        pokemon: { 
+          nickname: "Test Pokemon", 
+          species: "Pikachu", 
+          level: 5,
+          area_id: areas(:one).id,
+          caught_at: Time.current 
+        } 
+      }
+    end
+    assert_redirected_to challenge_pokemon_url(@challenge, Pokemon.last)
   end
 
   test "should get edit" do
-    get pokemons_edit_url
+    get edit_challenge_pokemon_url(@challenge, @pokemon)
     assert_response :success
   end
 
-  test "should get update" do
-    get pokemons_update_url
-    assert_response :success
+  test "should update pokemon" do
+    patch challenge_pokemon_url(@challenge, @pokemon), params: { 
+      pokemon: { nickname: "Updated Pokemon" } 
+    }
+    assert_redirected_to challenge_pokemon_url(@challenge, @pokemon)
   end
 
-  test "should get destroy" do
-    get pokemons_destroy_url
-    assert_response :success
+  test "should destroy pokemon" do
+    assert_difference("Pokemon.count", -1) do
+      delete challenge_pokemon_url(@challenge, @pokemon)
+    end
+    assert_redirected_to challenge_pokemons_url(@challenge)
   end
 
   test "should get party" do
-    get pokemons_party_url
+    get party_challenge_pokemons_url(@challenge)
     assert_response :success
   end
 end
