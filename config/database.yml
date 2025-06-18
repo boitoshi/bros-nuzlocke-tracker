@@ -73,9 +73,7 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: bros_nuzlocke_tracker_production
-    username: bros_nuzlocke_tracker
-    password: <%= ENV["BROS_NUZLOCKE_TRACKER_DATABASE_PASSWORD"] %>
+    url: <%= ENV.fetch("DATABASE_URL") %>
   cache:
     <<: *primary_production
     database: bros_nuzlocke_tracker_production_cache
