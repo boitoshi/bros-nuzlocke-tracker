@@ -16,24 +16,24 @@ class ChallengesController < ApplicationController
     @challenge = current_user.challenges.build
   end
 
+  def edit
+  end
+
   def create
     @challenge = current_user.challenges.build(challenge_params)
     @challenge.started_at = Time.current
     @challenge.status = :in_progress
 
     if @challenge.save
-      redirect_to @challenge, notice: "チャレンジが正常に作成されました！ 🎉"
+      redirect_to @challenge, notice: t("challenges.notices.created")
     else
       render :new, status: :unprocessable_entity
     end
   end
 
-  def edit
-  end
-
   def update
     if @challenge.update(challenge_params)
-      redirect_to @challenge, notice: "チャレンジが正常に更新されました！"
+      redirect_to @challenge, notice: t("challenges.notices.updated")
     else
       render :edit, status: :unprocessable_entity
     end
@@ -41,7 +41,7 @@ class ChallengesController < ApplicationController
 
   def destroy
     @challenge.destroy
-    redirect_to challenges_path, notice: "チャレンジが削除されました。"
+    redirect_to challenges_path, notice: t("challenges.notices.deleted")
   end
 
   private
@@ -51,6 +51,6 @@ class ChallengesController < ApplicationController
   end
 
   def challenge_params
-    params.require(:challenge).permit(:name, :game_title, :status, :completed_at)
+    params.expect(challenge: [ :name, :game_title, :status, :completed_at ])
   end
 end

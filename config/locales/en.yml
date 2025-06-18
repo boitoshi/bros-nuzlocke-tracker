@@ -29,3 +29,21 @@
 
 en:
   hello: "Hello world"
+  challenges:
+    notices:
+      created: "チャレンジが正常に作成されました！ 🎉"
+      updated: "チャレンジが正常に更新されました！"
+      deleted: "チャレンジが削除されました。"
+  pokemons:
+    notices:
+      created: "%{pokemon}を捕獲しました！ 🎉"
+      updated: "ポケモンが正常に更新されました！"
+      deleted: "ポケモンが削除されました。"
+  rules:
+    notices:
+      created: "カスタムルール「%{name}」を作成しました。"
+      updated: "ルールが正常に更新されました！"
+      updated_multiple: "%{count}個のルールを更新しました。"
+      deleted: "ルールが削除されました。"
+      create_failed: "カスタムルールの作成に失敗しました。"
+      update_failed: "一部のルールの更新に失敗しました。"

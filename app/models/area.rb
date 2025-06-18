@@ -62,7 +62,7 @@ class Area < ApplicationRecord
   end
 
   def has_caught_pokemon_for_challenge?(challenge)
-    pokemons.where(challenge: challenge).exists?
+    pokemons.exists?(challenge: challenge)
   end
 
   def caught_pokemon_for_challenge(challenge)

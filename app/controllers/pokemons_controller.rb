@@ -30,26 +30,26 @@ class PokemonsController < ApplicationController
     end
   end
 
+  def edit
+    @areas = Area.by_game(@challenge.game_title).by_order
+  end
+
   def create
     @pokemon = @challenge.pokemons.build(pokemon_params)
     @pokemon.caught_at = Time.current
     @pokemon.status = :alive
 
     if @pokemon.save
-      redirect_to challenge_pokemons_path(@challenge), notice: "#{@pokemon.display_name}を捕獲しました！ 🎉"
+      redirect_to challenge_pokemons_path(@challenge), notice: t("pokemons.notices.created", pokemon: @pokemon.display_name)
     else
       @areas = Area.by_game(@challenge.game_title).by_order
       render :new, status: :unprocessable_entity
     end
   end
 
-  def edit
-    @areas = Area.by_game(@challenge.game_title).by_order
-  end
-
   def update
     if @pokemon.update(pokemon_params)
-      redirect_to challenge_pokemon_path(@challenge, @pokemon), notice: "ポケモン情報が更新されました！"
+      redirect_to challenge_pokemon_path(@challenge, @pokemon), notice: t("pokemons.notices.updated")
     else
       @areas = Area.by_game(@challenge.game_title).by_order
       render :edit, status: :unprocessable_entity
@@ -97,10 +97,10 @@ class PokemonsController < ApplicationController
   end
 
   def pokemon_params
-    params.require(:pokemon).permit(:nickname, :species, :level, :nature, :ability, :area_id, :experience, :in_party)
+    params.expect(pokemon: [ :nickname, :species, :level, :nature, :ability, :area_id, :experience, :in_party ])
   end
 
   def redirect_back_or_to(fallback_path, **options)
-    redirect_to(request.referer.present? ? request.referer : fallback_path, **options)
+    redirect_to((request.referer.presence || fallback_path), **options)
   end
 end

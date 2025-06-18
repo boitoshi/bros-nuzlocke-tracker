@@ -93,7 +93,7 @@ class Rule < ApplicationRecord
   end
 
   def active_value
-    custom_value.present? ? custom_value : default_value
+    (custom_value.presence || default_value)
   end
 
   def boolean_value?

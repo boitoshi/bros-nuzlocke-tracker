@@ -55,25 +55,19 @@ class Challenge < ApplicationRecord
     end
   end
 
+  # delegateを使ってpokemons関連メソッドを簡潔に
+  delegate :count, to: :pokemons, prefix: :total, allow_nil: true
+  delegate :alive_pokemon, to: :pokemons
+  delegate :dead_pokemon, to: :pokemons
+  delegate :boxed_pokemon, to: :pokemons
+
   # ポケモン管理メソッド
   def party_pokemon
     pokemons.party_members.alive_pokemon.limit(6)
   end
 
-  def alive_pokemon
-    pokemons.alive_pokemon
-  end
-
-  def dead_pokemon
-    pokemons.dead_pokemon
-  end
-
-  def boxed_pokemon
-    pokemons.boxed_pokemon
-  end
-
   def total_caught
-    pokemons.count
+    total_count
   end
 
   def total_dead

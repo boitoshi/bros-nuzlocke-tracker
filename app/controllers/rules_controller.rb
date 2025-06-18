@@ -41,10 +41,10 @@ class RulesController < ApplicationController
 
     if error_rules.empty?
       redirect_to challenge_rules_path(@challenge),
-                  notice: "#{success_count}個のルールを更新しました。"
+                  notice: t("rules.notices.updated_multiple", count: success_count)
     else
       redirect_to challenge_rules_path(@challenge),
-                  alert: "一部のルールの更新に失敗しました。"
+                  alert: t("rules.notices.update_failed")
     end
   end
 
@@ -55,10 +55,10 @@ class RulesController < ApplicationController
 
     if @rule.save
       redirect_to challenge_rules_path(@challenge),
-                  notice: "カスタムルール「#{@rule.name}」を作成しました。"
+                  notice: t("rules.notices.created", name: @rule.name)
     else
       redirect_to challenge_rules_path(@challenge),
-                  alert: "カスタムルールの作成に失敗しました。"
+                  alert: t("rules.notices.create_failed")
     end
   end
 
@@ -88,14 +88,14 @@ class RulesController < ApplicationController
   end
 
   def rule_params
-    params.require(:rule).permit(:enabled, :custom_value, :description)
+    params.expect(rule: [ :enabled, :custom_value, :description ])
   end
 
   def rules_params
-    params.require(:rules).permit(rules: [ :enabled, :custom_value, :description ])
+    params.expect(rules: [ rules: [ :enabled, :custom_value, :description ] ])
   end
 
   def custom_rule_params
-    params.require(:rule).permit(:name, :description, :default_value, :enabled)
+    params.expect(rule: [ :name, :description, :default_value, :enabled ])
   end
 end
