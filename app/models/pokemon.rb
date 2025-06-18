@@ -3,7 +3,7 @@ class Pokemon < ApplicationRecord
   belongs_to :area
 
   # ステータスの定義
-  enum status: {
+  enum :status, {
     alive: 0,      # 生存
     dead: 1,       # 死亡
     boxed: 2       # ボックス保管
@@ -11,19 +11,19 @@ class Pokemon < ApplicationRecord
 
   # ポケモンの性格一覧
   NATURES = [
-    'がんばりや', 'さみしがり', 'ゆうかん', 'いじっぱり', 'やんちゃ',
-    'ずぶとい', 'すなお', 'のんき', 'わんぱく', 'のうてんき',
-    'おくびょう', 'せっかち', 'まじめ', 'ようき', 'むじゃき',
-    'ひかえめ', 'おっとり', 'れいせい', 'てれや', 'うっかりや',
-    'おだやか', 'おとなしい', 'なまいき', 'しんちょう', 'きまぐれ'
+    "がんばりや", "さみしがり", "ゆうかん", "いじっぱり", "やんちゃ",
+    "ずぶとい", "すなお", "のんき", "わんぱく", "のうてんき",
+    "おくびょう", "せっかち", "まじめ", "ようき", "むじゃき",
+    "ひかえめ", "おっとり", "れいせい", "てれや", "うっかりや",
+    "おだやか", "おとなしい", "なまいき", "しんちょう", "きまぐれ"
   ].freeze
 
   # バリデーション
   validates :nickname, presence: true, length: { minimum: 1, maximum: 20 }
   validates :species, presence: true, length: { minimum: 1, maximum: 50 }
-  validates :level, presence: true, numericality: { 
-    greater_than: 0, 
-    less_than_or_equal_to: 100 
+  validates :level, presence: true, numericality: {
+    greater_than: 0,
+    less_than_or_equal_to: 100
   }
   validates :nature, inclusion: { in: NATURES }, allow_blank: true
   validates :status, presence: true
@@ -47,34 +47,34 @@ class Pokemon < ApplicationRecord
   # メソッド
   def status_display
     case status
-    when 'alive' then '生存'
-    when 'dead' then '死亡'
-    when 'boxed' then 'ボックス'
+    when "alive" then "生存"
+    when "dead" then "死亡"
+    when "boxed" then "ボックス"
     else status
     end
   end
 
   def status_badge_class
     case status
-    when 'alive' then 'bg-success'
-    when 'dead' then 'bg-danger'
-    when 'boxed' then 'bg-secondary'
-    else 'bg-primary'
+    when "alive" then "bg-success"
+    when "dead" then "bg-danger"
+    when "boxed" then "bg-secondary"
+    else "bg-primary"
     end
   end
 
   def status_icon
     case status
-    when 'alive' then '💚'
-    when 'dead' then '💀'
-    when 'boxed' then '📦'
-    else '❓'
+    when "alive" then "💚"
+    when "dead" then "💀"
+    when "boxed" then "📦"
+    else "❓"
     end
   end
 
   def survival_days
     return nil unless caught_at
-    
+
     end_time = died_at || Time.current
     ((end_time - caught_at) / 1.day).to_i
   end
@@ -94,7 +94,7 @@ class Pokemon < ApplicationRecord
 
     party_count = challenge.pokemons.party_members.where.not(id: id).count
     if party_count >= 6
-      errors.add(:in_party, 'パーティには最大6匹までしか入れられません')
+      errors.add(:in_party, "パーティには最大6匹までしか入れられません")
     end
   end
 
@@ -128,7 +128,7 @@ class Pokemon < ApplicationRecord
     # 種族別統計（TOP 10）
     def species_popularity_stats(limit = 10)
       group(:species)
-        .order('count_species DESC')
+        .order("count_species DESC")
         .limit(limit)
         .count(:species)
     end
@@ -142,7 +142,7 @@ class Pokemon < ApplicationRecord
 
     # 性格別統計
     def nature_stats
-      where.not(nature: [nil, ''])
+      where.not(nature: [ nil, "" ])
         .group(:nature)
         .count
         .sort_by { |_, count| -count }
@@ -152,7 +152,7 @@ class Pokemon < ApplicationRecord
     # エリア別捕獲統計
     def area_catch_stats
       joins(:area)
-        .group('areas.name')
+        .group("areas.name")
         .count
         .sort_by { |_, count| -count }
         .to_h
@@ -182,7 +182,7 @@ class Pokemon < ApplicationRecord
     def calculate_survival_rate
       total = count
       return 0 if total == 0
-      
+
       alive_count = alive_pokemon.count
       ((alive_count.to_f / total) * 100).round(1)
     end

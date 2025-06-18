@@ -4,7 +4,7 @@ class DashboardController < ApplicationController
   def index
     @challenge_stats = current_user.challenges.total_stats
     @pokemon_stats = Pokemon.joins(:challenge).where(challenges: { user: current_user }).total_stats
-    
+
     # グラフ用データ
     @game_title_data = current_user.challenges.game_title_stats
     @species_popularity_data = Pokemon.joins(:challenge)
@@ -17,7 +17,7 @@ class DashboardController < ApplicationController
     @monthly_catches_data = Pokemon.joins(:challenge)
                                    .where(challenges: { user: current_user })
                                    .monthly_catch_stats(12)
-    
+
     # 追加統計
     @nature_stats = Pokemon.joins(:challenge)
                            .where(challenges: { user: current_user })
@@ -28,7 +28,7 @@ class DashboardController < ApplicationController
     @party_usage_stats = Pokemon.joins(:challenge)
                                 .where(challenges: { user: current_user })
                                 .party_usage_stats
-    
+
     # 平均値統計
     @average_duration = current_user.challenges.average_duration
   end

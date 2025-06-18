@@ -4,7 +4,7 @@ class Challenge < ApplicationRecord
   has_many :rules, dependent: :destroy
 
   # ステータスの定義
-  enum status: {
+  enum :status, {
     in_progress: 0,    # 進行中
     completed: 1,      # 完了
     failed: 2          # 失敗
@@ -12,16 +12,16 @@ class Challenge < ApplicationRecord
 
   # ゲームタイトルの定義
   GAME_TITLES = [
-    ['ポケットモンスター 赤', 'red'],
-    ['ポケットモンスター 緑', 'green'],
-    ['ポケットモンスター 青', 'blue'],
-    ['ポケットモンスター ピカチュウ', 'yellow'],
-    ['ポケットモンスター 金', 'gold'],
-    ['ポケットモンスター 銀', 'silver'],
-    ['ポケットモンスター クリスタル', 'crystal'],
-    ['ポケットモンスター ルビー', 'ruby'],
-    ['ポケットモンスター サファイア', 'sapphire'],
-    ['ポケットモンスター エメラルド', 'emerald']
+    [ "ポケットモンスター 赤", "red" ],
+    [ "ポケットモンスター 緑", "green" ],
+    [ "ポケットモンスター 青", "blue" ],
+    [ "ポケットモンスター ピカチュウ", "yellow" ],
+    [ "ポケットモンスター 金", "gold" ],
+    [ "ポケットモンスター 銀", "silver" ],
+    [ "ポケットモンスター クリスタル", "crystal" ],
+    [ "ポケットモンスター ルビー", "ruby" ],
+    [ "ポケットモンスター サファイア", "sapphire" ],
+    [ "ポケットモンスター エメラルド", "emerald" ]
   ].freeze
 
   # バリデーション
@@ -41,17 +41,17 @@ class Challenge < ApplicationRecord
 
   def duration_in_days
     return nil unless started_at
-    
+
     end_time = completed_at || Time.current
     ((end_time - started_at) / 1.day).to_i
   end
 
   def status_badge_class
     case status
-    when 'in_progress' then 'bg-primary'
-    when 'completed' then 'bg-success'
-    when 'failed' then 'bg-danger'
-    else 'bg-secondary'
+    when "in_progress" then "bg-primary"
+    when "completed" then "bg-success"
+    when "failed" then "bg-danger"
+    else "bg-secondary"
     end
   end
 
@@ -124,25 +124,25 @@ class Challenge < ApplicationRecord
 
   def check_rule_violations(pokemon, action = nil)
     violations = []
-    
+
     enabled_rules.each do |rule|
       rule_violations = rule.violation_check(pokemon, action)
       violations.concat(rule_violations)
     end
-    
+
     violations
   end
 
   def rule_violations_summary
     summary = {}
-    
+
     pokemons.each do |pokemon|
       violations = check_rule_violations(pokemon)
       if violations.any?
         summary[pokemon.id] = violations
       end
     end
-    
+
     summary
   end
 
@@ -187,7 +187,7 @@ class Challenge < ApplicationRecord
       total_days = completed_challenges.sum do |challenge|
         (challenge.completed_at - challenge.started_at) / 1.day
       end
-      
+
       (total_days / completed_challenges.count).round(1)
     end
 
@@ -196,7 +196,7 @@ class Challenge < ApplicationRecord
     def calculate_success_rate
       total = count
       return 0 if total == 0
-      
+
       success_count = completed.count
       ((success_count.to_f / total) * 100).round(1)
     end

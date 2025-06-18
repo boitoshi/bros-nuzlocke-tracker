@@ -1,7 +1,7 @@
 class RulesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_challenge
-  before_action :set_rule, only: [:show, :edit, :update, :destroy]
+  before_action :set_rule, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @rules = @challenge.rules.ordered
@@ -19,7 +19,7 @@ class RulesController < ApplicationController
 
   def update
     if @rule.update(rule_params)
-      redirect_to challenge_rules_path(@challenge), 
+      redirect_to challenge_rules_path(@challenge),
                   notice: "ルール「#{@rule.name}」を更新しました。"
     else
       render :edit, status: :unprocessable_entity
@@ -40,24 +40,24 @@ class RulesController < ApplicationController
     end
 
     if error_rules.empty?
-      redirect_to challenge_rules_path(@challenge), 
+      redirect_to challenge_rules_path(@challenge),
                   notice: "#{success_count}個のルールを更新しました。"
     else
-      redirect_to challenge_rules_path(@challenge), 
+      redirect_to challenge_rules_path(@challenge),
                   alert: "一部のルールの更新に失敗しました。"
     end
   end
 
   def create_custom
     @rule = @challenge.rules.build(custom_rule_params)
-    @rule.rule_type = 'custom'
+    @rule.rule_type = "custom"
     @rule.sort_order = @challenge.rules.maximum(:sort_order).to_i + 1
 
     if @rule.save
-      redirect_to challenge_rules_path(@challenge), 
+      redirect_to challenge_rules_path(@challenge),
                   notice: "カスタムルール「#{@rule.name}」を作成しました。"
     else
-      redirect_to challenge_rules_path(@challenge), 
+      redirect_to challenge_rules_path(@challenge),
                   alert: "カスタムルールの作成に失敗しました。"
     end
   end
@@ -65,7 +65,7 @@ class RulesController < ApplicationController
   def destroy
     rule_name = @rule.name
     @rule.destroy
-    redirect_to challenge_rules_path(@challenge), 
+    redirect_to challenge_rules_path(@challenge),
                 notice: "ルール「#{rule_name}」を削除しました。"
   end
 

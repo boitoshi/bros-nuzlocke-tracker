@@ -1,7 +1,7 @@
 class PokemonsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_challenge
-  before_action :set_pokemon, only: [:show, :edit, :update, :destroy, :toggle_party, :mark_as_dead, :mark_as_boxed]
+  before_action :set_pokemon, only: [ :show, :edit, :update, :destroy, :toggle_party, :mark_as_dead, :mark_as_boxed ]
 
   def index
     @pokemons = @challenge.pokemons.includes(:area).by_caught_order
@@ -22,7 +22,7 @@ class PokemonsController < ApplicationController
   def new
     @pokemon = @challenge.pokemons.build
     @areas = Area.by_game(@challenge.game_title).by_order
-    
+
     # ゲーム用のエリアがない場合は作成
     if @areas.empty?
       @challenge.create_areas_for_game
@@ -49,7 +49,7 @@ class PokemonsController < ApplicationController
 
   def update
     if @pokemon.update(pokemon_params)
-      redirect_to challenge_pokemon_path(@challenge, @pokemon), notice: 'ポケモン情報が更新されました！'
+      redirect_to challenge_pokemon_path(@challenge, @pokemon), notice: "ポケモン情報が更新されました！"
     else
       @areas = Area.by_game(@challenge.game_title).by_order
       render :edit, status: :unprocessable_entity
@@ -76,13 +76,13 @@ class PokemonsController < ApplicationController
 
   def mark_as_dead
     @pokemon.update(status: :dead, died_at: Time.current, in_party: false)
-    redirect_back_or_to challenge_pokemon_path(@challenge, @pokemon), 
+    redirect_back_or_to challenge_pokemon_path(@challenge, @pokemon),
                         notice: "#{@pokemon.display_name}が死亡しました...安らかに眠ってください 😢"
   end
 
   def mark_as_boxed
     @pokemon.update(status: :boxed, in_party: false)
-    redirect_back_or_to challenge_pokemon_path(@challenge, @pokemon), 
+    redirect_back_or_to challenge_pokemon_path(@challenge, @pokemon),
                         notice: "#{@pokemon.display_name}をボックスに預けました。"
   end
 

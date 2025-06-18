@@ -1,17 +1,17 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
-  game_title: MyString
-  status: 1
-  started_at: 2025-06-17 15:46:55
-  completed_at: 2025-06-17 15:46:55
+  name: "ポケモン赤チャレンジ"
+  game_title: "red"
+  status: 0
+  started_at: <%= 1.week.ago %>
+  completed_at: null
   user: one
 
 two:
-  name: MyString
-  game_title: MyString
+  name: "ポケモン青チャレンジ"
+  game_title: "blue"
   status: 1
-  started_at: 2025-06-17 15:46:55
-  completed_at: 2025-06-17 15:46:55
+  started_at: <%= 2.weeks.ago %>
+  completed_at: <%= 1.day.ago %>
   user: two

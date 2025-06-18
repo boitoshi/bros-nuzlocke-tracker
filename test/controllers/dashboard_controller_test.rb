@@ -25,7 +25,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
     get dashboard_url
     assert_response :success
-    
+
     # 統計カードが表示されることを確認
     assert_select ".card-title", /総チャレンジ数/
     assert_select ".card-title", /成功率/
@@ -37,7 +37,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
     get dashboard_url
     assert_response :success
-    
+
     # グラフのcanvas要素が存在することを確認
     assert_select "canvas#gameTitleChart"
     assert_select "canvas#speciesChart"
@@ -49,7 +49,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
     get dashboard_url
     assert_response :success
-    
+
     # Chart.jsのスクリプトが含まれることを確認
     assert_select "script[type='module']"
   end

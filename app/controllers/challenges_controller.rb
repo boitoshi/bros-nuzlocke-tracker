@@ -1,6 +1,6 @@
 class ChallengesController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_challenge, only: [:show, :edit, :update, :destroy]
+  before_action :set_challenge, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @challenges = current_user.challenges.recent.includes(:user)
@@ -22,7 +22,7 @@ class ChallengesController < ApplicationController
     @challenge.status = :in_progress
 
     if @challenge.save
-      redirect_to @challenge, notice: 'チャレンジが正常に作成されました！ 🎉'
+      redirect_to @challenge, notice: "チャレンジが正常に作成されました！ 🎉"
     else
       render :new, status: :unprocessable_entity
     end
@@ -33,7 +33,7 @@ class ChallengesController < ApplicationController
 
   def update
     if @challenge.update(challenge_params)
-      redirect_to @challenge, notice: 'チャレンジが正常に更新されました！'
+      redirect_to @challenge, notice: "チャレンジが正常に更新されました！"
     else
       render :edit, status: :unprocessable_entity
     end
@@ -41,7 +41,7 @@ class ChallengesController < ApplicationController
 
   def destroy
     @challenge.destroy
-    redirect_to challenges_path, notice: 'チャレンジが削除されました。'
+    redirect_to challenges_path, notice: "チャレンジが削除されました。"
   end
 
   private

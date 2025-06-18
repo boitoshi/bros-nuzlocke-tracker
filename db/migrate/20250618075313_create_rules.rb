@@ -13,7 +13,7 @@ class CreateRules < ActiveRecord::Migration[8.0]
       t.timestamps
     end
 
-    add_index :rules, [:challenge_id, :rule_type]
-    add_index :rules, [:challenge_id, :enabled]
+    add_index :rules, [ :challenge_id, :rule_type ]
+    add_index :rules, [ :challenge_id, :enabled ]
   end
 end

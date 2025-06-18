@@ -9,7 +9,7 @@ class User < ApplicationRecord
 
   # メソッド
   def display_name
-    email.split('@').first
+    email.split("@").first
   end
 
   def active_challenges

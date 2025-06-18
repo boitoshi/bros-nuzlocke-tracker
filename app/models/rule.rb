@@ -3,74 +3,74 @@ class Rule < ApplicationRecord
 
   # ルールタイプの定義
   RULE_TYPES = {
-    'basic' => '基本ルール',
-    'level' => 'レベル制限',
-    'item' => 'アイテム制限',
-    'pokemon_center' => 'ポケモンセンター制限',
-    'evolution' => '進化制限',
-    'duplicate' => '重複ポケモン制限',
-    'battle_style' => 'バトルスタイル',
-    'exp_share' => '経験値共有',
-    'wild_battle' => '野生ポケモン戦制限',
-    'custom' => 'カスタムルール'
+    "basic" => "基本ルール",
+    "level" => "レベル制限",
+    "item" => "アイテム制限",
+    "pokemon_center" => "ポケモンセンター制限",
+    "evolution" => "進化制限",
+    "duplicate" => "重複ポケモン制限",
+    "battle_style" => "バトルスタイル",
+    "exp_share" => "経験値共有",
+    "wild_battle" => "野生ポケモン戦制限",
+    "custom" => "カスタムルール"
   }.freeze
 
   # デフォルトルールの定義
   DEFAULT_RULES = [
     {
-      name: 'ポケモンが瀕死になったら死亡扱い',
-      description: 'バトルでHPが0になったポケモンは「死亡」として扱い、二度と使用できません。',
-      rule_type: 'basic',
-      default_value: 'true',
+      name: "ポケモンが瀕死になったら死亡扱い",
+      description: "バトルでHPが0になったポケモンは「死亡」として扱い、二度と使用できません。",
+      rule_type: "basic",
+      default_value: "true",
       sort_order: 1
     },
     {
-      name: '1エリア1匹ルール',
-      description: '同じエリア（ルート、街、ダンジョンなど）では最初に遭遇したポケモン1匹のみ捕獲可能です。',
-      rule_type: 'basic',
-      default_value: 'true',
+      name: "1エリア1匹ルール",
+      description: "同じエリア（ルート、街、ダンジョンなど）では最初に遭遇したポケモン1匹のみ捕獲可能です。",
+      rule_type: "basic",
+      default_value: "true",
       sort_order: 2
     },
     {
-      name: 'ニックネーム必須',
-      description: '捕獲したポケモンには必ずニックネームをつけてください。',
-      rule_type: 'basic',
-      default_value: 'true',
+      name: "ニックネーム必須",
+      description: "捕獲したポケモンには必ずニックネームをつけてください。",
+      rule_type: "basic",
+      default_value: "true",
       sort_order: 3
     },
     {
-      name: 'レベル制限',
-      description: 'ジムリーダーのエースポケモンより高いレベルで挑戦することを禁止します。',
-      rule_type: 'level',
-      default_value: 'false',
+      name: "レベル制限",
+      description: "ジムリーダーのエースポケモンより高いレベルで挑戦することを禁止します。",
+      rule_type: "level",
+      default_value: "false",
       sort_order: 10
     },
     {
-      name: '回復アイテム制限',
-      description: 'バトル中の回復アイテムの使用を制限します。',
-      rule_type: 'item',
-      default_value: 'false',
+      name: "回復アイテム制限",
+      description: "バトル中の回復アイテムの使用を制限します。",
+      rule_type: "item",
+      default_value: "false",
       sort_order: 20
     },
     {
-      name: 'ポケモンセンター制限',
-      description: 'ポケモンセンターでの回復回数を制限します。',
-      rule_type: 'pokemon_center',
-      default_value: 'false',
+      name: "ポケモンセンター制限",
+      description: "ポケモンセンターでの回復回数を制限します。",
+      rule_type: "pokemon_center",
+      default_value: "false",
       sort_order: 30
     },
     {
-      name: '進化制限',
-      description: 'ポケモンの進化を禁止または制限します。',
-      rule_type: 'evolution',
-      default_value: 'false',
+      name: "進化制限",
+      description: "ポケモンの進化を禁止または制限します。",
+      rule_type: "evolution",
+      default_value: "false",
       sort_order: 40
     },
     {
-      name: '重複ポケモン制限',
-      description: '同じ種族のポケモンを複数匹捕獲することを禁止します。',
-      rule_type: 'duplicate',
-      default_value: 'false',
+      name: "重複ポケモン制限",
+      description: "同じ種族のポケモンを複数匹捕獲することを禁止します。",
+      rule_type: "duplicate",
+      default_value: "false",
       sort_order: 50
     }
   ].freeze
@@ -78,7 +78,7 @@ class Rule < ApplicationRecord
   # バリデーション
   validates :name, presence: true, length: { minimum: 1, maximum: 100 }
   validates :rule_type, presence: true, inclusion: { in: RULE_TYPES.keys }
-  validates :enabled, inclusion: { in: [true, false] }
+  validates :enabled, inclusion: { in: [ true, false ] }
   validates :sort_order, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
   # スコープ
@@ -97,11 +97,11 @@ class Rule < ApplicationRecord
   end
 
   def boolean_value?
-    active_value.in?(['true', 'false'])
+    active_value.in?([ "true", "false" ])
   end
 
   def boolean_active?
-    active_value == 'true'
+    active_value == "true"
   end
 
   def numeric_value?
@@ -120,7 +120,7 @@ class Rule < ApplicationRecord
         description: rule_data[:description],
         rule_type: rule_data[:rule_type],
         default_value: rule_data[:default_value],
-        enabled: rule_data[:default_value] == 'true',
+        enabled: rule_data[:default_value] == "true",
         sort_order: rule_data[:sort_order]
       )
     end
@@ -133,11 +133,11 @@ class Rule < ApplicationRecord
     violations = []
 
     case rule_type
-    when 'basic'
+    when "basic"
       violations.concat(check_basic_rule_violations(pokemon, action))
-    when 'level'
+    when "level"
       violations.concat(check_level_violations(pokemon))
-    when 'duplicate'
+    when "duplicate"
       violations.concat(check_duplicate_violations(pokemon))
     end
 
@@ -150,11 +150,11 @@ class Rule < ApplicationRecord
     violations = []
 
     case name
-    when 'ポケモンが瀕死になったら死亡扱い'
+    when "ポケモンが瀕死になったら死亡扱い"
       if action == :revive && pokemon.dead?
         violations << "#{pokemon.display_name}は既に死亡しているため、使用できません。"
       end
-    when 'ニックネーム必須'
+    when "ニックネーム必須"
       if pokemon.nickname.blank?
         violations << "#{pokemon.species}にニックネームをつけてください。"
       end
@@ -165,7 +165,7 @@ class Rule < ApplicationRecord
 
   def check_level_violations(pokemon)
     violations = []
-    
+
     if enabled? && numeric_value? && pokemon.level > numeric_active_value
       violations << "#{pokemon.display_name}のレベル(#{pokemon.level})が制限レベル(#{numeric_active_value})を超えています。"
     end

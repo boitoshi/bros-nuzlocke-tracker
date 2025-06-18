@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   devise_for :users
-  
+
   resources :challenges do
     resources :pokemons do
       member do
@@ -12,8 +12,8 @@ Rails.application.routes.draw do
         get :party
       end
     end
-    
-    resources :rules, except: [:new, :create] do
+
+    resources :rules, except: [ :new, :create ] do
       collection do
         patch :update_multiple
         post :create_custom
@@ -21,10 +21,10 @@ Rails.application.routes.draw do
       end
     end
   end
-  
+
   # 統計ダッシュボード
-  get 'dashboard', to: 'dashboard#index'
-  
+  get "dashboard", to: "dashboard#index"
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
