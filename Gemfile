@@ -68,6 +68,7 @@ gem 'bootstrap', '~> 5.2' # 見た目をかわいく
 gem 'dartsass-sprockets'  # BootstrapのためのSassエンジン
 gem 'jquery-rails'        # jQuery
 gem 'image_processing'    # 画像処理
+gem 'groupdate'           # 日付グループ化（統計用）
 
 group :development do
   gem 'annotate'          # モデル情報自動追加

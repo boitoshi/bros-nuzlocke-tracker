@@ -1,0 +1,54 @@
+services:
+  # Web Service (Rails App)
+  - type: web
+    name: bros-nuzlocke-tracker-web
+    env: ruby
+    plan: starter
+    buildCommand: "./bin/rails assets:precompile"
+    startCommand: "./bin/rails server -p $PORT -e $RAILS_ENV"
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_SERVE_STATIC_FILES
+        value: true
+      - key: RAILS_LOG_TO_STDOUT
+        value: true
+      - key: WEB_CONCURRENCY
+        value: 2
+      - key: RAILS_MAX_THREADS
+        value: 5
+      - key: SOLID_QUEUE_IN_PUMA
+        value: true
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: bros-nuzlocke-tracker-db
+          property: connectionString
+      - key: BROS_NUZLOCKE_TRACKER_DATABASE_PASSWORD
+        fromDatabase:
+          name: bros-nuzlocke-tracker-db
+          property: password
+
+  # Background Jobs (if needed separately)
+  # - type: worker
+  #   name: bros-nuzlocke-tracker-worker
+  #   env: ruby
+  #   plan: starter
+  #   buildCommand: "./bin/rails assets:precompile"
+  #   startCommand: "./bin/jobs"
+  #   envVars:
+  #     - key: RAILS_ENV
+  #       value: production
+  #     - key: RAILS_MASTER_KEY
+  #       sync: false
+  #     - key: DATABASE_URL
+  #       fromDatabase:
+  #         name: bros-nuzlocke-tracker-db
+  #         property: connectionString
+
+databases:
+  - name: bros-nuzlocke-tracker-db
+    databaseName: bros_nuzlocke_tracker_production
+    user: bros_nuzlocke_tracker
+    plan: starter

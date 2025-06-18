@@ -1,0 +1,212 @@
+<% content_for :title, "#{@challenge.name} - ルール設定" %>
+
+<div class="container py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1 class="h2 mb-1">
+            <i class="bi bi-list-check"></i>
+            ルール設定
+          </h1>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><%= link_to "チャレンジ一覧", challenges_path %></li>
+              <li class="breadcrumb-item"><%= link_to @challenge.name, challenge_path(@challenge) %></li>
+              <li class="breadcrumb-item active">ルール設定</li>
+            </ol>
+          </nav>
+        </div>
+        <div>
+          <%= link_to challenge_path(@challenge), class: "btn btn-outline-secondary" do %>
+            <i class="bi bi-arrow-left"></i> チャレンジに戻る
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ルール違反サマリー -->
+  <% if @violations_summary.any? %>
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="alert alert-warning" role="alert">
+          <h5 class="alert-heading">
+            <i class="bi bi-exclamation-triangle"></i>
+            ルール違反が検出されました
+          </h5>
+          <p class="mb-2">以下のポケモンでルール違反が発生しています：</p>
+          <ul class="mb-0">
+            <% @violations_summary.each do |pokemon_id, violations| %>
+              <% pokemon = Pokemon.find(pokemon_id) %>
+              <li>
+                <strong><%= pokemon.display_name %></strong>: 
+                <%= violations.join(', ') %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <%= form_with url: update_multiple_challenge_rules_path(@challenge), method: :patch, local: true, data: { turbo: false } do |form| %>
+    <!-- ルールタイプ別表示 -->
+    <% Rule::RULE_TYPES.each do |rule_type, type_display| %>
+      <% rules_of_type = @rules_by_type[rule_type] %>
+      <% next if rules_of_type.blank? %>
+      
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title mb-0">
+                <i class="bi bi-gear"></i>
+                <%= type_display %>
+              </h5>
+            </div>
+            <div class="card-body">
+              <% rules_of_type.each do |rule| %>
+                <div class="row mb-3 p-3 border rounded">
+                  <div class="col-md-8">
+                    <div class="form-check form-switch mb-2">
+                      <%= form.check_box "rules[#{rule.id}][enabled]", 
+                                         { checked: rule.enabled?, 
+                                           class: "form-check-input",
+                                           id: "rule_#{rule.id}_enabled" } %>
+                      <%= form.label "rule_#{rule.id}_enabled", rule.name, 
+                                     class: "form-check-label fw-bold" %>
+                    </div>
+                    <p class="text-muted mb-2"><%= rule.description %></p>
+                    
+                    <!-- カスタム値入力 -->
+                    <% if rule.rule_type.in?(['level', 'pokemon_center']) %>
+                      <div class="mt-2">
+                        <%= form.label "rules[#{rule.id}][custom_value]", "制限値:", class: "form-label small" %>
+                        <%= form.number_field "rules[#{rule.id}][custom_value]", 
+                                              value: rule.custom_value || rule.default_value,
+                                              class: "form-control form-control-sm",
+                                              style: "width: 100px; display: inline-block;" %>
+                        <% if rule.rule_type == 'level' %>
+                          <small class="text-muted">レベル</small>
+                        <% elsif rule.rule_type == 'pokemon_center' %>
+                          <small class="text-muted">回/ジム</small>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                  <div class="col-md-4 text-end">
+                    <span class="badge <%= rule.enabled? ? 'bg-success' : 'bg-secondary' %>">
+                      <%= rule.enabled? ? '有効' : '無効' %>
+                    </span>
+                    <% if rule.rule_type == 'custom' %>
+                      <div class="mt-2">
+                        <%= link_to challenge_rule_path(@challenge, rule), 
+                                    method: :delete,
+                                    class: "btn btn-outline-danger btn-sm",
+                                    confirm: "このカスタムルールを削除しますか？" do %>
+                          <i class="bi bi-trash"></i>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- カスタムルール追加セクション -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-plus-circle"></i>
+              カスタムルール追加
+            </h5>
+          </div>
+          <div class="card-body">
+            <%= form_with url: create_custom_challenge_rules_path(@challenge), 
+                          method: :post, 
+                          local: true, 
+                          data: { turbo: false } do |custom_form| %>
+              <div class="row">
+                <div class="col-md-6">
+                  <%= custom_form.label :name, "ルール名", class: "form-label" %>
+                  <%= custom_form.text_field :name, class: "form-control", 
+                                             placeholder: "例: 道具ボール縛り" %>
+                </div>
+                <div class="col-md-6">
+                  <%= custom_form.label :default_value, "デフォルト値", class: "form-label" %>
+                  <%= custom_form.text_field :default_value, class: "form-control", 
+                                             placeholder: "例: true, false, 数値など" %>
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-12">
+                  <%= custom_form.label :description, "説明", class: "form-label" %>
+                  <%= custom_form.text_area :description, class: "form-control", 
+                                            rows: 2,
+                                            placeholder: "このルールの詳細な説明を入力してください" %>
+                </div>
+              </div>
+              <div class="row mt-3">
+                <div class="col-12">
+                  <div class="form-check">
+                    <%= custom_form.check_box :enabled, { checked: true, class: "form-check-input" } %>
+                    <%= custom_form.label :enabled, "作成時に有効にする", class: "form-check-label" %>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-3">
+                <%= custom_form.submit "カスタムルールを追加", class: "btn btn-success" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 保存ボタン -->
+    <div class="row">
+      <div class="col-12 text-center">
+        <%= form.submit "ルール設定を保存", class: "btn btn-primary btn-lg" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<script>
+  // ルール違反チェック機能
+  function checkViolations() {
+    fetch('<%= violations_check_challenge_rules_path(@challenge) %>')
+      .then(response => response.json())
+      .then(data => {
+        console.log('ルール違反チェック結果:', data);
+        
+        if (data.total_violations > 0) {
+          // 違反があった場合の処理
+          updateViolationAlert(data.violations);
+        }
+      })
+      .catch(error => {
+        console.error('ルール違反チェックエラー:', error);
+      });
+  }
+
+  function updateViolationAlert(violations) {
+    // ページ上部の警告エリアを更新
+    // 実装はオプション - リアルタイム更新が必要な場合
+  }
+
+  // フォーム変更時にルール違反をチェック（オプション）
+  document.addEventListener('change', function(e) {
+    if (e.target.type === 'checkbox' && e.target.name.includes('enabled')) {
+      // 少し遅延させてからチェック実行
+      setTimeout(checkViolations, 500);
+    }
+  });
+</script>

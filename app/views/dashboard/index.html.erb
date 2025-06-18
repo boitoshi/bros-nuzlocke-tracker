@@ -1,0 +1,302 @@
+<% content_for :title, "統計ダッシュボード" %>
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="h2 mb-4">
+        <i class="bi bi-graph-up"></i>
+        統計ダッシュボード
+        <small class="text-muted">あなたのNuzlockeチャレンジを分析</small>
+      </h1>
+    </div>
+  </div>
+
+  <!-- 全体統計カード -->
+  <div class="row mb-4">
+    <div class="col-md-3 mb-3">
+      <div class="card text-center bg-primary text-white">
+        <div class="card-body">
+          <h5 class="card-title">総チャレンジ数</h5>
+          <h2 class="display-4"><%= @challenge_stats[:total_challenges] %></h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card text-center bg-success text-white">
+        <div class="card-body">
+          <h5 class="card-title">成功率</h5>
+          <h2 class="display-4"><%= @challenge_stats[:success_rate] %>%</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card text-center bg-info text-white">
+        <div class="card-body">
+          <h5 class="card-title">総ポケモン数</h5>
+          <h2 class="display-4"><%= @pokemon_stats[:total_pokemon] %></h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card text-center bg-warning text-white">
+        <div class="card-body">
+          <h5 class="card-title">生存率</h5>
+          <h2 class="display-4"><%= @pokemon_stats[:survival_rate] %>%</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 詳細統計 -->
+  <div class="row mb-4">
+    <div class="col-md-6 mb-3">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">チャレンジステータス</h5>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-4">
+              <div class="border-end">
+                <h4 class="text-primary"><%= @challenge_stats[:in_progress] %></h4>
+                <small class="text-muted">進行中</small>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="border-end">
+                <h4 class="text-success"><%= @challenge_stats[:completed] %></h4>
+                <small class="text-muted">完了</small>
+              </div>
+            </div>
+            <div class="col-4">
+              <h4 class="text-danger"><%= @challenge_stats[:failed] %></h4>
+              <small class="text-muted">失敗</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">ポケモンステータス</h5>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-4">
+              <div class="border-end">
+                <h4 class="text-success"><%= @pokemon_stats[:alive] %></h4>
+                <small class="text-muted">生存</small>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="border-end">
+                <h4 class="text-danger"><%= @pokemon_stats[:dead] %></h4>
+                <small class="text-muted">死亡</small>
+              </div>
+            </div>
+            <div class="col-4">
+              <h4 class="text-secondary"><%= @pokemon_stats[:boxed] %></h4>
+              <small class="text-muted">ボックス</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- グラフエリア -->
+  <div class="row">
+    <!-- ゲームタイトル別チャレンジ数 -->
+    <div class="col-lg-6 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">ゲームタイトル別チャレンジ数</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="gameTitleChart" width="400" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- 人気ポケモンTOP10 -->
+    <div class="col-lg-6 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">人気ポケモン TOP10</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="speciesChart" width="400" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- レベル分布 -->
+    <div class="col-lg-6 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">ポケモンレベル分布</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="levelChart" width="400" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- 月別チャレンジ開始数 -->
+    <div class="col-lg-6 mb-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="card-title mb-0">月別チャレンジ開始数</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="monthlyChart" width="400" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 追加統計情報 -->
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="card-title mb-0">平均プレイ期間</h6>
+        </div>
+        <div class="card-body text-center">
+          <h3 class="text-primary"><%= @average_duration %> 日</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="card-title mb-0">現在のパーティメンバー</h6>
+        </div>
+        <div class="card-body text-center">
+          <h3 class="text-info"><%= @pokemon_stats[:party_members] %> / 6</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="card-title mb-0">人気性格 TOP3</h6>
+        </div>
+        <div class="card-body">
+          <% @nature_stats.first(3).each_with_index do |(nature, count), index| %>
+            <div class="d-flex justify-content-between">
+              <span><%= index + 1 %>. <%= nature %></span>
+              <span class="badge bg-secondary"><%= count %></span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js スクリプト -->
+<script type="module">
+  import Chart from 'chart.js';
+
+  // 日本語フォント設定
+  Chart.defaults.font.family = "'Helvetica Neue', 'Arial', 'Hiragino Sans', 'Meiryo', sans-serif";
+
+  // ゲームタイトル別チャレンジ数グラフ
+  const gameTitleCtx = document.getElementById('gameTitleChart').getContext('2d');
+  new Chart(gameTitleCtx, {
+    type: 'doughnut',
+    data: {
+      labels: <%= raw @game_title_data.keys.to_json %>,
+      datasets: [{
+        data: <%= raw @game_title_data.values.to_json %>,
+        backgroundColor: [
+          '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
+          '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF', 
+          '#4BC0C0', '#FF6384'
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  });
+
+  // 人気ポケモン TOP10 グラフ
+  const speciesCtx = document.getElementById('speciesChart').getContext('2d');
+  new Chart(speciesCtx, {
+    type: 'bar',
+    data: {
+      labels: <%= raw @species_popularity_data.keys.to_json %>,
+      datasets: [{
+        label: '捕獲数',
+        data: <%= raw @species_popularity_data.values.to_json %>,
+        backgroundColor: 'rgba(54, 162, 235, 0.8)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  // レベル分布グラフ
+  const levelCtx = document.getElementById('levelChart').getContext('2d');
+  new Chart(levelCtx, {
+    type: 'line',
+    data: {
+      labels: <%= raw @level_distribution_data.keys.to_json %>,
+      datasets: [{
+        label: 'ポケモン数',
+        data: <%= raw @level_distribution_data.values.to_json %>,
+        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        tension: 0.1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+
+  // 月別チャレンジ開始数グラフ
+  const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
+  new Chart(monthlyCtx, {
+    type: 'line',
+    data: {
+      labels: <%= raw @monthly_challenges_data.keys.map(&:strftime).map { |d| d.strftime('%Y年%m月') }.to_json %>,
+      datasets: [{
+        label: 'チャレンジ開始数',
+        data: <%= raw @monthly_challenges_data.values.to_json %>,
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        tension: 0.1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+</script>

@@ -110,4 +110,81 @@ class Pokemon < ApplicationRecord
       self.in_party = false  # パーティから除外
     end
   end
+
+  # 統計メソッド
+  class << self
+    # 全体統計
+    def total_stats
+      {
+        total_pokemon: count,
+        alive: alive_pokemon.count,
+        dead: dead_pokemon.count,
+        boxed: boxed_pokemon.count,
+        survival_rate: calculate_survival_rate,
+        party_members: party_members.count
+      }
+    end
+
+    # 種族別統計（TOP 10）
+    def species_popularity_stats(limit = 10)
+      group(:species)
+        .order('count_species DESC')
+        .limit(limit)
+        .count(:species)
+    end
+
+    # レベル分布統計
+    def level_distribution_stats
+      group(:level)
+        .order(:level)
+        .count
+    end
+
+    # 性格別統計
+    def nature_stats
+      where.not(nature: [nil, ''])
+        .group(:nature)
+        .count
+        .sort_by { |_, count| -count }
+        .to_h
+    end
+
+    # エリア別捕獲統計
+    def area_catch_stats
+      joins(:area)
+        .group('areas.name')
+        .count
+        .sort_by { |_, count| -count }
+        .to_h
+    end
+
+    # 月別捕獲統計
+    def monthly_catch_stats(months = 12)
+      where(caught_at: months.months.ago..Time.current)
+        .group_by_month(:caught_at)
+        .count
+    end
+
+    # パーティメンバー使用頻度
+    def party_usage_stats
+      species_usage = joins(:challenge)
+        .where(in_party: true)
+        .group(:species)
+        .count
+        .sort_by { |_, count| -count }
+        .to_h
+
+      { most_used_in_party: species_usage }
+    end
+
+    private
+
+    def calculate_survival_rate
+      total = count
+      return 0 if total == 0
+      
+      alive_count = alive_pokemon.count
+      ((alive_count.to_f / total) * 100).round(1)
+    end
+  end
 end
