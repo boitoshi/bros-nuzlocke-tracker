@@ -9,7 +9,7 @@
  * Consider organizing styles into separate files for maintainability.
  */
 
-@import "bootstrap";
+@use "bootstrap" as *;
 
 /* カスタムスタイル */
 .hero-section {

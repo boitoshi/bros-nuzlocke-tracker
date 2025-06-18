@@ -1,24 +1,67 @@
-# README
+# Bros Nuzlocke Tracker 🎮✨
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+ポケモンのナズロックチャレンジを管理するWebアプリケーション
 
-Things you may want to cover:
+## 開発環境セットアップ
 
-* Ruby version
+### 必要な環境
+- Ruby 3.3.4
+- Rails 8.0.2
+- Node.js 18+ (アセット管理用)
+- PostgreSQL (本番環境用)
 
-* System dependencies
+### セットアップ手順
 
-* Configuration
+```bash
+# リポジトリクローン
+git clone <repository-url>
+cd bros-nuzlocke-tracker
 
-* Database creation
+# 自動セットアップ（推奨）
+bin/setup
 
-* Database initialization
+# または手動セットアップ
+bundle install
+bin/rails db:prepare
+bin/rails server
+```
 
-* How to run the test suite
+### 開発コマンド
 
-* Services (job queues, cache servers, search engines, etc.)
+```bash
+# 開発サーバー起動
+bin/dev                 # 推奨（CSS/JSも自動コンパイル）
+bin/rails server        # Railsサーバーのみ
 
-* Deployment instructions
+# テスト実行
+bin/rails test
 
-* ...
+# コード品質チェック
+bin/rubocop            # Lintチェック
+bin/rubocop -a         # 自動修正
+bin/brakeman           # セキュリティ監査
+```
+
+### デプロイ
+
+本番環境はKamalでDockerコンテナとして自動デプロイされます。
+
+```bash
+bin/kamal setup    # 初回のみ
+bin/kamal deploy   # デプロイ
+```
+
+## 主要機能
+
+- 🔐 ユーザー認証（Devise）
+- 🎯 チャレンジ管理
+- 🐾 ポケモン捕獲記録
+- 📋 カスタムルール設定
+- 📊 チャレンジ統計
+
+## 技術スタック
+
+- **Backend**: Ruby on Rails 8.0.2
+- **Frontend**: Bootstrap 5 + Stimulus
+- **Database**: SQLite (開発), PostgreSQL (本番)
+- **Deploy**: Kamal + Docker
