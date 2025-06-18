@@ -12,6 +12,25 @@ Rails.application.configure do
   # Full error reports are disabled.
   config.consider_all_requests_local = false
 
+  # Enable serving of static files from the /public folder.
+  config.public_file_server.enabled = true
+
+  # Compress CSS using a preprocessor.
+  # config.assets.css_compressor = :sass
+
+  # Do not fall back to assets pipeline if a precompiled asset is missed.
+  config.assets.compile = false
+
+  # Asset digests allow you to set far-future HTTP expiration dates on all assets,
+  # yet still be able to expire them through the digest params.
+  config.assets.digest = true
+
+  # Version of your assets, change this if you want to expire all your assets.
+  config.assets.version = "1.0"
+
+  # Precompile additional assets.
+  config.assets.precompile += %w( application.js application.css )
+
   # Turn on fragment caching in view templates.
   config.action_controller.perform_caching = true
 

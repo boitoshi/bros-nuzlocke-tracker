@@ -1,0 +1,17 @@
+{
+  "name": "bros-nuzlocke-tracker",
+  "private": true,
+  "dependencies": {
+    "@hotwired/stimulus": "^3.2.0",
+    "@hotwired/turbo-rails": "^8.0.0",
+    "bootstrap": "^5.3.0",
+    "@popperjs/core": "^2.11.0"
+  },
+  "scripts": {
+    "build": "rails assets:precompile",
+    "build:css": "sass ./app/assets/stylesheets/application.scss ./app/assets/builds/application.css --no-source-map --load-path=node_modules"
+  },
+  "devDependencies": {
+    "sass": "^1.69.0"
+  }
+}

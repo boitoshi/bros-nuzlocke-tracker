@@ -4,7 +4,7 @@ services:
     name: bros-nuzlocke-tracker-web
     env: ruby
     plan: starter
-    buildCommand: "bundle install && ./bin/rails assets:precompile && ./bin/rails db:migrate"
+    buildCommand: "bundle install && yarn install && SECRET_KEY_BASE=dummy RAILS_ENV=production ./bin/rails assets:precompile && ./bin/rails db:migrate"
     startCommand: "./bin/rails server -p $PORT -e $RAILS_ENV"
     envVars:
       - key: RAILS_ENV
@@ -18,6 +18,10 @@ services:
       - key: RAILS_MAX_THREADS
         value: 5
       - key: SOLID_QUEUE_IN_PUMA
+        value: true
+      - key: RAILS_ASSUME_SSL
+        value: true
+      - key: RAILS_FORCE_SSL
         value: true
       - key: SECRET_KEY_BASE
         generateValue: true
