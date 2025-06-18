@@ -19,7 +19,7 @@ class Pokemon < ApplicationRecord
   ].freeze
 
   # ポケモンの性別一覧
-  GENDERS = ["♂", "♀", "不明"].freeze
+  GENDERS = [ "♂", "♀", "不明" ].freeze
 
   # バリデーション
   validates :nickname, presence: true, length: { minimum: 1, maximum: 20 }
