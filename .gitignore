@@ -35,3 +35,6 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+# Ignore SSH connection guide with private keys
+SSH_CONNECTION_GUIDE.md
