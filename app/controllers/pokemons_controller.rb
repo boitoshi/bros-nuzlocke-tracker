@@ -40,7 +40,7 @@ class PokemonsController < ApplicationController
     @pokemon.status = :alive
 
     if @pokemon.save
-      redirect_to challenge_pokemons_path(@challenge), notice: t("pokemons.notices.created", pokemon: @pokemon.display_name)
+      redirect_to challenge_pokemon_path(@challenge, @pokemon), notice: t("pokemons.notices.created", pokemon: @pokemon.display_name)
     else
       @areas = Area.by_game(@challenge.game_title).by_order
       render :new, status: :unprocessable_entity
@@ -65,12 +65,12 @@ class PokemonsController < ApplicationController
   def toggle_party
     if @pokemon.in_party?
       @pokemon.update(in_party: false)
-      redirect_back_or_to challenge_pokemons_party_path(@challenge), notice: "#{@pokemon.display_name}をパーティから外しました。"
+      redirect_back_or_to party_challenge_pokemons_path(@challenge), notice: "#{@pokemon.display_name}をパーティから外しました。"
     elsif @challenge.can_add_to_party? && @pokemon.can_be_in_party?
       @pokemon.update(in_party: true)
-      redirect_back_or_to challenge_pokemons_party_path(@challenge), notice: "#{@pokemon.display_name}をパーティに加えました！"
+      redirect_back_or_to party_challenge_pokemons_path(@challenge), notice: "#{@pokemon.display_name}をパーティに加えました！"
     else
-      redirect_back_or_to challenge_pokemons_party_path(@challenge), alert: "パーティに追加できませんでした。"
+      redirect_back_or_to party_challenge_pokemons_path(@challenge), alert: "パーティに追加できませんでした。"
     end
   end
 

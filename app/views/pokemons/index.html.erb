@@ -5,7 +5,7 @@
       <small class="text-muted"><%= @challenge.name %> - <%= @challenge.game_title_display %></small>
     </div>
     <div>
-      <%= link_to "パーティ管理", challenge_pokemons_party_path(@challenge), class: "btn btn-primary me-2" %>
+      <%= link_to "パーティ管理", party_challenge_pokemons_path(@challenge), class: "btn btn-primary me-2" %>
       <%= link_to "新しい仲間を捕獲", new_challenge_pokemon_path(@challenge), class: "btn btn-success" %>
     </div>
   </div>

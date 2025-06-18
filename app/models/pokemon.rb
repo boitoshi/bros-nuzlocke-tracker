@@ -18,6 +18,9 @@ class Pokemon < ApplicationRecord
     "おだやか", "おとなしい", "なまいき", "しんちょう", "きまぐれ"
   ].freeze
 
+  # ポケモンの性別一覧
+  GENDERS = ["♂", "♀", "不明"].freeze
+
   # バリデーション
   validates :nickname, presence: true, length: { minimum: 1, maximum: 20 }
   validates :species, presence: true, length: { minimum: 1, maximum: 50 }
@@ -70,6 +73,22 @@ class Pokemon < ApplicationRecord
     when "boxed" then "📦"
     else "❓"
     end
+  end
+
+  def gender
+    # データベースにgenderカラムがない場合は、ランダムまたはデフォルト値を返す
+    GENDERS.sample || "不明"
+  end
+
+  def pokemon_type
+    # データベースにpokemon_typeカラムがない場合は、デフォルト値を返す
+    # 本来はspeciesからタイプを判定するロジックを実装
+    "ノーマル"
+  end
+
+  def notes
+    # データベースにnotesカラムがない場合は、空文字を返す
+    ""
   end
 
   def survival_days
