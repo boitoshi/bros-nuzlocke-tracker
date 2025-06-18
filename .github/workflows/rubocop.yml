@@ -1,0 +1,25 @@
+name: RuboCop Auto-fix
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  rubocop:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.0
+        bundler-cache: true
+    - name: Run RuboCop with auto-correct
+      run: |
+        bundle exec rubocop --safe-auto-correct
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git diff --staged --quiet || git commit -m "Auto-fix RuboCop violations"
+        git push
