@@ -29,7 +29,7 @@ Rails.application.configure do
   config.assets.version = "1.0"
 
   # Precompile additional assets.
-  config.assets.precompile += %w( application.js application.css )
+  config.assets.precompile += %w[ application.js application.css ]
 
   # Turn on fragment caching in view templates.
   config.action_controller.perform_caching = true
