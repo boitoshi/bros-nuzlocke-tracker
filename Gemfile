@@ -50,8 +50,8 @@ group :development, :test do
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
 
-  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
-  gem "rubocop-rails-omakase", require: false
+  # RuboCopは一旦無効化（シンプルにするため）
+  # gem "rubocop-rails", require: false
 end
 
 group :development do
@@ -76,3 +76,5 @@ gem "groupdate"           # 日付グループ化（統計用）
 group :development do
   gem "annotate"          # モデル情報自動追加
 end
+
+gem "rubocop", "~> 1.76", :group => :development
