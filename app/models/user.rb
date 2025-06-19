@@ -2,12 +2,18 @@ class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable
 
   # バリデーション
   validates :username, presence: true, uniqueness: { case_sensitive: false }, 
             format: { with: /\A[a-zA-Z0-9_]+\z/, message: "英数字とアンダースコアのみ使用可能" },
             length: { in: 3..20 }
+  
+  validates :email, uniqueness: { case_sensitive: false, allow_blank: true }
+  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP, allow_blank: true }
+  
+  validates :password, presence: true, length: { minimum: 6 }, if: :password_required?
+  validates :password_confirmation, presence: true, if: :password_required?
 
   # リレーション
   has_many :challenges, dependent: :destroy
@@ -34,5 +40,11 @@ class User < ApplicationRecord
 
   def completed_challenges
     challenges.completed
+  end
+
+  private
+
+  def password_required?
+    new_record? || !password.nil? || !password_confirmation.nil?
   end
 end

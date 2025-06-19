@@ -29,6 +29,48 @@
 
 en:
   hello: "Hello world"
+  
+  # Devise関連の日本語化
+  devise:
+    sessions:
+      signed_in: "ログインしました！ 🎉 ポケモンの世界へようこそ！"
+      signed_out: "ログアウトしました。またお会いしましょう！ 👋"
+      already_signed_out: "既にログアウトしています。"
+    registrations:
+      signed_up: "アカウント作成完了！ 🎉 ナズロックチャレンジを始めよう！"
+      signed_up_but_inactive: "アカウントを作成しましたが、有効化が必要です。"
+      updated: "アカウント情報を更新しました！ ✨"
+      destroyed: "アカウントを削除しました。またお会いできる日を楽しみにしています！"
+    passwords:
+      send_instructions: "パスワードリセットのメールを送信しました！ 📧"
+      updated: "パスワードを変更しました！ 🔐"
+      updated_not_active: "パスワードを変更しました。"
+    failure:
+      invalid: "ユーザー名（またはメールアドレス）かパスワードが間違っています 💦"
+      timeout: "セッションがタイムアウトしました。再度ログインしてください。"
+      inactive: "アカウントがまだ有効化されていません。"
+      already_authenticated: "既にログインしています。"
+      
+  # モデルのバリデーションメッセージ
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            username:
+              blank: "ユーザー名を入力してください 📝"
+              taken: "そのユーザー名は既に使われています 💦 別の名前を考えてみてね！"
+              too_short: "ユーザー名は3文字以上で入力してください ⚡"
+              too_long: "ユーザー名は20文字以下で入力してください 📏"
+              invalid: "ユーザー名は英数字とアンダースコア(_)のみ使用できます 🔤"
+            email:
+              taken: "そのメールアドレスは既に登録されています 📧"
+              invalid: "有効なメールアドレスを入力してください 📮"
+            password:
+              blank: "パスワードを入力してください 🔐"
+              too_short: "パスワードは6文字以上で入力してください 🔒"
+            password_confirmation:
+              confirmation: "パスワード確認が一致しません 🔄"
   challenges:
     notices:
       created: "チャレンジが正常に作成されました！ 🎉"
