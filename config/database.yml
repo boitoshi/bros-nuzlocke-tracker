@@ -74,20 +74,22 @@ production:
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  # 外部データベース（Supabase/Heroku等）用のDATABASE_URL設定
+  # Supabase用のDATABASE_URL設定
   <% if ENV["DATABASE_URL"].present? %>
   url: <%= ENV["DATABASE_URL"] %>
   <% else %>
-  # 個別設定（Supabase等）
+  # フォールバック設定（開発・テスト用）
   host: <%= ENV["DATABASE_HOST"] || "localhost" %>
   port: <%= ENV["DATABASE_PORT"] || 5432 %>
   database: <%= ENV["DATABASE_NAME"] || "bros_nuzlocke_tracker_production" %>
   username: <%= ENV["DATABASE_USER"] || "postgres" %>
   password: <%= ENV["DATABASE_PASSWORD"] || "" %>
   <% end %>
-  # 外部データベース用接続設定
+  # Supabase最適化設定
   connect_timeout: 30
   read_timeout: 30
   write_timeout: 30
-  # SSL接続を有効化（外部DBで通常必要）
+  # SSL必須（Supabase要件）
   sslmode: require
+  # IPv4強制（Render要件）
+  host_type: ipv4
