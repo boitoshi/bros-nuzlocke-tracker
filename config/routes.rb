@@ -1,6 +1,14 @@
 Rails.application.routes.draw do
   devise_for :users
 
+  # ポケモン図鑑ルート 📖
+  resources :pokedex, only: [:index, :show] do
+    collection do
+      get :random
+      get :search
+    end
+  end
+
   resources :challenges do
     resources :pokemons do
       member do

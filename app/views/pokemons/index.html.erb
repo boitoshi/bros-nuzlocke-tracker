@@ -1,47 +1,53 @@
 <div class="container my-5">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h1>🐾 ポケモン図鑑</h1>
-      <small class="text-muted"><%= @challenge.name %> - <%= @challenge.game_title_display %></small>
-    </div>
-    <div>
-      <%= link_to "パーティ管理", party_challenge_pokemons_path(@challenge), class: "btn btn-primary me-2" %>
-      <%= link_to "新しい仲間を捕獲", new_challenge_pokemon_path(@challenge), class: "btn btn-success" %>
+  <!-- ヘッダーセクション 🐾 -->
+  <div class="hero-section text-center py-4 mb-5" style="border-radius: 20px;">
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+      <div class="text-white">
+        <h1 class="display-5 fw-bold mb-2">🐾 ポケモン図鑑</h1>
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge bg-light text-dark fs-6"><%= @challenge.name %></span>
+          <span class="badge bg-info fs-6"><%= @challenge.game_title_display %></span>
+        </div>
+      </div>
+      <div class="mt-3 mt-md-0">
+        <%= link_to party_challenge_pokemons_path(@challenge), class: "btn btn-light btn-lg me-2" do %>
+          ⚡ パーティ管理
+        <% end %>
+        <%= link_to new_challenge_pokemon_path(@challenge), class: "btn btn-success btn-lg" do %>
+          ✨ 新しい仲間を捕獲
+        <% end %>
+      </div>
     </div>
   </div>
 
-  <!-- 統計サマリー -->
-  <div class="row mb-4">
-    <div class="col-md-3">
-      <div class="card text-center">
-        <div class="card-body">
-          <h5 class="card-title text-primary">🎯 総捕獲数</h5>
-          <h2 class="text-primary"><%= @pokemons.count %></h2>
-        </div>
+  <!-- 統計サマリー 📊 -->
+  <div class="row g-4 mb-5">
+    <div class="col-lg-3 col-md-6">
+      <div class="stats-card card text-center p-4 h-100" style="background: var(--pokemon-gradient); color: white;">
+        <div class="stats-number"><%= @pokemons.count %></div>
+        <div class="stats-icon">🎯</div>
+        <h6 class="fw-bold mt-2">総捕獲数</h6>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="card text-center">
-        <div class="card-body">
-          <h5 class="card-title text-success">💚 生存中</h5>
-          <h2 class="text-success"><%= @alive_pokemon.count %></h2>
-        </div>
+    <div class="col-lg-3 col-md-6">
+      <div class="stats-card card text-center p-4 h-100" style="background: var(--success-gradient); color: white;">
+        <div class="stats-number"><%= @alive_pokemon.count %></div>
+        <div class="stats-icon">💚</div>
+        <h6 class="fw-bold mt-2">生存中</h6>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="card text-center">
-        <div class="card-body">
-          <h5 class="card-title text-danger">💀 死亡</h5>
-          <h2 class="text-danger"><%= @dead_pokemon.count %></h2>
-        </div>
+    <div class="col-lg-3 col-md-6">
+      <div class="stats-card card text-center p-4 h-100" style="background: var(--danger-gradient); color: white;">
+        <div class="stats-number"><%= @dead_pokemon.count %></div>
+        <div class="stats-icon">💀</div>
+        <h6 class="fw-bold mt-2">死亡</h6>
       </div>
     </div>
-    <div class="col-md-3">
-      <div class="card text-center">
-        <div class="card-body">
-          <h5 class="card-title text-secondary">📦 ボックス</h5>
-          <h2 class="text-secondary"><%= @boxed_pokemon.count %></h2>
-        </div>
+    <div class="col-lg-3 col-md-6">
+      <div class="stats-card card text-center p-4 h-100" style="background: linear-gradient(135deg, #6c757d, #495057); color: white;">
+        <div class="stats-number"><%= @boxed_pokemon.count %></div>
+        <div class="stats-icon">📦</div>
+        <h6 class="fw-bold mt-2">ボックス</h6>
       </div>
     </div>
   </div>

@@ -10,10 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_18_075313) do
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "pg_catalog.plpgsql"
-
+ActiveRecord::Schema[8.0].define(version: 2025_06_19_080320) do
   create_table "areas", force: :cascade do |t|
     t.string "name"
     t.string "area_type"
@@ -33,6 +30,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_18_075313) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_challenges_on_user_id"
+  end
+
+  create_table "pokemon_species", force: :cascade do |t|
+    t.integer "national_id", null: false
+    t.string "name_ja", null: false
+    t.string "name_en"
+    t.string "name_kana"
+    t.json "data"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name_en"], name: "index_pokemon_species_on_name_en"
+    t.index ["name_ja"], name: "index_pokemon_species_on_name_ja"
+    t.index ["national_id"], name: "index_pokemon_species_on_national_id", unique: true
   end
 
   create_table "pokemons", force: :cascade do |t|
@@ -78,8 +88,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_18_075313) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "username"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   add_foreign_key "challenges", "users"

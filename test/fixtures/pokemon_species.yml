@@ -1,0 +1,33 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  national_id: 1
+  name_ja: MyString
+  name_en: MyString
+  types: 
+  stats: 
+  abilities: 
+  category: MyString
+  height: 1.5
+  weight: 1.5
+  description: MyText
+  image_url: MyString
+  generation: 1
+  is_legendary: false
+  is_mythical: false
+
+two:
+  national_id: 1
+  name_ja: MyString
+  name_en: MyString
+  types: 
+  stats: 
+  abilities: 
+  category: MyString
+  height: 1.5
+  weight: 1.5
+  description: MyText
+  image_url: MyString
+  generation: 1
+  is_legendary: false
+  is_mythical: false

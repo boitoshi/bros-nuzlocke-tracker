@@ -1,0 +1,162 @@
+<!-- ポケモン図鑑一覧ページ 📖✨ -->
+<div class="container my-5">
+  <!-- ヘッダーセクション 🌟 -->
+  <div class="hero-section text-center py-5 mb-5" style="border-radius: 20px;">
+    <h1 class="display-4 fw-bold">📖 ポケモン図鑑</h1>
+    <p class="lead">すべてのポケモンを発見しよう！</p>
+    
+    <!-- クイックアクション -->
+    <div class="mt-4">
+      <%= link_to random_pokedex_index_path, class: "btn btn-light btn-lg me-3", method: :get do %>
+        🎲 ランダムポケモン
+      <% end %>
+      <span class="badge bg-light text-dark fs-6">
+        総登録数: <%= @total_species %>匹
+      </span>
+    </div>
+  </div>
+
+  <!-- 検索・フィルターセクション 🔍 -->
+  <div class="card mb-5 p-4" style="border-radius: 16px; background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05)); backdrop-filter: blur(10px);">
+    <%= form_with url: pokedex_index_path, method: :get, local: true, class: "row g-3 align-items-end" do |f| %>
+      <div class="col-lg-4 col-md-6">
+        <%= f.text_field :search, placeholder: "ポケモン名で検索...", 
+                         value: params[:search], 
+                         class: "form-control form-control-lg",
+                         style: "border-radius: 12px;" %>
+      </div>
+      
+      <div class="col-lg-2 col-md-3">
+        <%= f.select :type, options_for_select([['すべてのタイプ', '']] + @types.map { |t| [t, t] }, params[:type]),
+                     {}, { class: "form-select form-select-lg", style: "border-radius: 12px;" } %>
+      </div>
+      
+      <div class="col-lg-2 col-md-3">
+        <%= f.select :generation, options_for_select([['すべての世代', '']] + @generations.map { |g| ["第#{g}世代", g] }, params[:generation]),
+                     {}, { class: "form-select form-select-lg", style: "border-radius: 12px;" } %>
+      </div>
+      
+      <div class="col-lg-2 col-md-6">
+        <%= f.submit "🔍 検索", class: "btn btn-primary btn-lg w-100" %>
+      </div>
+      
+      <div class="col-lg-2 col-md-6">
+        <%= link_to "🔄 リセット", pokedex_index_path, class: "btn btn-outline-secondary btn-lg w-100" %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- ポケモンカードグリッド 🐾 -->
+  <% if @pokemon_species.any? %>
+    <div class="row g-4">
+      <% @pokemon_species.each do |pokemon| %>
+        <div class="col-xl-3 col-lg-4 col-md-6">
+          <%= link_to pokedex_path(pokemon), class: "text-decoration-none", data: { "bs-toggle": "tooltip", "bs-title": pokemon.display_name } do %>
+            <div class="card pokemon-card h-100 position-relative" style="border-radius: 16px; overflow: hidden;">
+              <!-- 図鑑番号バッジ -->
+              <div class="position-absolute top-0 start-0 m-3">
+                <span class="badge bg-dark bg-opacity-75 fs-6"><%= pokemon.formatted_dex_number %></span>
+              </div>
+              
+              <!-- ポケモン画像 -->
+              <div class="card-body text-center p-4" style="background: linear-gradient(135deg, <%= pokemon.type_colors.first || '#68A090' %>, <%= pokemon.type_colors.last || '#68A090' %>);">
+                <div class="pokemon-image-container mb-3" style="height: 120px; display: flex; align-items: center; justify-content: center;">
+                  <img src="<%= pokemon.official_artwork_url %>" 
+                       alt="<%= pokemon.display_name %>" 
+                       class="img-fluid"
+                       style="max-height: 100%; max-width: 100%; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));"
+                       loading="lazy"
+                       onerror="this.src='<%= pokemon.sprite_url %>';">
+                </div>
+                
+                <!-- ポケモン名 -->
+                <h5 class="card-title text-white fw-bold mb-2" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+                  <%= pokemon.display_name %>
+                </h5>
+                
+                <!-- タイプバッジ -->
+                <div class="pokemon-types">
+                  <% pokemon.types_data.each do |type| %>
+                    <span class="pokemon-type type-<%= type.downcase %> me-1">
+                      <%= type %>
+                    </span>
+                  <% end %>
+                </div>
+              </div>
+              
+              <!-- 基本情報 -->
+              <div class="card-footer bg-transparent border-0 p-3">
+                <div class="row text-center">
+                  <div class="col-6">
+                    <small class="text-muted d-block">身長</small>
+                    <strong><%= pokemon.height_m&.round(1) || '?' %>m</strong>
+                  </div>
+                  <div class="col-6">
+                    <small class="text-muted d-block">体重</small>
+                    <strong><%= pokemon.weight_kg&.round(1) || '?' %>kg</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- ページネーション 📄 -->
+    <div class="d-flex justify-content-center mt-5">
+      <%= paginate @pokemon_species, theme: 'custom' if respond_to?(:paginate) %>
+    </div>
+  <% else %>
+    <!-- 空の状態 😢 -->
+    <div class="text-center py-5">
+      <div style="font-size: 4rem; opacity: 0.3;">🔍</div>
+      <h3 class="mt-3 text-muted">ポケモンが見つかりません</h3>
+      <p class="lead text-muted">検索条件を変えてみてください</p>
+      <%= link_to "🔄 全て表示", pokedex_index_path, class: "btn btn-primary btn-lg mt-3" %>
+    </div>
+  <% end %>
+</div>
+
+<!-- カスタムスタイル追加 -->
+<style>
+  .pokemon-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+  
+  .pokemon-card:hover {
+    transform: translateY(-12px) scale(1.03);
+    box-shadow: var(--shadow-intense);
+  }
+  
+  .pokemon-image-container img {
+    transition: transform 0.3s ease;
+  }
+  
+  .pokemon-card:hover .pokemon-image-container img {
+    transform: scale(1.1) rotate(5deg);
+  }
+  
+  .pokemon-types {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  .card-footer {
+    background: rgba(255,255,255,0.9) !important;
+    backdrop-filter: blur(10px);
+  }
+</style>
+
+<script>
+  // ツールチップ初期化
+  document.addEventListener('DOMContentLoaded', function() {
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+  });
+</script>

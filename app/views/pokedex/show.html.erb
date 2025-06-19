@@ -1,0 +1,269 @@
+<!-- ポケモン詳細ページ 🔍✨ -->
+<div class="container my-5">
+  <!-- ヘッダーセクション -->
+  <div class="row mb-5">
+    <div class="col-lg-6">
+      <!-- ポケモン画像とメイン情報 -->
+      <div class="card pokemon-detail-card" style="background: linear-gradient(135deg, <%= @pokemon_species.type_colors.first || '#68A090' %>, <%= @pokemon_species.type_colors.last || '#68A090' %>); border-radius: 20px; color: white;">
+        <div class="card-body text-center p-5">
+          <!-- 図鑑番号 -->
+          <div class="mb-3">
+            <span class="badge bg-dark bg-opacity-50 fs-5 px-3 py-2">
+              <%= @pokemon_species.formatted_dex_number %>
+            </span>
+          </div>
+          
+          <!-- ポケモン画像 -->
+          <div class="pokemon-image-large mb-4" style="height: 200px; display: flex; align-items: center; justify-content: center;">
+            <img src="<%= @pokemon_species.official_artwork_url %>" 
+                 alt="<%= @pokemon_species.display_name %>" 
+                 class="img-fluid"
+                 style="max-height: 100%; max-width: 100%; object-fit: contain; filter: drop-shadow(4px 4px 8px rgba(0,0,0,0.4));"
+                 onerror="this.src='<%= @pokemon_species.sprite_url %>';">
+          </div>
+          
+          <!-- ポケモン名 -->
+          <h1 class="fw-bold mb-3" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+            <%= @pokemon_species.display_name %>
+          </h1>
+          
+          <!-- 英語名 -->
+          <% if @pokemon_species.name_en.present? && @pokemon_species.name_en != @pokemon_species.name_ja %>
+            <p class="lead mb-3" style="opacity: 0.9;">
+              <%= @pokemon_species.name_en %>
+            </p>
+          <% end %>
+          
+          <!-- タイプ -->
+          <div class="pokemon-types mb-4">
+            <% @pokemon_species.types_data.each do |type| %>
+              <span class="pokemon-type type-<%= type.downcase %> fs-5 px-3 py-2 me-2">
+                <%= type %>
+              </span>
+            <% end %>
+          </div>
+          
+          <!-- 基本情報 -->
+          <div class="row">
+            <div class="col-6">
+              <div class="stat-item">
+                <div class="stat-label">身長</div>
+                <div class="stat-value"><%= @pokemon_species.height_m&.round(1) || '?' %>m</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="stat-item">
+                <div class="stat-label">体重</div>
+                <div class="stat-value"><%= @pokemon_species.weight_kg&.round(1) || '?' %>kg</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-6">
+      <!-- 種族値 📊 -->
+      <div class="card h-100" style="border-radius: 20px;">
+        <div class="card-header bg-transparent border-0 text-center">
+          <h3 class="fw-bold mb-0">📊 種族値</h3>
+        </div>
+        <div class="card-body">
+          <% if @stats.present? %>
+            <% 
+              stat_names = {
+                'hp' => 'HP',
+                'attack' => '攻撃',
+                'defense' => '防御',
+                'special-attack' => '特攻',
+                'special-defense' => '特防',
+                'speed' => '素早さ'
+              }
+              
+              stat_colors = {
+                'hp' => '#FF5959',
+                'attack' => '#F5AC78',
+                'defense' => '#FAE078',
+                'special-attack' => '#9DB7F5',
+                'special-defense' => '#A7DB8D',
+                'speed' => '#FA92B2'
+              }
+            %>
+            
+            <% stat_names.each do |stat_key, stat_label| %>
+              <% stat_value = @stats[stat_key] || 0 %>
+              <div class="stat-bar-container mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="fw-semibold"><%= stat_label %></span>
+                  <span class="badge bg-secondary"><%= stat_value %></span>
+                </div>
+                <div class="progress" style="height: 8px; border-radius: 10px;">
+                  <div class="progress-bar" 
+                       role="progressbar" 
+                       style="width: <%= [stat_value.to_f / 200 * 100, 100].min %>%; background-color: <%= stat_colors[stat_key] %>; border-radius: 10px;"
+                       aria-valuenow="<%= stat_value %>" 
+                       aria-valuemin="0" 
+                       aria-valuemax="200"></div>
+                </div>
+              </div>
+            <% end %>
+            
+            <!-- 合計種族値 -->
+            <% total_stats = stat_names.keys.sum { |key| @stats[key].to_i } %>
+            <div class="mt-4 text-center">
+              <div class="badge bg-primary fs-6 px-3 py-2">
+                合計種族値: <%= total_stats %>
+              </div>
+            </div>
+          <% else %>
+            <div class="text-center text-muted py-4">
+              <p>種族値データがありません</p>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 特性セクション ⚡ -->
+  <% if @abilities.present? %>
+    <div class="card mb-5" style="border-radius: 20px;">
+      <div class="card-header bg-transparent border-0 text-center">
+        <h3 class="fw-bold mb-0">⚡ 特性</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <% @abilities.each_with_index do |ability, index| %>
+            <div class="col-lg-4 col-md-6 mb-3">
+              <div class="ability-card card h-100 p-3" style="border-radius: 12px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));">
+                <h5 class="fw-bold mb-2">
+                  <%= ability['name'] %>
+                  <% if ability['is_hidden'] %>
+                    <span class="badge bg-warning text-dark">隠れ特性</span>
+                  <% end %>
+                </h5>
+                <% if ability['description'].present? %>
+                  <p class="text-muted mb-0"><%= ability['description'] %></p>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- 覚える技セクション 🎯 -->
+  <% if @moves.present? %>
+    <div class="card mb-5" style="border-radius: 20px;">
+      <div class="card-header bg-transparent border-0 text-center">
+        <h3 class="fw-bold mb-0">🎯 覚える技（一部）</h3>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <% @moves.each do |move| %>
+            <div class="col-xl-3 col-lg-4 col-md-6">
+              <div class="move-card card p-3" style="border-radius: 12px;">
+                <h6 class="fw-bold mb-1"><%= move['name'] %></h6>
+                <div class="d-flex justify-content-between align-items-center">
+                  <% if move['type'].present? %>
+                    <span class="pokemon-type type-<%= move['type'].downcase %> small">
+                      <%= move['type'] %>
+                    </span>
+                  <% end %>
+                  <% if move['power'].present? %>
+                    <small class="text-muted">威力: <%= move['power'] %></small>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+        
+        <% if @pokemon_species.moves_data&.size.to_i > 20 %>
+          <div class="text-center mt-4">
+            <small class="text-muted">
+              他にも<%= @pokemon_species.moves_data.size - 20 %>個の技を覚えます
+            </small>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- アクションボタン -->
+  <div class="text-center">
+    <%= link_to pokedex_index_path, class: "btn btn-outline-primary btn-lg me-3" do %>
+      ← 図鑑に戻る
+    <% end %>
+    <%= link_to random_pokedex_index_path, class: "btn btn-success btn-lg", method: :get do %>
+      🎲 ランダムポケモン
+    <% end %>
+  </div>
+</div>
+
+<!-- カスタムスタイル -->
+<style>
+  .pokemon-detail-card {
+    box-shadow: var(--shadow-intense);
+    transform: perspective(1000px) rotateY(0deg);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .pokemon-detail-card:hover {
+    transform: perspective(1000px) rotateY(5deg) translateZ(20px);
+  }
+  
+  .pokemon-image-large img {
+    transition: transform 0.5s ease;
+  }
+  
+  .pokemon-detail-card:hover .pokemon-image-large img {
+    transform: scale(1.1) rotate(10deg);
+  }
+  
+  .stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    backdrop-filter: blur(10px);
+  }
+  
+  .stat-label {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-bottom: 0.5rem;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  
+  .stat-bar-container {
+    animation: slideInRight 0.8s ease-out;
+  }
+  
+  .ability-card, .move-card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+  }
+  
+  .ability-card:hover, .move-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+  }
+  
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+</style>

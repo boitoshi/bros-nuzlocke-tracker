@@ -1,53 +1,143 @@
 <div class="hero-section text-center py-5">
-  <h1 class="display-4">🎮 Bros Nuzlocke Tracker</h1>
-  <p class="lead">ポケモンナズロックチャレンジの記録・管理をサポート</p>
+  <div class="container">
+    <h1 class="display-4">🎮 Bros Nuzlocke Tracker</h1>
+    <p class="lead">ポケモンナズロックチャレンジの記録・管理をサポート ✨</p>
+    
+    <% if user_signed_in? %>
+      <div class="mt-4">
+        <div class="hero-welcome mb-4">
+          <h3 class="fw-bold">こんにちは、<%= current_user.display_name %>さん！ 👋</h3>
+          <% if @total_challenges > 0 %>
+            <div class="d-flex justify-content-center gap-4 mt-3">
+              <div class="stats-card card text-center p-3" style="min-width: 120px;">
+                <div class="stats-number text-primary"><%= @total_challenges %></div>
+                <div class="stats-icon">🎯</div>
+                <small>総チャレンジ</small>
+              </div>
+              <div class="stats-card card text-center p-3" style="min-width: 120px;">
+                <div class="stats-number text-success"><%= @completed_challenges %></div>
+                <div class="stats-icon">🏆</div>
+                <small>完了済み</small>
+              </div>
+            </div>
+          <% else %>
+            <p class="lead mt-3">ナズロックチャレンジを始めましょう 🚀</p>
+          <% end %>
+        </div>
+        
+        <div class="hero-actions d-flex flex-wrap justify-content-center gap-3">
+          <%= link_to dashboard_path, class: "btn btn-info btn-lg" do %>
+            📊 統計ダッシュボード
+          <% end %>
+          <%= link_to challenges_path, class: "btn btn-primary btn-lg" do %>
+            🎯 チャレンジ一覧
+          <% end %>
+          <%= link_to new_challenge_path, class: "btn btn-success btn-lg" do %>
+            ✨ 新しいチャレンジ
+          <% end %>
+        </div>
+      </div>
+    <% else %>
+      <div class="mt-4">
+        <p class="lead">アカウントを作成してナズロックチャレンジを始めよう！ 🌟</p>
+        <div class="hero-actions d-flex justify-content-center gap-3 mt-4">
+          <%= link_to new_user_registration_path, class: "btn btn-primary btn-lg" do %>
+            📝 新規登録
+          <% end %>
+          <%= link_to new_user_session_path, class: "btn btn-outline-light btn-lg" do %>
+            🚪 ログイン
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="container my-5">
+  <!-- 機能紹介セクション 🌈 -->
+  <div class="text-center mb-5">
+    <h2 class="fw-bold mb-3">Bros Nuzlocke Trackerの特徴 ✨</h2>
+    <p class="lead text-muted">あなたのポケモンナズロックチャレンジを完全サポート</p>
+  </div>
   
-  <% if user_signed_in? %>
-    <div class="mt-4">
-      <h3>こんにちは、<%= current_user.display_name %>さん！</h3>
-      <% if @total_challenges > 0 %>
-        <p>総チャレンジ数: <strong><%= @total_challenges %></strong> | 完了: <strong><%= @completed_challenges %></strong></p>
-      <% else %>
-        <p>ナズロックチャレンジを始めましょう 🚀</p>
-      <% end %>
-      <div class="mt-3">
-        <%= link_to "統計ダッシュボード", dashboard_path, class: "btn btn-info me-2" %>
-        <%= link_to "チャレンジ一覧", challenges_path, class: "btn btn-primary me-2" %>
-        <%= link_to "新しいチャレンジ", new_challenge_path, class: "btn btn-success me-2" %>
-        <%= link_to "ログアウト", destroy_user_session_path, method: :delete, class: "btn btn-outline-secondary" %>
+  <div class="row g-4">
+    <div class="col-lg-4 col-md-6">
+      <div class="card h-100 text-center p-4">
+        <div class="card-body">
+          <div class="mb-3" style="font-size: 3rem;">📝</div>
+          <h5 class="card-title fw-bold">記録管理</h5>
+          <p class="card-text">捕獲したポケモンやジム戦の記録をしっかり管理。生存状況やパーティ編成も一目で確認！</p>
+        </div>
       </div>
     </div>
-  <% else %>
-    <div class="mt-4">
-      <p>アカウントを作成してナズロックチャレンジを始めよう！</p>
-      <div class="mt-3">
-        <%= link_to "新規登録", new_user_registration_path, class: "btn btn-primary me-2" %>
-        <%= link_to "ログイン", new_user_session_path, class: "btn btn-outline-primary" %>
+    
+    <div class="col-lg-4 col-md-6">
+      <div class="card h-100 text-center p-4">
+        <div class="card-body">
+          <div class="mb-3" style="font-size: 3rem;">🗺️</div>
+          <h5 class="card-title fw-bold">ガイド機能</h5>
+          <p class="card-text">攻略ガイドでナズロックを安全にサポート。危険なエリアや推奨レベルを事前にチェック！</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6">
+      <div class="card h-100 text-center p-4">
+        <div class="card-body">
+          <div class="mb-3" style="font-size: 3rem;">📊</div>
+          <h5 class="card-title fw-bold">統計分析</h5>
+          <p class="card-text">詳細な統計とグラフでチャレンジの進行状況を分析。成長の軌跡を可視化します！</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6">
+      <div class="card h-100 text-center p-4">
+        <div class="card-body">
+          <div class="mb-3" style="font-size: 3rem;">🎯</div>
+          <h5 class="card-title fw-bold">ルール管理</h5>
+          <p class="card-text">カスタムルールの設定と遵守チェック。自分だけのナズロックルールを作成可能！</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6">
+      <div class="card h-100 text-center p-4">
+        <div class="card-body">
+          <div class="mb-3" style="font-size: 3rem;">🏆</div>
+          <h5 class="card-title fw-bold">実績システム</h5>
+          <p class="card-text">チャレンジの達成度を記録。完了したチャレンジの思い出を永久保存！</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6">
+      <div class="card h-100 text-center p-4">
+        <div class="card-body">
+          <div class="mb-3" style="font-size: 3rem;">📱</div>
+          <h5 class="card-title fw-bold">モバイル対応</h5>
+          <p class="card-text">スマホからも快適に利用可能。外出先でも手軽に記録更新ができます！</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA セクション 🚀 -->
+  <% unless user_signed_in? %>
+    <div class="text-center mt-5 py-5" style="background: var(--pokemon-gradient); border-radius: 20px; color: white;">
+      <h3 class="fw-bold mb-3">今すぐ始めよう！ 🌟</h3>
+      <p class="lead mb-4">無料でアカウントを作成して、最高のナズロック体験を始めましょう</p>
+      <div class="d-flex justify-content-center gap-3">
+        <%= link_to new_user_registration_path, class: "btn btn-light btn-lg" do %>
+          📝 無料で始める
+        <% end %>
+        <%= link_to new_user_session_path, class: "btn btn-outline-light btn-lg" do %>
+          🚪 既にアカウントをお持ちの方
+        <% end %>
       </div>
     </div>
   <% end %>
 </div>
-
-<div class="container my-5">
-  <div class="row">
-    <div class="col-md-4">
-      <div class="card">
-        <div class="card-body text-center">
-          <h5 class="card-title">📝 記録管理</h5>
-          <p class="card-text">捕獲したポケモンやジム戦の記録をしっかり管理</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card">
-        <div class="card-body text-center">
-          <h5 class="card-title">🗺️ ガイド機能</h5>
-          <p class="card-text">攻略ガイドでナズロックを安全にサポート</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div class="card">
         <div class="card-body text-center">
           <h5 class="card-title">⚙️ 難易度調整</h5>
           <p class="card-text">自分のスキルに合わせたチャレンジ設定</p>
