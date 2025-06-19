@@ -72,4 +72,10 @@ test:
 #
 production:
   <<: *default
-  url: <%= ENV.fetch("DATABASE_URL") %>
+  url: <%= ENV["DATABASE_URL"] %>
+  # Renderでデータベース接続に問題がある場合のフォールバック設定
+  database: bros_nuzlocke_tracker_production
+  username: bros_nuzlocke_tracker
+  password: <%= ENV["DATABASE_PASSWORD"] %>
+  host: <%= ENV["DATABASE_HOST"] %>
+  port: <%= ENV["DATABASE_PORT"] || 5432 %>

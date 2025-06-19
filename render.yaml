@@ -23,9 +23,25 @@ services:
         fromDatabase:
           name: bros-nuzlocke-tracker-db
           property: connectionString
+      # 個別のデータベース接続情報（フォールバック用）
+      - key: DATABASE_HOST
+        fromDatabase:
+          name: bros-nuzlocke-tracker-db
+          property: host
+      - key: DATABASE_PORT
+        fromDatabase:
+          name: bros-nuzlocke-tracker-db
+          property: port
+      - key: DATABASE_PASSWORD
+        fromDatabase:
+          name: bros-nuzlocke-tracker-db
+          property: password
 
 databases:
   - name: bros-nuzlocke-tracker-db
     databaseName: bros_nuzlocke_tracker_production
     user: bros_nuzlocke_tracker
+    plan: starter
+    # PostgreSQLバージョンを明示指定
+    ipAllowList: []
     plan: starter
