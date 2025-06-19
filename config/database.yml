@@ -91,5 +91,7 @@ production:
   write_timeout: 30
   # SSL必須（Supabase要件）
   sslmode: require
-  # IPv4強制（Render要件）
-  host_type: ipv4
+  # IPv4強制（Render IPv6非対応対策）
+  hostaddr: <%= ENV["DATABASE_HOSTADDR"] if ENV["DATABASE_HOSTADDR"].present? %>
+  # PostgreSQL IPv4優先設定
+  application_name: "bros-nuzlocke-tracker"

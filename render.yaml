@@ -7,7 +7,7 @@ services:
     plan: starter
     # ビルド時はDB接続をスキップ、本番実行時のみ接続
     buildCommand: "bundle install && RAILS_ENV=production SECRET_KEY_BASE=dummy ./bin/rails assets:precompile"
-    startCommand: "./bin/rails db:prepare && ./bin/rails server -p $PORT -e $RAILS_ENV"
+    startCommand: "./bin/rails db:prepare && bundle exec puma -C config/puma.rb"
     envVars:
       - key: RAILS_ENV
         value: production
