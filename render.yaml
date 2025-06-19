@@ -4,7 +4,9 @@ services:
     name: bros-nuzlocke-tracker-web
     env: ruby
     plan: starter
-    buildCommand: "bundle install && ./bin/rails assets:precompile && ./bin/rails db:prepare"
+    # Dockerを明示的に無効化
+    runtime: ruby
+    buildCommand: "bundle install && yarn install && ./bin/rails assets:precompile && ./bin/rails db:prepare"
     startCommand: "./bin/rails server -p $PORT -e $RAILS_ENV"
     envVars:
       - key: RAILS_ENV
