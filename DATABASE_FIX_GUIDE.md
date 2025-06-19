@@ -1,14 +1,22 @@
-# 🗄️ Render DATABASE_URL エラー解決ガイド
+# 🗄️ Render PostgreSQL接続エラー解決ガイド
 
 ## 🚨 エラー内容
+```
+PG::ConnectionBad: could not connect to server: No such file or directory
+Is the server running locally and accepting connections on Unix domain socket "/var/run/postgresql/.s.PGSQL.5432"?
+```
+
+または
+
 ```
 KeyError: key not found: "DATABASE_URL"
 ```
 
 ## 🔍 原因
-1. PostgreSQLデータベースサービスが正しく起動していない
-2. WebサービスとDBサービスの接続設定にミス
-3. 環境変数が正しく設定されていない
+1. DATABASE_URLが設定されていない（Unixソケット接続を試行）
+2. PostgreSQLデータベースサービスが正しく起動していない
+3. WebサービスとDBサービスの接続設定にミス
+4. TCP接続ではなくローカルソケット接続を試行している
 
 ## ✅ 解決手順
 

@@ -71,11 +71,24 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  <<: *default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  # RenderではDATABASE_URLが必須（TCP接続）
+  <% if ENV["DATABASE_URL"].present? %>
   url: <%= ENV["DATABASE_URL"] %>
-  # Renderでデータベース接続に問題がある場合のフォールバック設定
-  database: bros_nuzlocke_tracker_production
-  username: bros_nuzlocke_tracker
-  password: <%= ENV["DATABASE_PASSWORD"] %>
-  host: <%= ENV["DATABASE_HOST"] %>
+  <% else %>
+  # フォールバック設定（本来はDATABASE_URLが設定されるはず）
+  host: <%= ENV["DATABASE_HOST"] || "localhost" %>
   port: <%= ENV["DATABASE_PORT"] || 5432 %>
+  database: <%= ENV["DATABASE_NAME"] || "bros_nuzlocke_tracker_production" %>
+  username: <%= ENV["DATABASE_USER"] || "bros_nuzlocke_tracker" %>
+  password: <%= ENV["DATABASE_PASSWORD"] || "" %>
+  <% end %>
+  # Renderのマネージドデータベース用設定
+  connect_timeout: 30
+  read_timeout: 30
+  write_timeout: 30
+  # TCP接続を強制（Unixソケット接続を防ぐ）
+  host: <%= ENV["DATABASE_HOST"] unless ENV["DATABASE_URL"].present? %>
+  port: <%= ENV["DATABASE_PORT"] || 5432 unless ENV["DATABASE_URL"].present? %>

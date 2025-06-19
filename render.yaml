@@ -3,11 +3,11 @@ services:
   - type: web
     name: bros-nuzlocke-tracker-web
     env: ruby
-    plan: starter
-    # Dockerを明示的に無効化
     runtime: ruby
-    buildCommand: "bundle install && yarn install && ./bin/rails assets:precompile && ./bin/rails db:prepare"
-    startCommand: "./bin/rails server -p $PORT -e $RAILS_ENV"
+    plan: starter
+    # ビルド時はDB接続をスキップ、本番実行時のみ接続
+    buildCommand: "bundle install && RAILS_ENV=production SECRET_KEY_BASE=dummy ./bin/rails assets:precompile"
+    startCommand: "./bin/rails db:prepare && ./bin/rails server -p $PORT -e $RAILS_ENV"
     envVars:
       - key: RAILS_ENV
         value: production
@@ -23,19 +23,6 @@ services:
         fromDatabase:
           name: bros-nuzlocke-tracker-db
           property: connectionString
-      # 個別のデータベース接続情報（フォールバック用）
-      - key: DATABASE_HOST
-        fromDatabase:
-          name: bros-nuzlocke-tracker-db
-          property: host
-      - key: DATABASE_PORT
-        fromDatabase:
-          name: bros-nuzlocke-tracker-db
-          property: port
-      - key: DATABASE_PASSWORD
-        fromDatabase:
-          name: bros-nuzlocke-tracker-db
-          property: password
 
 databases:
   - name: bros-nuzlocke-tracker-db
@@ -44,4 +31,3 @@ databases:
     plan: starter
     # PostgreSQLバージョンを明示指定
     ipAllowList: []
-    plan: starter
