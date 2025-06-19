@@ -1,6 +1,26 @@
 Rails.application.routes.draw do
   devise_for :users
 
+  # 攻略情報ルート 🎯
+  resources :boss_battles, only: [:index, :show] do
+    collection do
+      get :by_game
+      get :by_type
+    end
+  end
+
+  resources :strategy_guides, only: [:index, :show] do
+    collection do
+      get :by_game
+      get :by_type
+      get :search
+    end
+    member do
+      patch :increment_views
+      patch :toggle_like
+    end
+  end
+
   # ポケモン図鑑ルート 📖
   resources :pokedex, only: [:index, :show] do
     collection do

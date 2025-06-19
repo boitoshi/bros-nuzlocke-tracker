@@ -2,6 +2,8 @@ class Challenge < ApplicationRecord
   belongs_to :user
   has_many :pokemons, dependent: :destroy
   has_many :rules, dependent: :destroy
+  has_many :milestones, dependent: :destroy
+  has_many :event_logs, dependent: :destroy
 
   # ステータスの定義
   enum :status, {
@@ -89,6 +91,7 @@ class Challenge < ApplicationRecord
 
   # コールバック
   after_create :setup_default_rules
+  after_create :setup_default_milestones
 
   # チャレンジ作成時にエリアデータを自動生成
   def create_areas_for_game
@@ -146,6 +149,10 @@ class Challenge < ApplicationRecord
     Rule.create_default_rules_for_challenge(self)
   end
 
+  def setup_default_milestones
+    Milestone.create_default_milestones_for_challenge(self)
+  end
+
   # 統計メソッド
   class << self
     # 全体統計
@@ -168,9 +175,15 @@ class Challenge < ApplicationRecord
 
     # 月別作成数統計
     def monthly_creation_stats(months = 12)
-      where(created_at: months.months.ago..Time.current)
-        .group_by_month(:created_at)
-        .count
+      challenges = where(created_at: months.months.ago..Time.current)
+      monthly_counts = {}
+      
+      challenges.each do |challenge|
+        month_key = challenge.created_at.beginning_of_month
+        monthly_counts[month_key] = (monthly_counts[month_key] || 0) + 1
+      end
+      
+      monthly_counts.sort.to_h
     end
 
     # 平均プレイ期間

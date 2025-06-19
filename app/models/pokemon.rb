@@ -179,9 +179,15 @@ class Pokemon < ApplicationRecord
 
     # 月別捕獲統計
     def monthly_catch_stats(months = 12)
-      where(caught_at: months.months.ago..Time.current)
-        .group_by_month(:caught_at)
-        .count
+      pokemons = where(caught_at: months.months.ago..Time.current)
+      monthly_counts = {}
+      
+      pokemons.each do |pokemon|
+        month_key = pokemon.caught_at.beginning_of_month
+        monthly_counts[month_key] = (monthly_counts[month_key] || 0) + 1
+      end
+      
+      monthly_counts.sort.to_h
     end
 
     # パーティメンバー使用頻度
