@@ -4,26 +4,14 @@ services:
     name: bros-nuzlocke-tracker-web
     env: ruby
     plan: starter
-    buildCommand: "bundle install && yarn install && RAILS_SERVE_STATIC_FILES=true SECRET_KEY_BASE=dummy RAILS_ENV=production NODE_ENV=production DISABLE_SPRING=1 ./bin/rails assets:precompile"
-    startCommand: "./bin/rails db:migrate && ./bin/rails server -p $PORT -e $RAILS_ENV"
+    buildCommand: "bundle install && ./bin/rails assets:precompile && ./bin/rails db:prepare"
+    startCommand: "./bin/rails server -p $PORT -e $RAILS_ENV"
     envVars:
       - key: RAILS_ENV
-        value: production
-      - key: NODE_ENV
         value: production
       - key: RAILS_SERVE_STATIC_FILES
         value: true
       - key: RAILS_LOG_TO_STDOUT
-        value: true
-      - key: WEB_CONCURRENCY
-        value: 2
-      - key: RAILS_MAX_THREADS
-        value: 5
-      - key: SOLID_QUEUE_IN_PUMA
-        value: true
-      - key: RAILS_ASSUME_SSL
-        value: true
-      - key: RAILS_FORCE_SSL
         value: true
       - key: SECRET_KEY_BASE
         generateValue: true
@@ -33,23 +21,6 @@ services:
         fromDatabase:
           name: bros-nuzlocke-tracker-db
           property: connectionString
-
-  # Background Jobs (if needed separately)
-  # - type: worker
-  #   name: bros-nuzlocke-tracker-worker
-  #   env: ruby
-  #   plan: starter
-  #   buildCommand: "./bin/rails assets:precompile"
-  #   startCommand: "./bin/jobs"
-  #   envVars:
-  #     - key: RAILS_ENV
-  #       value: production
-  #     - key: RAILS_MASTER_KEY
-  #       sync: false
-  #     - key: DATABASE_URL
-  #       fromDatabase:
-  #         name: bros-nuzlocke-tracker-db
-  #         property: connectionString
 
 databases:
   - name: bros-nuzlocke-tracker-db
