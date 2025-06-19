@@ -44,8 +44,9 @@ KeyError: key not found: "DATABASE_URL"
 
 Environment タブで **Add Environment Variable**:
 ```
+```
 Key: RAILS_MASTER_KEY
-Value: 30257a5ea2b89e4d602220f18e1fa5d8
+Value: [config/master.keyの内容をここに入力]
 ```
 
 ### Step 4: サービスの依存関係確認

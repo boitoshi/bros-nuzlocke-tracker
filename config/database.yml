@@ -74,21 +74,20 @@ production:
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  # RenderではDATABASE_URLが必須（TCP接続）
+  # 外部データベース（Supabase/Heroku等）用のDATABASE_URL設定
   <% if ENV["DATABASE_URL"].present? %>
   url: <%= ENV["DATABASE_URL"] %>
   <% else %>
-  # フォールバック設定（本来はDATABASE_URLが設定されるはず）
+  # 個別設定（Supabase等）
   host: <%= ENV["DATABASE_HOST"] || "localhost" %>
   port: <%= ENV["DATABASE_PORT"] || 5432 %>
   database: <%= ENV["DATABASE_NAME"] || "bros_nuzlocke_tracker_production" %>
-  username: <%= ENV["DATABASE_USER"] || "bros_nuzlocke_tracker" %>
+  username: <%= ENV["DATABASE_USER"] || "postgres" %>
   password: <%= ENV["DATABASE_PASSWORD"] || "" %>
   <% end %>
-  # Renderのマネージドデータベース用設定
+  # 外部データベース用接続設定
   connect_timeout: 30
   read_timeout: 30
   write_timeout: 30
-  # TCP接続を強制（Unixソケット接続を防ぐ）
-  host: <%= ENV["DATABASE_HOST"] unless ENV["DATABASE_URL"].present? %>
-  port: <%= ENV["DATABASE_PORT"] || 5432 unless ENV["DATABASE_URL"].present? %>
+  # SSL接続を有効化（外部DBで通常必要）
+  sslmode: require
