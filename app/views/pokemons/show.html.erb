@@ -95,12 +95,12 @@
               <h6 class="text-muted mb-2">👥 パーティ管理</h6>
               <% if @pokemon.in_party? %>
                 <%= button_to "パーティから外す", toggle_party_challenge_pokemon_path(@challenge, @pokemon), 
-                    method: :patch,
+                    data: { "turbo-method": :patch },
                     class: "btn btn-outline-warning w-100 mb-2",
-                    confirm: "#{@pokemon.display_name}をパーティから外しますか？" %>
+                    "turbo-confirm": "本当に実行しますか？" %>
               <% elsif @pokemon.alive? && @challenge.can_add_to_party? %>
                 <%= button_to "パーティに参加", toggle_party_challenge_pokemon_path(@challenge, @pokemon), 
-                    method: :patch,
+                    data: { "turbo-method": :patch },
                     class: "btn btn-success w-100 mb-2" %>
               <% elsif @pokemon.alive? %>
                 <button class="btn btn-secondary w-100 mb-2" disabled>パーティが満員</button>
@@ -112,20 +112,20 @@
               <h6 class="text-muted mb-2">🔄 状態変更</h6>
               <% if @pokemon.alive? %>
                 <%= button_to "ボックスに預ける", mark_as_boxed_challenge_pokemon_path(@challenge, @pokemon), 
-                    method: :patch,
+                    data: { "turbo-method": :patch },
                     class: "btn btn-outline-secondary w-100 mb-2",
-                    confirm: "#{@pokemon.display_name}をボックスに預けますか？" %>
+                    "turbo-confirm": "本当に実行しますか？" %>
               <% elsif @pokemon.boxed? %>
                 <%= button_to "アクティブに戻す", toggle_party_challenge_pokemon_path(@challenge, @pokemon), 
-                    method: :patch,
+                    data: { "turbo-method": :patch },
                     class: "btn btn-outline-success w-100 mb-2" %>
               <% end %>
               
               <% if @pokemon.alive? || @pokemon.boxed? %>
                 <%= button_to "💀 死亡マーク", mark_as_dead_challenge_pokemon_path(@challenge, @pokemon), 
-                    method: :patch,
+                    data: { "turbo-method": :patch },
                     class: "btn btn-outline-danger w-100",
-                    confirm: "#{@pokemon.display_name}が死亡しました。本当によろしいですか？この操作は取り消せません。" %>
+                    "turbo-confirm": "本当に実行しますか？" %>
               <% end %>
             </div>
           <% else %>
@@ -353,14 +353,14 @@
             </p>
             <div class="d-flex gap-2">
               <%= button_to "💀 このポケモンが戦闘不能になった", mark_as_dead_challenge_pokemon_path(@challenge, @pokemon), 
-                  method: :patch,
+                  data: { "turbo-method": :patch },
                   class: "btn btn-danger",
-                  confirm: "#{@pokemon.display_name}が戦闘不能になりました。\n\nナズロックルールに従い、このポケモンは使用不可となります。\n本当によろしいですか？\n\nこの操作は取り消せません。" %>
+                  "turbo-confirm": "本当に実行しますか？" %>
               
               <%= link_to "🗑️ ポケモンを削除", challenge_pokemon_path(@challenge, @pokemon), 
-                  method: :delete,
+                  data: { "turbo-method": :delete },
                   class: "btn btn-outline-danger",
-                  confirm: "#{@pokemon.display_name}のデータを完全に削除します。\n\n注意: この操作は取り消せません。本当に削除しますか？" %>
+                  "turbo-confirm": "本当に実行しますか？" %>
             </div>
           </div>
         </div>

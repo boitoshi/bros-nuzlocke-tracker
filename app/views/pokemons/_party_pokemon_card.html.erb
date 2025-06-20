@@ -43,14 +43,14 @@
       <%= link_to "詳細", challenge_pokemon_path(@challenge, pokemon), 
           class: "btn btn-outline-primary btn-sm flex-fill" %>
       <%= button_to "外す", toggle_party_challenge_pokemon_path(@challenge, pokemon), 
-          method: :patch,
+          data: { "turbo-method": :patch },
           class: "btn btn-outline-warning btn-sm",
-          confirm: "#{pokemon.display_name}をパーティから外しますか？",
+          "turbo-confirm": "本当に実行しますか？",
           title: "パーティから外す" %>
       <%= button_to "💀", mark_as_dead_challenge_pokemon_path(@challenge, pokemon), 
-          method: :patch,
+          data: { "turbo-method": :patch },
           class: "btn btn-outline-danger btn-sm",
-          confirm: "#{pokemon.display_name}が死亡しました。本当によろしいですか？",
+          "turbo-confirm": "本当に実行しますか？",
           title: "死亡マーク" %>
     </div>
   </div>

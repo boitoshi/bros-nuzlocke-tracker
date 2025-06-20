@@ -62,11 +62,11 @@ production:
     lock_timeout: 10s
   # SSL必須（Supabase要件）
   sslmode: require
-  # prepared statement重複エラー対策
-  prepared_statements: false
   # IPv4強制（Render IPv6非対応対策）
   hostaddr: <%= ENV["DATABASE_HOSTADDR"] if ENV["DATABASE_HOSTADDR"].present? %>
   # PostgreSQL最適化設定
-  application_name: "bros-nuzlocke-tracker"
+  application_name: "bros-nuzlocke-tracker-<%= Time.current.to_i %>"
   # 接続プール最適化
   reaping_frequency: 10
+  # prepared statement名前重複回避
+  statement_limit: 1000

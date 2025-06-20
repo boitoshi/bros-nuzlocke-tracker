@@ -65,25 +65,25 @@
           <% if show_party_status %>
             <% if pokemon.in_party? %>
               <%= button_to "外す", toggle_party_challenge_pokemon_path(@challenge, pokemon), 
-                  method: :patch,
+                  data: { "turbo-method": :patch },
                   class: "btn btn-outline-warning btn-sm",
                   title: "パーティから外す" %>
             <% elsif @challenge.can_add_to_party? %>
               <%= button_to "参加", toggle_party_challenge_pokemon_path(@challenge, pokemon), 
-                  method: :patch,
+                  data: { "turbo-method": :patch },
                   class: "btn btn-success btn-sm",
                   title: "パーティに参加" %>
             <% end %>
           <% end %>
           
           <%= button_to "💀", mark_as_dead_challenge_pokemon_path(@challenge, pokemon), 
-              method: :patch,
+              data: { "turbo-method": :patch },
               class: "btn btn-outline-danger btn-sm",
-              confirm: "#{pokemon.display_name}が死亡しました。本当によろしいですか？",
+              "turbo-confirm": "本当に実行しますか？",
               title: "死亡マーク" %>
         <% elsif pokemon.boxed? %>
           <%= button_to "復帰", toggle_party_challenge_pokemon_path(@challenge, pokemon), 
-              method: :patch,
+              data: { "turbo-method": :patch },
               class: "btn btn-outline-success btn-sm",
               title: "アクティブに戻す" %>
         <% end %>

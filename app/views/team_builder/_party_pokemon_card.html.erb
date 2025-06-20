@@ -77,11 +77,11 @@
         <i class="fas fa-eye"></i> 詳細
       <% end %>
       <%= link_to challenge_pokemon_path(@challenge, pokemon, pokemon: { in_party: false }), 
-                  method: :patch, 
+                  data: { "turbo-method": :patch }, 
                   class: "btn btn-outline-secondary btn-sm flex-fill",
                   data: { 
-                    confirm: "#{pokemon.nickname}をパーティから外しますか？",
-                    turbo_method: :patch
+                    "turbo-confirm": "本当に実行しますか？",
+                    turbo_data: { "turbo-method": :patch }
                   } do %>
         <i class="fas fa-minus-circle"></i> 外す
       <% end %>

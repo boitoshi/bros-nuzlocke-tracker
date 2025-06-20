@@ -62,14 +62,14 @@
               <%= link_to "ポケモン管理", challenge_pokemons_path(@challenge), class: "btn btn-primary" %>
               <%= link_to "編集", edit_challenge_path(@challenge), class: "btn btn-outline-secondary" %>
               <% if @challenge.in_progress? %>
-                <%= button_to "完了にする", challenge_path(@challenge), method: :patch, 
+                <%= button_to "完了にする", challenge_path(@challenge), data: { "turbo-method": :patch }, 
                     params: { challenge: { status: 'completed', completed_at: Time.current } },
                     class: "btn btn-success", 
-                    confirm: "本当にチャレンジを完了にしますか？" %>
-                <%= button_to "失敗にする", challenge_path(@challenge), method: :patch, 
+                    "turbo-confirm": "本当に実行しますか？" %>
+                <%= button_to "失敗にする", challenge_path(@challenge), data: { "turbo-method": :patch }, 
                     params: { challenge: { status: 'failed' } },
                     class: "btn btn-danger", 
-                    confirm: "本当にチャレンジを失敗にしますか？" %>
+                    "turbo-confirm": "本当に実行しますか？" %>
               <% end %>
             </div>
           </div>

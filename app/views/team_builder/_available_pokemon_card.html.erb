@@ -67,11 +67,11 @@
       <% end %>
       <% if pokemon.can_be_in_party? %>
         <%= link_to challenge_pokemon_path(@challenge, pokemon, pokemon: { in_party: true }), 
-                    method: :patch, 
+                    data: { "turbo-method": :patch }, 
                     class: "btn btn-success btn-sm flex-fill",
                     data: { 
-                      confirm: "#{pokemon.nickname}をパーティに追加しますか？",
-                      turbo_method: :patch
+                      "turbo-confirm": "本当に実行しますか？",
+                      turbo_data: { "turbo-method": :patch }
                     } do %>
           <i class="fas fa-plus-circle"></i> 追加
         <% end %>

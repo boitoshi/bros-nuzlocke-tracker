@@ -64,7 +64,7 @@
           <%= form_with url: guest_login_path, method: :post, local: true, 
                         class: "d-inline", data: { testid: "guest-form" } do |f| %>
             <%= f.submit "🎮 ゲスト体験", class: "modern-btn modern-btn-secondary",
-                         data: { confirm: "ゲストアカウントでログインしますか？" } %>
+                         data: { "turbo-confirm": "ゲスト体験を開始しますか？" } %>
           <% end %>
         </div>
         <div class="mt-3">
@@ -173,7 +173,7 @@
             <%= form_with url: guest_login_path, method: :post, local: true, 
                           class: "d-inline", data: { testid: "guest-form-2" } do |f| %>
               <%= f.submit "🎮 まずは体験", class: "modern-btn modern-btn-outline-light",
-                           data: { confirm: "ゲストアカウントでログインしますか？" } %>
+                           data: { "turbo-confirm": "ゲスト体験を開始しますか？" } %>
             <% end %>
           </div>
         </div>

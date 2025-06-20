@@ -50,7 +50,7 @@
     </div>
   <% end %>
 
-  <%= form_with url: update_multiple_challenge_rules_path(@challenge), method: :patch, local: true, data: { turbo: false } do |form| %>
+  <%= form_with url: update_multiple_challenge_rules_path(@challenge), data: { "turbo-method": :patch }, local: true, data: { turbo: false } do |form| %>
     <!-- ルールタイプ別表示 -->
     <% Rule::RULE_TYPES.each do |rule_type, type_display| %>
       <% rules_of_type = @rules_by_type[rule_type] %>
@@ -102,9 +102,9 @@
                     <% if rule.rule_type == 'custom' %>
                       <div class="mt-2">
                         <%= link_to challenge_rule_path(@challenge, rule), 
-                                    method: :delete,
+                                    data: { "turbo-method": :delete },
                                     class: "btn btn-outline-danger btn-sm",
-                                    confirm: "このカスタムルールを削除しますか？" do %>
+                                    "turbo-confirm": "本当に実行しますか？" do %>
                           <i class="bi bi-trash"></i>
                         <% end %>
                       </div>
