@@ -14,10 +14,18 @@ class PokedexController < ApplicationController
     # ページネーション（1ページ30匹）
     @pokemon_species = @pokemon_species.page(params[:page]).per(30)
     
-    # 統計情報
-    @total_species = PokemonSpecies.count
-    @generations = PokemonSpecies.pluck_generations.uniq.sort
-    @types = PokemonSpecies.pluck_types.uniq.sort
+    # 統計情報（キャッシュ化で最適化）
+    @total_species = Rails.cache.fetch("pokemon_species_count", expires_in: 1.hour) do
+      PokemonSpecies.count
+    end
+    
+    @generations = Rails.cache.fetch("pokemon_generations", expires_in: 1.hour) do
+      PokemonSpecies.pluck_generations.uniq.sort
+    end
+    
+    @types = Rails.cache.fetch("pokemon_types", expires_in: 1.hour) do
+      PokemonSpecies.pluck_types.uniq.sort
+    end
   end
 
   # ポケモン詳細ページ 🔍

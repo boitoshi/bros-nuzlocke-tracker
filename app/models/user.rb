@@ -12,7 +12,7 @@ class User < ApplicationRecord
   validates :email, uniqueness: { case_sensitive: false, allow_blank: true }
   validates :email, format: { with: URI::MailTo::EMAIL_REGEXP, allow_blank: true }
   
-  validates :password, presence: true, length: { minimum: 6 }, if: :password_required?
+  validates :password, presence: true, length: { in: 6..128 }, if: :password_required?
   validates :password_confirmation, presence: true, if: :password_required?
 
   # リレーション

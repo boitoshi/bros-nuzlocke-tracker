@@ -1,33 +1,57 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  national_id: 1
-  name_ja: MyString
-  name_en: MyString
-  types: 
-  stats: 
-  abilities: 
-  category: MyString
-  height: 1.5
-  weight: 1.5
-  description: MyText
-  image_url: MyString
-  generation: 1
-  is_legendary: false
-  is_mythical: false
+  national_id: 25
+  name_ja: ピカチュウ
+  name_en: Pikachu
+  name_kana: ピカチュウ
+  data: '{
+    "types": ["でんき"],
+    "stats": {
+      "hp": 35,
+      "attack": 55,
+      "defense": 40,
+      "special_attack": 50,
+      "special_defense": 50,
+      "speed": 90
+    },
+    "abilities": ["せいでんき", "ひらいしん"],
+    "category": "ねずみポケモン",
+    "height": 4,
+    "weight": 60,
+    "description": "でんきを ためる せいしつ。ときどき おなかの でんきぶくろが からっぽに なって でんきを だせなくなる。",
+    "image_url": "",
+    "generation": 1,
+    "is_legendary": false,
+    "is_mythical": false
+  }'
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
 
 two:
   national_id: 1
-  name_ja: MyString
-  name_en: MyString
-  types: 
-  stats: 
-  abilities: 
-  category: MyString
-  height: 1.5
-  weight: 1.5
-  description: MyText
-  image_url: MyString
-  generation: 1
-  is_legendary: false
-  is_mythical: false
+  name_ja: フシギダネ
+  name_en: Bulbasaur
+  name_kana: フシギダネ
+  data: '{
+    "types": ["くさ", "どく"],
+    "stats": {
+      "hp": 45,
+      "attack": 49,
+      "defense": 49,
+      "special_attack": 65,
+      "special_defense": 65,
+      "speed": 45
+    },
+    "abilities": ["しんりょく", "ようりょくそ"],
+    "category": "たねポケモン",
+    "height": 7,
+    "weight": 69,
+    "description": "うまれたときから せなかに ふしぎな タネが うえてあって からだと ともに そだつという。",
+    "image_url": "",
+    "generation": 1,
+    "is_legendary": false,
+    "is_mythical": false
+  }'
+  created_at: <%= 1.day.ago %>
+  updated_at: <%= 1.day.ago %>
