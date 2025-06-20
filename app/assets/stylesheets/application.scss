@@ -14,6 +14,27 @@
 // チームビルダー専用スタイル
 @import "team_builder";
 
+// パフォーマンス最適化設定 ⚡
+* {
+  // ハードウェアアクセラレーション有効化
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+// スムーズスクロール（60FPS対応）
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+// パフォーマンス重視のリンク・ボタン共通設定
+a, button {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation; // タッチ遅延削除
+}
+
 // ポケモンタイプカラー定義 🌈
 :root {
   // ポケモンタイプカラー
@@ -68,14 +89,16 @@
   }
 }
 
-// モダンナビゲーションスタイル ✨
+// モダンナビゲーションスタイル ✨（パフォーマンス最適化版）
 .modern-navbar {
-  transition: all 0.3s ease;
+  transition: box-shadow 0.2s ease-out; // 軽量化
   box-shadow: var(--shadow-soft);
+  will-change: box-shadow;
   
   .navbar-brand {
     color: var(--nav-text) !important;
-    transition: color 0.3s ease;
+    transition: color 0.15s ease-out; // 軽量化
+    will-change: color;
     
     &:hover {
       color: var(--nav-text-hover) !important;
@@ -83,7 +106,8 @@
     
     .brand-icon {
       font-size: 1.5rem;
-      transition: transform 0.3s ease;
+      transition: transform 0.15s ease-out; // 軽量化
+      will-change: transform;
     }
     
     .brand-text {
@@ -92,7 +116,7 @@
     }
     
     &:hover .brand-icon {
-      transform: scale(1.1) rotate(5deg);
+      transform: scale(1.05); // 軽量化（回転削除でGPU負荷軽減）
     }
   }
   
@@ -144,7 +168,7 @@
   }
 }
 
-// モダンナビゲーションリンク
+// モダンナビゲーションリンク（軽量化版）
 .modern-nav-link {
   color: var(--nav-text) !important;
   font-weight: 500;
@@ -153,12 +177,14 @@
   gap: 0.5rem;
   padding: 0.75rem 1rem !important;
   border-radius: 8px;
-  transition: all 0.3s ease;
+  transition: color 0.15s ease-out, background-color 0.15s ease-out; // 軽量化
   position: relative;
+  will-change: color, background-color;
   
   .nav-icon {
     font-size: var(--nav-icon-size);
-    transition: transform 0.3s ease;
+    transition: transform 0.15s ease-out; // 軽量化
+    will-change: transform;
   }
   
   .nav-text {
@@ -168,10 +194,10 @@
   &:hover {
     color: var(--nav-text-hover) !important;
     background: rgba(102, 126, 234, 0.1);
-    transform: translateY(-1px);
+    // transform削除でパフォーマンス向上
     
     .nav-icon {
-      transform: scale(1.1);
+      transform: scale(1.05); // 軽量化
     }
   }
   
@@ -774,20 +800,22 @@
   50% { transform: translateY(-10px); }
 }
 
-@keyframes fadeInScale {
+// 軽量化されたアニメーション（GPUアクセラレーション重視）
+@keyframes fadeInFast {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: translate3d(0, 10px, 0); // 軽量化
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translate3d(0, 0, 0);
   }
 }
 
-// ページ遷移アニメーション
+// ページ遷移アニメーション（軽量化版）
 .page-content {
-  animation: fadeInScale 0.6s ease-out;
+  animation: fadeInFast 0.2s ease-out; // 高速化
+  will-change: transform, opacity;
 }
 
 // レスポンシブ調整 📱

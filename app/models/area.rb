@@ -73,12 +73,20 @@ class Area < ApplicationRecord
   def self.create_default_areas_for_game(game_title)
     return if exists?(game_title: game_title)
 
-    case game_title
-    when "red", "green", "blue", "yellow"
-      create_kanto_areas(game_title)
-    when "gold", "silver", "crystal"
-      create_johto_areas(game_title)
-      # 他のゲームも追加可能
+    begin
+      case game_title
+      when "red", "green", "blue", "yellow"
+        create_kanto_areas(game_title)
+      when "gold", "silver", "crystal"
+        create_johto_areas(game_title)
+        # 他のゲームも追加可能
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      Rails.logger.error "Failed to create areas for #{game_title}: #{e.message}"
+      # エラーが発生してもアプリケーションを継続
+    rescue StandardError => e
+      Rails.logger.error "Unexpected error creating areas for #{game_title}: #{e.message}"
+      # 予期しないエラーもログに記録
     end
   end
 
@@ -108,7 +116,12 @@ class Area < ApplicationRecord
     ]
 
     areas.each do |area_data|
-      create!(area_data.merge(game_title: game_title))
+      begin
+        create!(area_data.merge(game_title: game_title))
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => e
+        Rails.logger.warn "Skipped creating area #{area_data[:name]} for #{game_title}: #{e.message}"
+        # 重複などのエラーは無視して続行
+      end
     end
   end
 
@@ -124,7 +137,12 @@ class Area < ApplicationRecord
     ]
 
     areas.each do |area_data|
-      create!(area_data.merge(game_title: game_title))
+      begin
+        create!(area_data.merge(game_title: game_title))
+      rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => e
+        Rails.logger.warn "Skipped creating area #{area_data[:name]} for #{game_title}: #{e.message}"
+        # 重複などのエラーは無視して続行
+      end
     end
   end
 end

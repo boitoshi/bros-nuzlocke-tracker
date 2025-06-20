@@ -93,7 +93,7 @@
                       <i class="me-2">🎮</i>ゲスト体験モード
                     </span></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><%= link_to guest_logout_path, method: :delete, class: "dropdown-item modern-dropdown-item", data: { action: "click->navbar#closeMenuOnLinkClick" } do %>
+                    <li><%= link_to guest_logout_path, class: "dropdown-item modern-dropdown-item", data: { "turbo-method": :delete, action: "click->navbar#closeMenuOnLinkClick" } do %>
                       <i class="me-2">👋</i>ゲスト終了
                     <% end %></li>
                   <% else %>
@@ -101,7 +101,7 @@
                       <i class="me-2">⚙️</i>設定
                     <% end %></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><%= link_to destroy_user_session_path, method: :delete, class: "dropdown-item modern-dropdown-item", data: { action: "click->navbar#closeMenuOnLinkClick" } do %>
+                    <li><%= link_to destroy_user_session_path, class: "dropdown-item modern-dropdown-item", data: { "turbo-method": :delete, action: "click->navbar#closeMenuOnLinkClick" } do %>
                       <i class="me-2">🚪</i>ログアウト
                     <% end %></li>
                   <% end %>
