@@ -2,6 +2,9 @@ class ApplicationController < ActionController::Base
   # シンプルにするため、ブラウザ制限は無効化
   # allow_browser versions: :modern
   
+  # セキュリティヘッダーの設定
+  before_action :set_security_headers
+  
   # Devise用のストロングパラメータ設定
   before_action :configure_permitted_parameters, if: :devise_controller?
 
@@ -25,4 +28,13 @@ class ApplicationController < ActionController::Base
     user_signed_in? && !guest_user?
   end
   helper_method :regular_user?
+
+  private
+
+  def set_security_headers
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+  end
 end

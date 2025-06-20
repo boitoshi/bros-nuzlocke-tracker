@@ -51,22 +51,31 @@
       <div class="mt-4">
         <p class="lead text-muted">アカウントを作成してナズロックチャレンジを始めよう！ 🌟</p>
         <div class="hero-actions d-flex justify-content-center gap-3 mt-4">
-          <%= link_to new_user_registration_path, class: "modern-btn modern-btn-primary" do %>
+          <%= link_to new_user_registration_path, class: "modern-btn modern-btn-primary", 
+                      title: "新規登録ページへ", data: { testid: "signup-link" } do %>
             <i class="btn-icon">📝</i>
             <span>新規登録</span>
           <% end %>
-          <%= link_to new_user_session_path, class: "modern-btn modern-btn-outline" do %>
+          <%= link_to new_user_session_path, class: "modern-btn modern-btn-outline",
+                      title: "ログインページへ", data: { testid: "login-link" } do %>
             <i class="btn-icon">🚪</i>
             <span>ログイン</span>
           <% end %>
-          <%= link_to guest_login_path, method: :post, class: "modern-btn modern-btn-secondary" do %>
-            <i class="btn-icon">🎮</i>
-            <span>ゲスト体験</span>
+          <%= form_with url: guest_login_path, method: :post, local: true, 
+                        class: "d-inline", data: { testid: "guest-form" } do |f| %>
+            <%= f.submit "🎮 ゲスト体験", class: "modern-btn modern-btn-secondary",
+                         data: { confirm: "ゲストアカウントでログインしますか？" } %>
           <% end %>
         </div>
         <div class="mt-3">
           <small class="text-muted">
             <i class="text-info">💡</i> ゲスト体験では登録なしでデモ機能をお試しいただけます
+            <br>
+            <span class="text-success">🔗 Debug: 
+              新規登録 → <%= new_user_registration_path rescue "ERROR" %> | 
+              ログイン → <%= new_user_session_path rescue "ERROR" %> | 
+              ゲスト → <%= guest_login_path rescue "ERROR" %>
+            </span>
           </small>
         </div>
       </div>
@@ -151,17 +160,20 @@
           <h3 class="fw-bold mb-3 text-white">今すぐ始めよう！ 🌟</h3>
           <p class="lead mb-4 text-white opacity-75">無料でアカウントを作成して、最高のナズロック体験を始めましょう</p>
           <div class="d-flex justify-content-center gap-3 flex-wrap">
-            <%= link_to new_user_registration_path, class: "modern-btn modern-btn-light" do %>
+            <%= link_to new_user_registration_path, class: "modern-btn modern-btn-light",
+                        title: "新規登録ページへ", data: { testid: "signup-link-2" } do %>
               <i class="btn-icon">📝</i>
               <span>無料で始める</span>
             <% end %>
-            <%= link_to new_user_session_path, class: "modern-btn modern-btn-outline-light" do %>
+            <%= link_to new_user_session_path, class: "modern-btn modern-btn-outline-light",
+                        title: "ログインページへ", data: { testid: "login-link-2" } do %>
               <i class="btn-icon">🚪</i>
               <span>既にアカウントをお持ちの方</span>
             <% end %>
-            <%= link_to guest_login_path, method: :post, class: "modern-btn modern-btn-outline-light" do %>
-              <i class="btn-icon">🎮</i>
-              <span>まずは体験</span>
+            <%= form_with url: guest_login_path, method: :post, local: true, 
+                          class: "d-inline", data: { testid: "guest-form-2" } do |f| %>
+              <%= f.submit "🎮 まずは体験", class: "modern-btn modern-btn-outline-light",
+                           data: { confirm: "ゲストアカウントでログインしますか？" } %>
             <% end %>
           </div>
         </div>

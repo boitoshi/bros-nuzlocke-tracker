@@ -39,20 +39,40 @@ class PokemonsController < ApplicationController
     @pokemon.caught_at = Time.current
     @pokemon.status = :alive
 
-    if @pokemon.save
-      redirect_to challenge_pokemon_path(@challenge, @pokemon), notice: t("pokemons.notices.created", pokemon: @pokemon.display_name)
-    else
+    begin
+      if @pokemon.save
+        redirect_to challenge_pokemon_path(@challenge, @pokemon), notice: t("pokemons.notices.created", pokemon: @pokemon.display_name)
+      else
+        @areas = Area.by_game(@challenge.game_title).by_order
+        render :new, status: :unprocessable_entity
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      Rails.logger.error "Pokemon creation failed: #{e.message}"
       @areas = Area.by_game(@challenge.game_title).by_order
+      flash.now[:alert] = "ポケモンの作成に失敗しました。入力内容を確認してください。"
       render :new, status: :unprocessable_entity
+    rescue StandardError => e
+      Rails.logger.error "Unexpected error during pokemon creation: #{e.message}"
+      redirect_to new_challenge_pokemon_path(@challenge), alert: "予期しないエラーが発生しました。しばらく時間をおいて再度お試しください。"
     end
   end
 
   def update
-    if @pokemon.update(pokemon_params)
-      redirect_to challenge_pokemon_path(@challenge, @pokemon), notice: t("pokemons.notices.updated")
-    else
+    begin
+      if @pokemon.update(pokemon_params)
+        redirect_to challenge_pokemon_path(@challenge, @pokemon), notice: t("pokemons.notices.updated")
+      else
+        @areas = Area.by_game(@challenge.game_title).by_order
+        render :edit, status: :unprocessable_entity
+      end
+    rescue ActiveRecord::RecordInvalid => e
+      Rails.logger.error "Pokemon update failed: #{e.message}"
       @areas = Area.by_game(@challenge.game_title).by_order
+      flash.now[:alert] = "ポケモンの更新に失敗しました。入力内容を確認してください。"
       render :edit, status: :unprocessable_entity
+    rescue StandardError => e
+      Rails.logger.error "Unexpected error during pokemon update: #{e.message}"
+      redirect_to challenge_pokemon_path(@challenge, @pokemon), alert: "予期しないエラーが発生しました。しばらく時間をおいて再度お試しください。"
     end
   end
 
@@ -90,10 +110,14 @@ class PokemonsController < ApplicationController
 
   def set_challenge
     @challenge = current_user.challenges.find(params[:challenge_id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to challenges_path, alert: "指定されたチャレンジが見つかりません。"
   end
 
   def set_pokemon
     @pokemon = @challenge.pokemons.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to challenge_pokemons_path(@challenge), alert: "指定されたポケモンが見つかりません。"
   end
 
   def pokemon_params

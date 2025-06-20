@@ -9,7 +9,15 @@ class GuestSessionsController < ApplicationController
       sign_in(demo_user)
       redirect_to root_path, notice: '🎮 ゲストユーザーとしてログインしました！デモ機能をお楽しみください ✨'
     else
-      redirect_to root_path, alert: '❌ ゲストユーザーが見つかりません。管理者にお問い合わせください。'
+      # デモユーザーが存在しない場合は作成
+      begin
+        demo_user = create_demo_user
+        sign_in(demo_user)
+        redirect_to root_path, notice: '🎮 ゲストユーザーを作成してログインしました！デモ機能をお楽しみください ✨'
+      rescue StandardError => e
+        Rails.logger.error "Failed to create demo user: #{e.message}"
+        redirect_to root_path, alert: '❌ ゲストログインに失敗しました。しばらく時間をおいて再度お試しください。'
+      end
     end
   end
   
@@ -20,5 +28,16 @@ class GuestSessionsController < ApplicationController
     else
       redirect_to root_path
     end
+  end
+
+  private
+
+  def create_demo_user
+    User.create!(
+      username: 'demouser',
+      email: 'demo@example.com',
+      password: 'DemoPass123!',
+      password_confirmation: 'DemoPass123!'
+    )
   end
 end

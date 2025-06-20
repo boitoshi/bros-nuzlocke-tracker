@@ -113,28 +113,40 @@ class BattleRecordsController < ApplicationController
   def create_battle_participants
     return unless params[:battle_participants].present?
     
-    params[:battle_participants].each do |participant_data|
-      next unless participant_data[:pokemon_id].present?
-      
-      pokemon = @challenge.pokemons.find(participant_data[:pokemon_id])
-      
-      @battle_record.battle_participants.create!(
-        pokemon: pokemon,
-        starting_level: participant_data[:starting_level] || pokemon.level,
-        ending_level: participant_data[:ending_level] || pokemon.level,
-        starting_hp: participant_data[:starting_hp] || 0,
-        ending_hp: participant_data[:ending_hp] || 0,
-        turns_active: participant_data[:turns_active] || 0,
-        damage_dealt: participant_data[:damage_dealt] || 0,
-        damage_taken: participant_data[:damage_taken] || 0,
-        was_ko: participant_data[:was_ko] == '1',
-        performance_notes: participant_data[:performance_notes],
-        moves_used: parse_moves_used(participant_data[:moves_used])
-      )
+    ActiveRecord::Base.transaction do
+      params[:battle_participants].each do |participant_data|
+        next unless participant_data[:pokemon_id].present?
+        
+        begin
+          pokemon = @challenge.pokemons.find(participant_data[:pokemon_id])
+          
+          @battle_record.battle_participants.create!(
+            pokemon: pokemon,
+            starting_level: participant_data[:starting_level] || pokemon.level,
+            ending_level: participant_data[:ending_level] || pokemon.level,
+            starting_hp: participant_data[:starting_hp] || 0,
+            ending_hp: participant_data[:ending_hp] || 0,
+            turns_active: participant_data[:turns_active] || 0,
+            damage_dealt: participant_data[:damage_dealt] || 0,
+            damage_taken: participant_data[:damage_taken] || 0,
+            was_ko: participant_data[:was_ko] == '1',
+            performance_notes: participant_data[:performance_notes],
+            moves_used: parse_moves_used(participant_data[:moves_used])
+          )
+        rescue ActiveRecord::RecordNotFound
+          Rails.logger.warn "Pokemon with ID #{participant_data[:pokemon_id]} not found for battle record #{@battle_record.id}"
+          next
+        end
+      end
     end
   rescue ActiveRecord::RecordInvalid => e
     Rails.logger.error "Failed to create battle participants: #{e.message}"
     @battle_record.errors.add(:base, "参加ポケモンの登録に失敗しました: #{e.message}")
+    false
+  rescue StandardError => e
+    Rails.logger.error "Unexpected error during battle participants creation: #{e.message}"
+    @battle_record.errors.add(:base, "予期しないエラーが発生しました")
+    false
   end
 
   def update_battle_participants

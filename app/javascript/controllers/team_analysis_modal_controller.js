@@ -72,8 +72,18 @@ export default class extends Controller {
       utility: 0
     }
 
+    if (!Array.isArray(pokemon)) {
+      console.warn('Pokemon data is not an array:', pokemon)
+      return composition
+    }
+
     pokemon.forEach(p => {
-      const role = p.role
+      if (!p || typeof p.role !== 'string') {
+        console.warn('Invalid pokemon data:', p)
+        return
+      }
+      
+      const role = p.role.toLowerCase()
       if (role.includes('physical')) composition.physical++
       if (role.includes('special')) composition.special++
       if (role.includes('tank')) composition.tank++

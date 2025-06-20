@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  # Devise設定を最初に配置
   devise_for :users
   
   # ゲストログイン機能 🎮
