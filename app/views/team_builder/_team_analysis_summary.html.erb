@@ -85,8 +85,13 @@
 
     <!-- 詳細分析へのリンク -->
     <div class="text-center mt-3">
-      <%= link_to challenge_team_builder_analyze_path(@challenge), class: "btn btn-outline-primary btn-sm" do %>
-        <i class="fas fa-chart-line"></i> 詳細分析を見る
+      <button type="button" 
+              class="btn btn-outline-light btn-sm me-2"
+              data-action="click->team-analysis-modal#show">
+        <i class="fas fa-microscope"></i> 詳細分析
+      </button>
+      <%= link_to challenge_team_builder_analyze_path(@challenge), class: "btn btn-outline-light btn-sm" do %>
+        <i class="fas fa-chart-line"></i> 分析ページ
       <% end %>
     </div>
   </div>

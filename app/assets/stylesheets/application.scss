@@ -11,6 +11,9 @@
 
 @use "bootstrap" as *;
 
+// チームビルダー専用スタイル
+@import "team_builder";
+
 // ポケモンタイプカラー定義 🌈
 :root {
   // ポケモンタイプカラー

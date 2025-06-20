@@ -1,6 +1,11 @@
 <% content_for :title, "チームビルダー" %>
 
-<div class="container-fluid py-4">
+<div class="container-fluid py-4" 
+     data-controller="team-builder"
+     data-team-builder-challenge-id-value="<%= @challenge.id %>"
+     data-team-builder-type-chart-value="<%= TypeEffectiveness.all.group_by(&:attacking_type).transform_values { |effs| effs.to_h { |e| [e.defending_type, e.effectiveness] } }.to_json %>"
+     data-team-builder-pokemon-types-value="<%= TypeEffectiveness::POKEMON_TYPES.to_json %>">
+  
   <div class="row">
     <div class="col-12">
       <div class="d-flex justify-content-between align-items-center mb-4">
@@ -30,27 +35,37 @@
           </h4>
         </div>
         <div class="card-body">
-          <% if @party_pokemon.any? %>
-            <div class="row g-3">
-              <% @party_pokemon.each do |pokemon| %>
-                <div class="col-lg-4 col-md-6">
+          <div class="row g-3">
+            <% 6.times do |i| %>
+              <div class="col-lg-4 col-md-6">
+                <% if pokemon = @party_pokemon[i] %>
                   <%= render 'party_pokemon_card', pokemon: pokemon %>
-                </div>
-              <% end %>
-            </div>
-
-            <!-- パーティ分析結果 -->
-            <% if @team_analysis.present? %>
-              <div class="mt-4">
-                <%= render 'team_analysis_summary', analysis: @team_analysis %>
+                <% else %>
+                  <div class="party-slot empty" 
+                       data-team-builder-target="partySlot"
+                       data-slot-index="<%= i %>">
+                    <div class="text-center text-muted">
+                      <i class="fas fa-plus-circle fa-2x mb-2"></i>
+                      <p>ポケモンをドロップ</p>
+                    </div>
+                  </div>
+                <% end %>
               </div>
             <% end %>
+          </div>
+
+          <!-- パーティ分析結果 -->
+          <% if @team_analysis.present? %>
+            <div class="mt-4" data-team-builder-target="analysisResult">
+              <%= render 'team_analysis_summary', analysis: @team_analysis %>
+            </div>
           <% else %>
-            <div class="text-center py-5">
-              <i class="fas fa-exclamation-triangle fa-3x text-muted mb-3"></i>
-              <h5 class="text-muted">パーティにポケモンがいません</h5>
-              <p class="text-muted">ポケモンを捕獲してパーティに追加してください。</p>
-              <%= link_to "ポケモン一覧", challenge_pokemons_path(@challenge), class: "btn btn-primary" %>
+            <div class="mt-4" data-team-builder-target="analysisResult">
+              <div class="text-center py-4">
+                <i class="fas fa-info-circle fa-2x text-muted mb-3"></i>
+                <h5 class="text-muted">ポケモンを追加してチーム分析を開始</h5>
+                <p class="text-muted">ドラッグ&ドロップでポケモンをパーティに追加できます ✨</p>
+              </div>
             </div>
           <% end %>
         </div>
@@ -86,6 +101,29 @@
           <% end %>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- 詳細分析モーダル -->
+<div class="team-analysis-modal" 
+     data-controller="team-analysis-modal"
+     data-team-analysis-modal-target="modal"
+     style="display: none;">
+  <div class="modal-backdrop"></div>
+  <div class="modal-content-wrapper">
+    <div class="modal-header">
+      <h4 class="modal-title">
+        <i class="fas fa-chart-line"></i> 詳細チーム分析
+      </h4>
+      <button type="button" 
+              class="btn-close" 
+              data-action="click->team-analysis-modal#hide">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="modal-body" data-team-analysis-modal-target="content">
+      <!-- 分析結果がここに表示される -->
     </div>
   </div>
 </div>

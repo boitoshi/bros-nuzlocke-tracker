@@ -1,0 +1,678 @@
+// 🏆 Team Builder Pokemon-style Animations & Effects
+
+// ポケモンらしいキーフレームアニメーション
+@keyframes pokemonGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes sparkleAnim {
+  0% {
+    opacity: 0;
+    transform: translateY(0) rotate(0deg) scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-20px) rotate(180deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-40px) rotate(360deg) scale(0);
+  }
+}
+
+@keyframes successPulse {
+  0% { 
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+  }
+  50% { 
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+  }
+  100% { 
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+  }
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateY(0) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateY(-50px) rotate(360deg);
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pokemonCardEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes typeGlow {
+  0%, 100% { box-shadow: 0 0 5px currentColor; }
+  50% { box-shadow: 0 0 20px currentColor, 0 0 30px currentColor; }
+}
+
+// ポケモンカードスタイル
+.pokemon-card {
+  border: 2px solid transparent;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: pokemonCardEntrance 0.6s ease-out;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    transition: left 0.5s;
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
+
+  &.dragging {
+    cursor: grabbing;
+    z-index: 1000;
+    transform: rotate(5deg) scale(1.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  // タイプに応じたボーダーカラー
+  &[data-primary-type="fire"] { border-color: #F08030; }
+  &[data-primary-type="water"] { border-color: #6890F0; }
+  &[data-primary-type="grass"] { border-color: #78C850; }
+  &[data-primary-type="electric"] { border-color: #F8D030; }
+  &[data-primary-type="psychic"] { border-color: #F85888; }
+  &[data-primary-type="dragon"] { border-color: #7038F8; }
+  // ... 他のタイプも同様に
+}
+
+// パーティスロット
+.party-slot {
+  min-height: 200px;
+  border: 3px dashed #dee2e6;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  position: relative;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+
+  &.drag-over {
+    border-color: #28a745;
+    border-style: solid;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+    background-size: 400% 400%;
+    animation: pokemonGradient 1.5s ease infinite;
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(40, 167, 69, 0.5);
+  }
+
+  &.empty {
+    &::after {
+      content: '⚡ ここにポケモンをドロップ ⚡';
+      color: #6c757d;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// タイプバッジの強化
+.type-badge {
+  position: relative;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.1);
+    animation: typeGlow 1s ease-in-out infinite;
+  }
+
+  // タイプ別のグラデーション
+  &.type-fire {
+    background: linear-gradient(45deg, #F08030, #FF4500);
+  }
+  
+  &.type-water {
+    background: linear-gradient(45deg, #6890F0, #1E90FF);
+  }
+  
+  &.type-grass {
+    background: linear-gradient(45deg, #78C850, #32CD32);
+  }
+  
+  &.type-electric {
+    background: linear-gradient(45deg, #F8D030, #FFD700);
+    color: #333;
+  }
+  
+  &.type-psychic {
+    background: linear-gradient(45deg, #F85888, #FF69B4);
+  }
+  
+  &.type-dragon {
+    background: linear-gradient(45deg, #7038F8, #8A2BE2);
+  }
+  
+  &.type-dark {
+    background: linear-gradient(45deg, #705848, #8B4513);
+  }
+  
+  &.type-steel {
+    background: linear-gradient(45deg, #B8B8D0, #C0C0C0);
+    color: #333;
+  }
+  
+  &.type-fairy {
+    background: linear-gradient(45deg, #EE99AC, #FFB6C1);
+    color: #333;
+  }
+  
+  &.type-fighting {
+    background: linear-gradient(45deg, #C03028, #DC143C);
+  }
+  
+  &.type-poison {
+    background: linear-gradient(45deg, #A040A0, #9932CC);
+  }
+  
+  &.type-ground {
+    background: linear-gradient(45deg, #E0C068, #DAA520);
+    color: #333;
+  }
+  
+  &.type-flying {
+    background: linear-gradient(45deg, #A890F0, #87CEEB);
+  }
+  
+  &.type-bug {
+    background: linear-gradient(45deg, #A8B820, #9ACD32);
+  }
+  
+  &.type-rock {
+    background: linear-gradient(45deg, #B8A038, #CD853F);
+  }
+  
+  &.type-ghost {
+    background: linear-gradient(45deg, #705898, #663399);
+  }
+  
+  &.type-ice {
+    background: linear-gradient(45deg, #98D8D8, #B0E0E6);
+    color: #333;
+  }
+  
+  &.type-normal {
+    background: linear-gradient(45deg, #A8A878, #C0C0C0);
+    color: #333;
+  }
+}
+
+// 弱点・耐性インジケーター
+.weakness-indicator {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &.weakness-4x {
+    background: linear-gradient(45deg, #dc3545, #c82333);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  &.weakness-2x {
+    background: linear-gradient(45deg, #fd7e14, #e06500);
+  }
+
+  &.resistance-0-5x {
+    background: linear-gradient(45deg, #198754, #157347);
+  }
+
+  &.resistance-0-25x {
+    background: linear-gradient(45deg, #20c997, #1aa085);
+  }
+
+  &.immunity-0x {
+    background: linear-gradient(45deg, #6f42c1, #5a2d91);
+    animation: shimmer 2s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes shimmer {
+  0%, 100% { box-shadow: 0 0 5px rgba(111, 66, 193, 0.5); }
+  50% { box-shadow: 0 0 15px rgba(111, 66, 193, 0.8); }
+}
+
+// チーム分析結果のスタイル
+.team-analysis-summary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: rotate 10s linear infinite;
+  }
+
+  .score-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #28a745, #20c997);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0 auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .coverage-bar {
+    background: linear-gradient(to top, #28a745, #20c997);
+    width: 100%;
+    border-radius: 4px;
+    transition: height 0.5s ease;
+    min-height: 4px;
+  }
+}
+
+@keyframes rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// ツールチップスタイル
+.type-tooltip {
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.9);
+  }
+}
+
+// レスポンシブ対応
+@media (max-width: 768px) {
+  .pokemon-card {
+    margin-bottom: 1rem;
+  }
+  
+  .party-slot {
+    min-height: 150px;
+  }
+  
+  .type-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+  
+  // タッチデバイス用の大きなタップエリア
+  .pokemon-card, .party-slot {
+    min-height: 60px;
+  }
+}
+
+// アクセシビリティ対応
+@media (prefers-reduced-motion: reduce) {
+  .pokemon-card,
+  .party-slot,
+  .type-badge,
+  .weakness-indicator {
+    animation: none;
+    transition: none;
+  }
+}
+
+// ダークモード対応
+@media (prefers-color-scheme: dark) {
+  .pokemon-card {
+    background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+    color: white;
+  }
+  
+  .party-slot {
+    background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+    border-color: #4a5568;
+  }
+}
+
+// フォーカス状態のアクセシビリティ
+.pokemon-card:focus,
+.party-slot:focus {
+  outline: 3px solid #007bff;
+  outline-offset: 2px;
+}
+
+// 詳細分析モーダル
+.team-analysis-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  .modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+  }
+  
+  .modal-content-wrapper {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    max-width: 90vw;
+    max-height: 90vh;
+    width: 800px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    
+    .modal-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      
+      .modal-title {
+        margin: 0;
+        font-weight: 600;
+      }
+      
+      .btn-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          background: rgba(255, 255, 255, 0.2);
+          transform: scale(1.1);
+        }
+      }
+    }
+    
+    .modal-body {
+      padding: 2rem;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+  }
+}
+
+// 詳細分析コンポーネント
+.detailed-analysis {
+  .composition-section {
+    .composition-item {
+      padding: 1rem;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 12px;
+      text-align: center;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      
+      .composition-count {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #667eea;
+      }
+      
+      .composition-label {
+        color: #6c757d;
+        font-weight: 500;
+      }
+    }
+  }
+  
+  .strategy-card {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-radius: 12px;
+    padding: 1rem;
+    height: 100%;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .strategy-name {
+      color: #1976d2;
+      margin-bottom: 0.5rem;
+    }
+    
+    .strategy-desc {
+      font-size: 0.9rem;
+      color: #424242;
+      margin-bottom: 0.5rem;
+    }
+  }
+  
+  .recommendation-item {
+    background: rgba(255, 193, 7, 0.1);
+    border-left: 4px solid #ffc107;
+    padding: 1rem;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: rgba(255, 193, 7, 0.15);
+      transform: translateX(5px);
+    }
+  }
+  
+  .weakness-heatmap {
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      gap: 4px;
+      
+      .heatmap-cell {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: white;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        
+        &:hover {
+          transform: scale(1.1);
+          z-index: 10;
+        }
+        
+        &.critical {
+          background: linear-gradient(45deg, #dc3545, #c82333);
+          animation: pulse 2s ease-in-out infinite;
+        }
+        
+        &.high {
+          background: linear-gradient(45deg, #fd7e14, #e06500);
+        }
+        
+        &.normal {
+          background: linear-gradient(45deg, #6c757d, #545b62);
+        }
+        
+        &.low {
+          background: linear-gradient(45deg, #198754, #157347);
+        }
+        
+        &.minimal {
+          background: linear-gradient(45deg, #20c997, #1aa085);
+        }
+      }
+    }
+  }
+  
+  .synergy-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(32, 201, 151, 0.1);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    
+    .synergy-icon {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+// モーダルアニメーション
+@keyframes modalSparkle {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) rotate(360deg);
+  }
+}
+
+// タッチデバイス最適化
+@media (max-width: 768px) {
+  .team-analysis-modal {
+    .modal-content-wrapper {
+      width: 95vw;
+      margin: 1rem;
+    }
+    
+    .modal-body {
+      padding: 1rem;
+    }
+  }
+  
+  .detailed-analysis {
+    .composition-section .composition-item {
+      margin-bottom: 0.5rem;
+    }
+    
+    .weakness-heatmap .heatmap-grid {
+      grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+      gap: 2px;
+    }
+  }
+}
+
+// プリント時のスタイル
+@media print {
+  .pokemon-card,
+  .party-slot {
+    background: white;
+    color: black;
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+  
+  .team-analysis-modal {
+    display: none;
+  }
+}
