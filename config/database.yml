@@ -1,14 +1,33 @@
 # Bros Nuzlocke Tracker Database Configuration 🗄️
-# 開発環境ではSQLite、本番環境ではPostgreSQL（Supabase）
+# 開発・本番環境ともにSupabase PostgreSQL
 
-# 開発環境：SQLite（ローカル開発用）
+# 開発環境：Supabase PostgreSQL
 development:
-  adapter: sqlite3
-  database: storage/development.sqlite3
+  adapter: postgresql
+  encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  timeout: 5000
+  
+  # Supabase用のDATABASE_URL設定
+  <% if ENV["DATABASE_URL"].present? %>
+  url: <%= ENV["DATABASE_URL"] %>
+  <% else %>
+  # フォールバック設定
+  host: <%= ENV["DATABASE_HOST"] || "localhost" %>
+  port: <%= ENV["DATABASE_PORT"] || 5432 %>
+  database: <%= ENV["DATABASE_NAME"] || "bros_nuzlocke_tracker_development" %>
+  username: <%= ENV["DATABASE_USER"] || "postgres" %>
+  password: <%= ENV["DATABASE_PASSWORD"] || "" %>
+  <% end %>
+  
+  # Supabase最適化設定
+  connect_timeout: 10
+  read_timeout: 10
+  write_timeout: 10
+  checkout_timeout: 5
+  sslmode: require
 
 # テスト環境：SQLite（テスト用）
+# 環境変数に関係なく強制的にSQLiteを使用
 test:
   adapter: sqlite3
   database: storage/test.sqlite3
@@ -21,8 +40,8 @@ production:
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   
-  # Supabase用のDATABASE_URL設定
-  <% if ENV["DATABASE_URL"].present? %>
+  # Supabase用のDATABASE_URL設定（本番環境のみ）
+  <% if Rails.env.production? && ENV["DATABASE_URL"].present? %>
   url: <%= ENV["DATABASE_URL"] %>
   <% else %>
   # フォールバック設定（開発・テスト用）
