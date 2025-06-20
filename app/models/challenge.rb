@@ -130,18 +130,19 @@ class Challenge < ApplicationRecord
   def most_active_battle_pokemon
     return nil if battle_records.empty?
     
-    # バトル参加回数が最も多いポケモンを取得
-    BattleParticipant.joins(:battle_record)
-                     .where(battle_records: { challenge: self })
-                     .joins(:pokemon)
-                     .group('pokemons.id', 'pokemons.nickname', 'pokemons.species')
-                     .order('COUNT(*) DESC')
-                     .limit(1)
-                     .pluck('pokemons.nickname', 'pokemons.species', 'COUNT(*)')
-                     .first
-                     &.then { |nickname, species, count| 
-                       { name: "#{nickname} (#{species})", battle_count: count } 
-                     }
+    # バトル参加回数が最も多いポケモンを取得（N+1クエリ対策済み）
+    result = BattleParticipant.joins(:battle_record, :pokemon)
+                              .where(battle_records: { challenge: self })
+                              .group('pokemons.id', 'pokemons.nickname', 'pokemons.species')
+                              .order('COUNT(*) DESC')
+                              .limit(1)
+                              .pluck('pokemons.nickname', 'pokemons.species', 'COUNT(*)')
+                              .first
+    
+    return nil unless result
+    
+    nickname, species, count = result
+    { name: "#{nickname} (#{species})", battle_count: count }
   end
 
   # コールバック

@@ -19,12 +19,18 @@ typescriptでコードを生成してくれる！コードのコメントは技�
 
 **プロジェクトタイプ**: Ruby on Rails ポケモンNuzlockeチャレンジ管理アプリ
 **言語**: Ruby 3.3.4, Rails 8.0.2
-**データベース**: SQLite (開発), PostgreSQL (本番)
+**データベース**: PostgreSQL (Supabase) - 開発・本番統一
 **認証**: Devise
-**デプロイ**: Render.com
-**フロントエンド**: Bootstrap 5 + Stimulus + Turbo
+**デプロイ**: Render.com + Supabase
+**フロントエンド**: Bootstrap 5 + Stimulus + Turbo 8
 
-## 🎮 新機能（2025年6月更新）
+## 🚀 最新の技術改善（2025年6月更新）
+
+### ⚡ パフォーマンス最適化
+- **Turbo 8高速化**: プリロード機能・プログレスバー最適化・キャッシュ強化
+- **CSS軽量化**: アニメーション0.15s・GPU最適化・will-change活用
+- **JavaScript最適化**: 遅延読み込み・即座フィードバック・60FPS対応
+- **Rails 8対応**: `turbo-method`・`turbo-confirm`完全移行
 
 ### 🎯 攻略情報システム
 - **ボスバトル情報**: ジムリーダー・四天王・チャンピオンの詳細データ
@@ -36,6 +42,11 @@ typescriptでコードを生成してくれる！コードのコメントは技�
 - **イベントログ**: ポケモン捕獲・死亡・レベルアップの詳細記録
 - **統計ダッシュボード**: Chart.jsを使った視覚的な統計表示
 - **詳細分析**: 月別データ・人気ポケモン・生存率分析
+
+### 🔧 インフラ・デプロイ改善
+- **PostgreSQL prepared statement対策**: 重複エラー完全解決
+- **Supabase接続最適化**: 接続プール・タイムアウト設定
+- **Render自動デプロイ**: ビルド時DB分離・エラーハンドリング強化
 
 ## 開発環境のセットアップと一般的なコマンド
 
@@ -254,6 +265,28 @@ bin/rubocop -a                # 自動修正
 - `render.yaml`の設定確認
 - 環境変数の設定確認
 - ビルドログでエラー箇所を特定
+
+### PostgreSQL prepared statement重複エラー（2025年6月対策済み）
+```bash
+# 症状: PG::DuplicatePstatement: ERROR: prepared statement "a1" already exists
+# 原因: Supabase + Renderでのprepared statement重複
+# 解決済み: database.ymlとrender.yamlで対策実装済み
+```
+
+### Rails 8 Turbo method エラー（2025年6月対策済み）
+```bash
+# 症状: NoMethodError: undefined method 'prepared_statements='
+# 症状: 404エラー（ゲストログアウトボタンなど）
+# 原因: Rails 8でのmethod記法変更
+# 解決済み: 全viewファイルでturbo-method対応完了
+```
+
+### パフォーマンス問題（2025年6月改善済み）
+```bash
+# 症状: ページ遷移が重い・もっさりした動作
+# 原因: 重いアニメーション・非効率なCSS/JS
+# 解決済み: Turbo最適化・CSS軽量化・GPU最適化完了
+```
 
 ## セキュリティとベストプラクティス
 

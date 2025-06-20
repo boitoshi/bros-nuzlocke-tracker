@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_20_081320) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_20_162229) do
   create_table "areas", force: :cascade do |t|
     t.string "name"
     t.string "area_type"
@@ -18,6 +18,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_20_081320) do
     t.integer "order_index"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["game_title", "area_type"], name: "index_areas_on_game_and_type"
   end
 
   create_table "battle_participants", force: :cascade do |t|
@@ -35,6 +36,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_20_081320) do
     t.text "performance_notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["battle_record_id", "pokemon_id"], name: "index_battle_participants_on_battle_and_pokemon", unique: true
     t.index ["battle_record_id", "pokemon_id"], name: "index_battle_participants_unique", unique: true
     t.index ["battle_record_id"], name: "index_battle_participants_on_battle_record_id"
     t.index ["pokemon_id"], name: "index_battle_participants_on_pokemon_id"
@@ -61,6 +63,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_20_081320) do
     t.index ["battle_date"], name: "index_battle_records_on_battle_date"
     t.index ["battle_type"], name: "index_battle_records_on_battle_type"
     t.index ["boss_battle_id"], name: "index_battle_records_on_boss_battle_id"
+    t.index ["challenge_id", "battle_date"], name: "index_battle_records_on_challenge_and_date"
+    t.index ["challenge_id", "result"], name: "index_battle_records_on_challenge_and_result"
     t.index ["challenge_id"], name: "index_battle_records_on_challenge_id"
     t.index ["mvp_pokemon_id"], name: "index_battle_records_on_mvp_pokemon_id"
     t.index ["result"], name: "index_battle_records_on_result"
@@ -93,6 +97,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_20_081320) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["game_title", "status"], name: "index_challenges_on_game_and_status"
+    t.index ["user_id", "status"], name: "index_challenges_on_user_and_status"
     t.index ["user_id"], name: "index_challenges_on_user_id"
   end
 
@@ -108,7 +114,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_20_081320) do
     t.integer "importance", default: 1
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["challenge_id", "event_type"], name: "index_event_logs_on_challenge_and_type"
     t.index ["challenge_id", "event_type"], name: "index_event_logs_on_challenge_id_and_event_type"
+    t.index ["challenge_id", "occurred_at"], name: "index_event_logs_on_challenge_and_date"
     t.index ["challenge_id", "occurred_at"], name: "index_event_logs_on_challenge_id_and_occurred_at"
     t.index ["challenge_id"], name: "index_event_logs_on_challenge_id"
     t.index ["occurred_at"], name: "index_event_logs_on_occurred_at"
@@ -127,6 +135,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_20_081320) do
     t.json "completion_data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["challenge_id", "completed_at"], name: "index_milestones_on_challenge_and_completed"
     t.index ["challenge_id", "milestone_type"], name: "index_milestones_on_challenge_id_and_milestone_type"
     t.index ["challenge_id", "order_index"], name: "index_milestones_on_challenge_id_and_order_index"
     t.index ["challenge_id"], name: "index_milestones_on_challenge_id"
@@ -179,10 +188,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_20_081320) do
     t.string "gender", limit: 10
     t.text "notes"
     t.index ["area_id"], name: "index_pokemons_on_area_id"
+    t.index ["caught_at"], name: "index_pokemons_on_caught_at"
+    t.index ["challenge_id", "status"], name: "index_pokemons_on_challenge_and_status"
     t.index ["challenge_id"], name: "index_pokemons_on_challenge_id"
+    t.index ["died_at"], name: "index_pokemons_on_died_at"
     t.index ["primary_type"], name: "index_pokemons_on_primary_type"
     t.index ["role"], name: "index_pokemons_on_role"
     t.index ["secondary_type"], name: "index_pokemons_on_secondary_type"
+    t.index ["species", "status"], name: "index_pokemons_on_species_and_status"
   end
 
   create_table "rules", force: :cascade do |t|

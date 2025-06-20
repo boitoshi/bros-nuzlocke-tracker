@@ -3,30 +3,24 @@ class StatisticsController < ApplicationController
   before_action :set_challenge, only: [:index, :challenge_stats]
 
   def index
+    @statistics_service = StatisticsService.new(current_user)
     @challenges = current_user.challenges.includes(:pokemons, :event_logs, :milestones)
     
     if @challenges.any?
-      @overall_stats = calculate_overall_statistics
-      @monthly_data = calculate_monthly_statistics
-      @popular_pokemon = calculate_popular_pokemon
-      @survival_analysis = calculate_survival_analysis
-      @area_danger_map = calculate_area_danger_statistics
-      @recent_activities = recent_activities_data
+      @overall_stats = @statistics_service.calculate_overall_statistics
+      @monthly_data = @statistics_service.calculate_monthly_statistics
+      @popular_pokemon = @statistics_service.calculate_popular_pokemon
+      @survival_analysis = @statistics_service.calculate_survival_analysis
+      @area_danger_map = @statistics_service.calculate_area_danger_statistics
+      @recent_activities = @statistics_service.recent_activities_data
     end
   end
 
   def challenge_stats
-    @challenge_stats = calculate_challenge_statistics(@challenge)
-    @monthly_challenge_data = calculate_monthly_challenge_statistics(@challenge)
-    @pokemon_timeline = calculate_pokemon_timeline(@challenge)
-    @milestone_progress = calculate_milestone_progress(@challenge)
+    statistics_service = StatisticsService.new(current_user, @challenge)
+    challenge_stats = statistics_service.calculate_challenge_statistics(@challenge)
     
-    render json: {
-      challenge_stats: @challenge_stats,
-      monthly_data: @monthly_challenge_data,
-      pokemon_timeline: @pokemon_timeline,
-      milestone_progress: @milestone_progress
-    }
+    render json: challenge_stats
   end
 
   private

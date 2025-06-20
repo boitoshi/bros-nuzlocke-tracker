@@ -12,7 +12,7 @@ module ErrorHandling
 
   def record_not_found(exception)
     logger.warn "Record not found: #{exception.message}"
-    
+
     respond_to do |format|
       format.html { redirect_to root_path, alert: "お探しのページが見つかりません 😢" }
       format.json { render json: { error: "Record not found" }, status: :not_found }
@@ -21,7 +21,7 @@ module ErrorHandling
 
   def parameter_missing(exception)
     logger.warn "Parameter missing: #{exception.message}"
-    
+
     respond_to do |format|
       format.html { redirect_back(fallback_location: root_path, alert: "必要なパラメータが不足しています") }
       format.json { render json: { error: "Parameter missing" }, status: :bad_request }
