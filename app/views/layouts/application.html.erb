@@ -24,38 +24,54 @@
 
   <body>
     <!-- ナビゲーションバー 🧭 -->
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background: var(--pokemon-gradient); backdrop-filter: blur(10px);">
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top modern-navbar" 
+         style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.1);"
+         data-controller="navbar">
       <div class="container">
-        <%= link_to root_path, class: "navbar-brand fw-bold" do %>
-          🎮 Bros Nuzlocke Tracker
+        <%= link_to root_path, class: "navbar-brand fw-bold d-flex align-items-center" do %>
+          <span class="brand-icon me-2">🎮</span>
+          <span class="brand-text">Bros Nuzlocke</span>
         <% end %>
         
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler border-0 p-0" 
+                type="button" 
+                data-navbar-target="toggler"
+                aria-controls="navbarNav" 
+                aria-expanded="false" 
+                aria-label="Toggle navigation">
+          <span class="hamburger-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
         </button>
         
-        <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="collapse navbar-collapse" id="navbarNav" data-navbar-target="collapse">
           <ul class="navbar-nav me-auto">
             <% if user_signed_in? %>
               <li class="nav-item">
-                <%= link_to dashboard_path, class: "nav-link #{'active' if current_page?(dashboard_path)}" do %>
-                  📊 ダッシュボード
+                <%= link_to dashboard_path, class: "nav-link modern-nav-link #{'active' if current_page?(dashboard_path)}", data: { action: "click->navbar#closeMenuOnLinkClick" } do %>
+                  <i class="nav-icon">📊</i>
+                  <span class="nav-text">ダッシュボード</span>
                 <% end %>
               </li>
               <li class="nav-item">
-                <%= link_to challenges_path, class: "nav-link #{'active' if current_page?(challenges_path)}" do %>
-                  🎯 チャレンジ
+                <%= link_to challenges_path, class: "nav-link modern-nav-link #{'active' if current_page?(challenges_path)}", data: { action: "click->navbar#closeMenuOnLinkClick" } do %>
+                  <i class="nav-icon">🎯</i>
+                  <span class="nav-text">チャレンジ</span>
                 <% end %>
               </li>
               <li class="nav-item">
-                <%= link_to statistics_path, class: "nav-link #{'active' if current_page?(statistics_path)}" do %>
-                  📈 統計分析
+                <%= link_to statistics_path, class: "nav-link modern-nav-link #{'active' if current_page?(statistics_path)}", data: { action: "click->navbar#closeMenuOnLinkClick" } do %>
+                  <i class="nav-icon">📈</i>
+                  <span class="nav-text">統計分析</span>
                 <% end %>
               </li>
             <% end %>
             <li class="nav-item">
-              <%= link_to pokedex_index_path, class: "nav-link #{'active' if current_page?(pokedex_index_path) || current_page?(controller: 'pokedex')}" do %>
-                📖 ポケモン図鑑
+              <%= link_to pokedex_index_path, class: "nav-link modern-nav-link #{'active' if current_page?(pokedex_index_path) || current_page?(controller: 'pokedex')}", data: { action: "click->navbar#closeMenuOnLinkClick" } do %>
+                <i class="nav-icon">📖</i>
+                <span class="nav-text">ポケモン図鑑</span>
               <% end %>
             </li>
           </ul>
@@ -63,21 +79,36 @@
           <ul class="navbar-nav">
             <% if user_signed_in? %>
               <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                  👤 <%= current_user.display_name %>
+                <a class="nav-link dropdown-toggle modern-nav-link d-flex align-items-center" 
+                   href="#" 
+                   role="button" 
+                   data-action="click->navbar#toggleUserDropdown"
+                   aria-expanded="false">
+                  <i class="nav-icon">👤</i>
+                  <span class="nav-text"><%= current_user.display_name %></span>
                 </a>
-                <ul class="dropdown-menu">
-                  <li><%= link_to "⚙️ 設定", edit_user_registration_path, class: "dropdown-item" %></li>
+                <ul class="dropdown-menu dropdown-menu-end modern-dropdown">
+                  <li><%= link_to edit_user_registration_path, class: "dropdown-item modern-dropdown-item", data: { action: "click->navbar#closeMenuOnLinkClick" } do %>
+                    <i class="me-2">⚙️</i>設定
+                  <% end %></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><%= link_to "🚪 ログアウト", destroy_user_session_path, method: :delete, class: "dropdown-item" %></li>
+                  <li><%= link_to destroy_user_session_path, method: :delete, class: "dropdown-item modern-dropdown-item", data: { action: "click->navbar#closeMenuOnLinkClick" } do %>
+                    <i class="me-2">🚪</i>ログアウト
+                  <% end %></li>
                 </ul>
               </li>
             <% else %>
               <li class="nav-item">
-                <%= link_to "🚪 ログイン", new_user_session_path, class: "nav-link" %>
+                <%= link_to new_user_session_path, class: "nav-link modern-nav-link", data: { action: "click->navbar#closeMenuOnLinkClick" } do %>
+                  <i class="nav-icon">🚪</i>
+                  <span class="nav-text">ログイン</span>
+                <% end %>
               </li>
               <li class="nav-item">
-                <%= link_to "📝 新規登録", new_user_registration_path, class: "nav-link" %>
+                <%= link_to new_user_registration_path, class: "nav-link modern-nav-link", data: { action: "click->navbar#closeMenuOnLinkClick" } do %>
+                  <i class="nav-icon">📝</i>
+                  <span class="nav-text">新規登録</span>
+                <% end %>
               </li>
             <% end %>
           </ul>
