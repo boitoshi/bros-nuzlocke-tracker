@@ -59,6 +59,15 @@
             <div class="mt-4" data-team-builder-target="analysisResult">
               <%= render 'team_analysis_summary', analysis: @team_analysis %>
             </div>
+            
+            <!-- ビジュアル分析チャート -->
+            <div class="mt-4" 
+                 data-controller="pokemon-charts"
+                 data-pokemon-charts-team-data-value="<%= { pokemon: @party_pokemon.map { |p| { primaryType: p.primary_type, secondaryType: p.secondary_type, role: p.role } } }.to_json %>"
+                 data-pokemon-charts-type-chart-value="<%= TypeEffectiveness.all.group_by(&:attacking_type).transform_values { |effs| effs.to_h { |e| [e.defending_type, e.effectiveness] } }.to_json %>"
+                 data-pokemon-charts-pokemon-types-value="<%= TypeEffectiveness::POKEMON_TYPES.to_json %>">
+              <%= render 'visual_analysis_charts' %>
+            </div>
           <% else %>
             <div class="mt-4" data-team-builder-target="analysisResult">
               <div class="text-center py-4">

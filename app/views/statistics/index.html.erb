@@ -1,0 +1,355 @@
+<% content_for :title, "統計ダッシュボード" %>
+
+<div class="container-fluid py-4" 
+     data-controller="statistics"
+     <% if @overall_stats.present? %>
+       data-statistics-monthly-data-value="<%= @monthly_data.to_json %>"
+       data-statistics-popular-pokemon-value="<%= @popular_pokemon.to_json %>"
+       data-statistics-survival-analysis-value="<%= @survival_analysis.to_json %>"
+       data-statistics-area-danger-map-value="<%= @area_danger_map.to_json %>"
+       data-statistics-overall-stats-value="<%= @overall_stats.to_json %>"
+     <% end %>>
+  
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 text-primary mb-0">
+          📊 統計ダッシュボード
+          <small class="text-muted">- あなたのNuzlocke戦績を可視化</small>
+        </h1>
+        <button type="button" 
+                class="btn btn-outline-primary"
+                data-action="click->statistics#refreshCharts">
+          <i class="fas fa-sync-alt"></i> データ更新
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <% if @challenges.empty? %>
+    <!-- データなしの場合 -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card text-center py-5">
+          <div class="card-body">
+            <i class="fas fa-chart-bar fa-4x text-muted mb-3"></i>
+            <h3 class="text-muted">まだ統計データがありません</h3>
+            <p class="text-muted mb-4">Nuzlockeチャレンジを開始して、統計を蓄積しましょう！</p>
+            <%= link_to "新しいチャレンジを開始", new_challenge_path, class: "btn btn-primary btn-lg" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <!-- 全体統計カード -->
+    <div class="row mb-4" data-statistics-target="overallStatsCard">
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-gradient-primary text-white h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="card-title mb-0 opacity-75">総チャレンジ数</h6>
+                <h2 class="mb-0" id="total-challenges">0</h2>
+              </div>
+              <div class="fs-1 opacity-50">
+                <i class="fas fa-trophy"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-gradient-success text-white h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="card-title mb-0 opacity-75">捕獲ポケモン数</h6>
+                <h2 class="mb-0" id="total-pokemon">0</h2>
+              </div>
+              <div class="fs-1 opacity-50">
+                <i class="fas fa-paw"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-gradient-warning text-white h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="card-title mb-0 opacity-75">全体生存率</h6>
+                <h2 class="mb-0" id="survival-rate">0%</h2>
+              </div>
+              <div class="fs-1 opacity-50">
+                <i class="fas fa-heart"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-3 col-md-6 mb-3">
+        <div class="card bg-gradient-info text-white h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="card-title mb-0 opacity-75">総イベント数</h6>
+                <h2 class="mb-0" id="total-events">0</h2>
+              </div>
+              <div class="fs-1 opacity-50">
+                <i class="fas fa-calendar-alt"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- チャートエリア -->
+    <div class="row g-4">
+      
+      <!-- 月別トレンドチャート -->
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-header bg-gradient-primary text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-chart-line"></i> 📈 月別アクティビティトレンド
+              <small class="opacity-75">- 過去12ヶ月の活動状況</small>
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <div class="chart-wrapper" style="height: 400px;">
+                <canvas data-statistics-target="monthlyChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 人気ポケモンランキング -->
+      <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+          <div class="card-header bg-gradient-success text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-star"></i> 🏆 人気ポケモンランキング
+              <small class="opacity-75">- よく使われるポケモンTOP8</small>
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <div class="chart-wrapper" style="height: 350px;">
+                <canvas data-statistics-target="popularPokemonChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- エリア別危険度 -->
+      <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+          <div class="card-header bg-gradient-danger text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-map-marked-alt"></i> 🗺️ エリア別危険度マップ
+              <small class="opacity-75">- 死亡率の高いエリア</small>
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <div class="chart-wrapper" style="height: 350px;">
+                <canvas data-statistics-target="areaDangerChart"></canvas>
+              </div>
+            </div>
+            <div class="mt-3">
+              <div class="row g-2 text-center">
+                <div class="col">
+                  <span class="badge bg-success">🟢 安全</span>
+                </div>
+                <div class="col">
+                  <span class="badge bg-info">🟡 低危険</span>
+                </div>
+                <div class="col">
+                  <span class="badge bg-warning">🟠 中危険</span>
+                </div>
+                <div class="col">
+                  <span class="badge bg-danger">🔴 高危険</span>
+                </div>
+                <div class="col">
+                  <span class="badge bg-dark">💀 超危険</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- タイプ別生存率 -->
+      <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+          <div class="card-header bg-gradient-info text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-shield-alt"></i> 🔥 タイプ別生存率分析
+              <small class="opacity-75">- どのタイプが生き残りやすい？</small>
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <div class="chart-wrapper" style="height: 350px;">
+                <canvas data-statistics-target="survivalTypeChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- レベル別生存率 -->
+      <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+          <div class="card-header bg-gradient-warning text-white">
+            <h5 class="mb-0">
+              <i class="fas fa-chart-bar"></i> 📊 レベル別生存率分析
+              <small class="opacity-75">- レベル帯ごとの危険度</small>
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="chart-container">
+              <div class="chart-wrapper" style="height: 350px;">
+                <canvas data-statistics-target="survivalLevelChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 最近のアクティビティ -->
+    <% if @recent_activities.present? %>
+      <div class="row mt-4">
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+              <h5 class="mb-0">
+                <i class="fas fa-history"></i> 📋 最近のアクティビティ
+                <small class="opacity-75">- 直近20件の記録</small>
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <% @recent_activities.each do |activity| %>
+                  <div class="col-lg-6 mb-3">
+                    <div class="activity-item p-3 border rounded">
+                      <div class="d-flex align-items-center">
+                        <div class="activity-icon me-3">
+                          <span class="fs-4"><%= activity[:event_type_icon] %></span>
+                        </div>
+                        <div class="flex-grow-1">
+                          <h6 class="mb-1"><%= activity[:title] %></h6>
+                          <p class="mb-1 text-muted small"><%= activity[:description] %></p>
+                          <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                              📍 <%= activity[:location] || "不明" %> | 
+                              🏆 <%= activity[:challenge_name] %>
+                            </small>
+                            <span class="badge <%= activity[:importance_info][:color] == 'danger' ? 'bg-danger' : "bg-#{activity[:importance_info][:color]}" %>">
+                              <%= activity[:importance_info][:icon] %>
+                            </span>
+                          </div>
+                          <small class="text-muted">
+                            <i class="fas fa-clock"></i> <%= activity[:time_ago] %>前
+                          </small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+  <% end %>
+</div>
+
+<style>
+  .chart-container {
+    position: relative;
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .chart-wrapper {
+    position: relative;
+    padding: 1rem;
+  }
+
+  .activity-item {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+  }
+
+  .activity-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  .bg-gradient-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  }
+
+  .bg-gradient-info {
+    background: linear-gradient(135deg, #2196F3 0%, #21CBF3 100%);
+  }
+
+  .bg-gradient-warning {
+    background: linear-gradient(135deg, #FFB300 0%, #FF8F00 100%);
+  }
+
+  .bg-gradient-danger {
+    background: linear-gradient(135deg, #FC466B 0%, #3F5EFB 100%);
+  }
+
+  .card {
+    border-radius: 16px;
+    border: none;
+    transition: all 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  }
+
+  /* カウントアップアニメーション */
+  @keyframes countUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-body h2 {
+    animation: countUp 1s ease-out;
+  }
+
+  /* レスポンシブ対応 */
+  @media (max-width: 768px) {
+    .chart-wrapper {
+      height: 300px !important;
+    }
+    
+    .activity-item {
+      margin-bottom: 0.5rem;
+    }
+  }
+</style>

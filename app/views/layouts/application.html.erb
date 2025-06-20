@@ -47,6 +47,11 @@
                   🎯 チャレンジ
                 <% end %>
               </li>
+              <li class="nav-item">
+                <%= link_to statistics_path, class: "nav-link #{'active' if current_page?(statistics_path)}" do %>
+                  📈 統計分析
+                <% end %>
+              </li>
             <% end %>
             <li class="nav-item">
               <%= link_to pokedex_index_path, class: "nav-link #{'active' if current_page?(pokedex_index_path) || current_page?(controller: 'pokedex')}" do %>

@@ -1,0 +1,194 @@
+<div class="card shadow-sm">
+  <div class="card-header bg-gradient-primary text-white">
+    <h5 class="mb-0">
+      <i class="fas fa-chart-area"></i> ビジュアル分析
+      <small class="opacity-75">- 美しいグラフでチーム構成を理解 ✨</small>
+    </h5>
+  </div>
+  <div class="card-body">
+    <div class="row g-4">
+      
+      <!-- タイプ相性レーダーチャート -->
+      <div class="col-lg-6">
+        <div class="chart-container">
+          <h6 class="chart-title">
+            <i class="fas fa-radar-chart text-primary"></i> タイプ相性バランス
+          </h6>
+          <p class="chart-description">
+            パーティ全体の各タイプに対する耐性・弱点を表示
+          </p>
+          <div class="chart-wrapper">
+            <canvas data-pokemon-charts-target="typeRadar" 
+                    width="400" 
+                    height="300"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- 役割分布ドーナツチャート -->
+      <div class="col-lg-6">
+        <div class="chart-container">
+          <h6 class="chart-title">
+            <i class="fas fa-chart-pie text-success"></i> 役割分布
+          </h6>
+          <p class="chart-description">
+            パーティメンバーの戦闘での役割バランス
+          </p>
+          <div class="chart-wrapper">
+            <canvas data-pokemon-charts-target="roleDonut" 
+                    width="400" 
+                    height="300"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- タイプカバレッジ棒グラフ -->
+      <div class="col-lg-8">
+        <div class="chart-container">
+          <h6 class="chart-title">
+            <i class="fas fa-chart-bar text-info"></i> タイプカバレッジ
+          </h6>
+          <p class="chart-description">
+            18タイプのうち、パーティでカバーできているタイプ
+          </p>
+          <div class="chart-wrapper">
+            <canvas data-pokemon-charts-target="coverageBar" 
+                    width="600" 
+                    height="300"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- 弱点ヒートマップ -->
+      <div class="col-lg-4">
+        <div class="chart-container">
+          <h6 class="chart-title">
+            <i class="fas fa-fire text-danger"></i> 弱点ヒートマップ
+          </h6>
+          <p class="chart-description">
+            各タイプからの平均被ダメージ
+          </p>
+          <div class="chart-wrapper heatmap-wrapper">
+            <canvas data-pokemon-charts-target="weaknessHeatmap" 
+                    class="heatmap-canvas"></canvas>
+          </div>
+          <div class="heatmap-legend mt-2">
+            <small class="d-flex justify-content-between">
+              <span class="legend-item">
+                <span class="legend-color bg-success"></span>
+                優秀
+              </span>
+              <span class="legend-item">
+                <span class="legend-color bg-info"></span>
+                良好
+              </span>
+              <span class="legend-item">
+                <span class="legend-color bg-secondary"></span>
+                普通
+              </span>
+              <span class="legend-item">
+                <span class="legend-color bg-warning"></span>
+                注意
+              </span>
+              <span class="legend-item">
+                <span class="legend-color bg-danger"></span>
+                危険
+              </span>
+            </small>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- チャート操作ボタン -->
+    <div class="row mt-4">
+      <div class="col-12">
+        <div class="d-flex justify-content-center gap-2">
+          <button type="button" 
+                  class="btn btn-outline-primary btn-sm"
+                  data-action="click->pokemon-charts#updateCharts">
+            <i class="fas fa-sync-alt"></i> チャート更新
+          </button>
+          <button type="button" 
+                  class="btn btn-outline-success btn-sm"
+                  data-action="click->pokemon-charts#exportCharts">
+            <i class="fas fa-download"></i> 画像保存
+          </button>
+          <button type="button" 
+                  class="btn btn-outline-info btn-sm"
+                  data-bs-toggle="modal" 
+                  data-bs-target="#chartHelpModal">
+            <i class="fas fa-question-circle"></i> チャートの見方
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- チャートヘルプモーダル -->
+<div class="modal fade" id="chartHelpModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">
+          <i class="fas fa-chart-line"></i> チャートの見方
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="help-item">
+              <h6 class="text-primary">
+                <i class="fas fa-radar-chart"></i> タイプ相性バランス
+              </h6>
+              <p class="small">
+                レーダーチャートで表示。外側に伸びるほど、そのタイプに対する耐性（緑）や弱点（赤）が強いことを表します。
+                理想的には緑の部分が大きく、赤の部分が小さいチームです。
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="help-item">
+              <h6 class="text-success">
+                <i class="fas fa-chart-pie"></i> 役割分布
+              </h6>
+              <p class="small">
+                ドーナツチャートで各役割の割合を表示。バランスの取れたパーティは複数の役割が適度に分散されています。
+                一つの役割に偏りすぎないよう注意しましょう。
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="help-item">
+              <h6 class="text-info">
+                <i class="fas fa-chart-bar"></i> タイプカバレッジ
+              </h6>
+              <p class="small">
+                18タイプのうち、パーティでカバーできているタイプを棒グラフで表示。
+                緑が多いほど多様なタイプをカバーしており、戦略の幅が広がります。
+              </p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="help-item">
+              <h6 class="text-danger">
+                <i class="fas fa-fire"></i> 弱点ヒートマップ
+              </h6>
+              <p class="small">
+                各タイプからの平均被ダメージを色で表現。
+                赤いセルは要注意、緑のセルは安全です。赤いセルが多い場合は、そのタイプに強いポケモンの追加を検討しましょう。
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+      </div>
+    </div>
+  </div>
+</div>
