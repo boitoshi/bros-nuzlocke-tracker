@@ -69,7 +69,7 @@
               </li>
             <% end %>
             <li class="nav-item">
-              <%= link_to pokedex_index_path, class: "nav-link modern-nav-link #{'active' if current_page?(pokedex_index_path) || current_page?(controller: 'pokedex')}", data: { action: "click->navbar#closeMenuOnLinkClick" } do %>
+              <%= link_to pokedex_index_path, class: "nav-link modern-nav-link #{'active' if current_page?(pokedex_index_path) || params[:controller] == 'pokedex'}", data: { action: "click->navbar#closeMenuOnLinkClick" } do %>
                 <i class="nav-icon">📖</i>
                 <span class="nav-text">ポケモン図鑑</span>
               <% end %>
