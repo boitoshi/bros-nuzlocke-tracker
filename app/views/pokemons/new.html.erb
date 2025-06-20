@@ -51,6 +51,31 @@
               <%= form.text_field :ability, class: "form-control", placeholder: "例: せいでんき" %>
             </div>
 
+            <div class="col-md-6">
+              <%= form.label :primary_type, "タイプ1", class: "form-label" %>
+              <%= form.select :primary_type, 
+                  options_for_select([['タイプを選択', '']] + TypeEffectiveness::POKEMON_TYPES.map { |t| [t.capitalize, t] }), 
+                  {}, 
+                  { class: "form-select" } %>
+            </div>
+
+            <div class="col-md-6">
+              <%= form.label :secondary_type, "タイプ2（任意）", class: "form-label" %>
+              <%= form.select :secondary_type, 
+                  options_for_select([['タイプなし', '']] + TypeEffectiveness::POKEMON_TYPES.map { |t| [t.capitalize, t] }), 
+                  {}, 
+                  { class: "form-select" } %>
+            </div>
+
+            <div class="col-12">
+              <%= form.label :role, "役割", class: "form-label" %>
+              <%= form.select :role, 
+                  options_for_select(Pokemon.roles.map { |key, _| [Pokemon.human_enum_name(:role, key), key] }), 
+                  {}, 
+                  { class: "form-select" } %>
+              <div class="form-text">このポケモンのバトルでの役割を選択してください</div>
+            </div>
+
             <div class="col-12">
               <%= form.label :area_id, "捕獲場所", class: "form-label" %>
               <%= form.select :area_id, 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_19_163302) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_20_053957) do
   create_table "areas", force: :cascade do |t|
     t.string "name"
     t.string "area_type"
@@ -115,8 +115,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_19_163302) do
     t.bigint "area_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "primary_type", default: "normal", null: false
+    t.string "secondary_type"
+    t.integer "role", default: 0
     t.index ["area_id"], name: "index_pokemons_on_area_id"
     t.index ["challenge_id"], name: "index_pokemons_on_challenge_id"
+    t.index ["primary_type"], name: "index_pokemons_on_primary_type"
+    t.index ["role"], name: "index_pokemons_on_role"
+    t.index ["secondary_type"], name: "index_pokemons_on_secondary_type"
   end
 
   create_table "rules", force: :cascade do |t|
@@ -153,6 +159,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_19_163302) do
     t.index ["guide_type", "difficulty"], name: "index_strategy_guides_on_guide_type_and_difficulty"
     t.index ["is_public"], name: "index_strategy_guides_on_is_public"
     t.index ["target_boss_id"], name: "index_strategy_guides_on_target_boss_id"
+  end
+
+  create_table "type_effectivenesses", force: :cascade do |t|
+    t.string "attacking_type", null: false
+    t.string "defending_type", null: false
+    t.decimal "effectiveness", precision: 3, scale: 2, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["attacking_type", "defending_type"], name: "idx_on_attacking_type_defending_type_329670bb48", unique: true
+    t.index ["attacking_type"], name: "index_type_effectivenesses_on_attacking_type"
+    t.index ["defending_type"], name: "index_type_effectivenesses_on_defending_type"
   end
 
   create_table "users", force: :cascade do |t|

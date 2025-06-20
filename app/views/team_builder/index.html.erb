@@ -1,0 +1,147 @@
+<% content_for :title, "チームビルダー" %>
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 text-primary">
+          🏆 チームビルダー
+        </h1>
+        <div class="btn-group" role="group">
+          <%= link_to challenge_team_builder_analyze_path(@challenge), class: "btn btn-outline-primary" do %>
+            <i class="fas fa-chart-line"></i> 詳細分析
+          <% end %>
+          <%= link_to challenge_team_builder_suggest_path(@challenge), class: "btn btn-outline-success" do %>
+            <i class="fas fa-lightbulb"></i> おすすめ提案
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 現在のパーティ -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">
+            <i class="fas fa-users"></i> 現在のパーティ
+            <span class="badge bg-light text-dark ms-2"><%= @party_pokemon.count %>/6</span>
+          </h4>
+        </div>
+        <div class="card-body">
+          <% if @party_pokemon.any? %>
+            <div class="row g-3">
+              <% @party_pokemon.each do |pokemon| %>
+                <div class="col-lg-4 col-md-6">
+                  <%= render 'party_pokemon_card', pokemon: pokemon %>
+                </div>
+              <% end %>
+            </div>
+
+            <!-- パーティ分析結果 -->
+            <% if @team_analysis.present? %>
+              <div class="mt-4">
+                <%= render 'team_analysis_summary', analysis: @team_analysis %>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="text-center py-5">
+              <i class="fas fa-exclamation-triangle fa-3x text-muted mb-3"></i>
+              <h5 class="text-muted">パーティにポケモンがいません</h5>
+              <p class="text-muted">ポケモンを捕獲してパーティに追加してください。</p>
+              <%= link_to "ポケモン一覧", challenge_pokemons_path(@challenge), class: "btn btn-primary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 利用可能なポケモン -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0">
+            <i class="fas fa-box"></i> 利用可能なポケモン
+            <span class="badge bg-light text-dark ms-2"><%= @available_pokemon.count %></span>
+          </h4>
+        </div>
+        <div class="card-body">
+          <% if @available_pokemon.any? %>
+            <div class="row g-3">
+              <% @available_pokemon.each do |pokemon| %>
+                <div class="col-lg-4 col-md-6">
+                  <%= render 'available_pokemon_card', pokemon: pokemon %>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="text-center py-4">
+              <i class="fas fa-info-circle fa-2x text-muted mb-3"></i>
+              <p class="text-muted">利用可能なポケモンがありません。</p>
+              <%= link_to "新しいポケモンを捕獲", new_challenge_pokemon_path(@challenge), class: "btn btn-success" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- タイプ相性チャート用のスタイル -->
+<style>
+  .type-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 0.375rem;
+    text-transform: capitalize;
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .type-normal { background-color: #A8A878; color: white; }
+  .type-fire { background-color: #F08030; color: white; }
+  .type-water { background-color: #6890F0; color: white; }
+  .type-electric { background-color: #F8D030; color: black; }
+  .type-grass { background-color: #78C850; color: white; }
+  .type-ice { background-color: #98D8D8; color: black; }
+  .type-fighting { background-color: #C03028; color: white; }
+  .type-poison { background-color: #A040A0; color: white; }
+  .type-ground { background-color: #E0C068; color: black; }
+  .type-flying { background-color: #A890F0; color: white; }
+  .type-psychic { background-color: #F85888; color: white; }
+  .type-bug { background-color: #A8B820; color: white; }
+  .type-rock { background-color: #B8A038; color: white; }
+  .type-ghost { background-color: #705898; color: white; }
+  .type-dragon { background-color: #7038F8; color: white; }
+  .type-dark { background-color: #705848; color: white; }
+  .type-steel { background-color: #B8B8D0; color: black; }
+  .type-fairy { background-color: #EE99AC; color: black; }
+
+  .pokemon-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+
+  .pokemon-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  .weakness-indicator {
+    display: inline-block;
+    padding: 0.125rem 0.375rem;
+    font-size: 0.65rem;
+    border-radius: 0.25rem;
+    margin-right: 0.25rem;
+  }
+
+  .weakness-4x { background-color: #dc3545; color: white; }
+  .weakness-2x { background-color: #fd7e14; color: white; }
+  .resistance-0-5x { background-color: #198754; color: white; }
+  .resistance-0-25x { background-color: #20c997; color: white; }
+  .immunity-0x { background-color: #6f42c1; color: white; }
+</style>

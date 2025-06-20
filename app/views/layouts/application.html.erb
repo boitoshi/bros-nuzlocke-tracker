@@ -49,18 +49,9 @@
               </li>
             <% end %>
             <li class="nav-item">
-              <%= link_to pokedex_index_path, class: "nav-link #{'active' if current_page?(pokedex_index_path) || params[:controller] == 'pokedex'}" do %>
+              <%= link_to pokedex_index_path, class: "nav-link #{'active' if current_page?(pokedex_index_path) || current_page?(controller: 'pokedex')}" do %>
                 📖 ポケモン図鑑
               <% end %>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle #{'active' if params[:controller].in?(['boss_battles', 'strategy_guides'])}" href="#" role="button" data-bs-toggle="dropdown">
-                🎯 攻略情報
-              </a>
-              <ul class="dropdown-menu">
-                <li><%= link_to "🏟️ ボス一覧", boss_battles_path, class: "dropdown-item" %></li>
-                <li><%= link_to "📝 攻略ガイド", strategy_guides_path, class: "dropdown-item" %></li>
-              </ul>
             </li>
           </ul>
           

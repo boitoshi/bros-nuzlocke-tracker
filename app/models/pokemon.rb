@@ -9,6 +9,20 @@ class Pokemon < ApplicationRecord
     boxed: 2       # ボックス保管
   }
 
+  # 役割の定義
+  enum :role, {
+    physical_attacker: 0,    # 物理アタッカー
+    special_attacker: 1,     # 特殊アタッカー
+    physical_tank: 2,        # 物理受け
+    special_tank: 3,         # 特殊受け
+    support: 4,             # サポート
+    utility: 5,             # ユーティリティ
+    sweeper: 6,             # スイーパー
+    wall: 7,                # 壁
+    pivot: 8,               # 起点作り
+    mixed_attacker: 9       # 混合アタッカー
+  }
+
   # ポケモンの性格一覧
   NATURES = [
     "がんばりや", "さみしがり", "ゆうかん", "いじっぱり", "やんちゃ",
@@ -31,6 +45,9 @@ class Pokemon < ApplicationRecord
   validates :nature, inclusion: { in: NATURES }, allow_blank: true
   validates :status, presence: true
   validates :caught_at, presence: true
+  validates :primary_type, presence: true, inclusion: { in: TypeEffectiveness::POKEMON_TYPES }
+  validates :secondary_type, inclusion: { in: TypeEffectiveness::POKEMON_TYPES }, allow_blank: true
+  validates :role, presence: true
 
   # スコープ
   scope :party_members, -> { where(in_party: true) }
@@ -80,10 +97,74 @@ class Pokemon < ApplicationRecord
     GENDERS.sample || "不明"
   end
 
-  def pokemon_type
-    # データベースにpokemon_typeカラムがない場合は、デフォルト値を返す
-    # 本来はspeciesからタイプを判定するロジックを実装
-    "ノーマル"
+  def types
+    [primary_type, secondary_type].compact
+  end
+
+  def dual_type?
+    secondary_type.present?
+  end
+
+  def role_display
+    case role
+    when "physical_attacker" then "物理アタッカー"
+    when "special_attacker" then "特殊アタッカー"
+    when "physical_tank" then "物理受け"
+    when "special_tank" then "特殊受け"
+    when "support" then "サポート"
+    when "utility" then "ユーティリティ"
+    when "sweeper" then "スイーパー"
+    when "wall" then "壁"
+    when "pivot" then "起点作り"
+    when "mixed_attacker" then "混合アタッカー"
+    else role
+    end
+  end
+
+  def type_display
+    if dual_type?
+      "#{primary_type.capitalize}/#{secondary_type.capitalize}"
+    else
+      primary_type.capitalize
+    end
+  end
+
+  def weakness_analysis
+    return @weakness_analysis if @weakness_analysis
+
+    weaknesses = {}
+    resistances = {}
+    immunities = {}
+
+    TypeEffectiveness::POKEMON_TYPES.each do |attacking_type|
+      effectiveness = calculate_type_effectiveness(attacking_type)
+      
+      case effectiveness
+      when 0.0
+        immunities[attacking_type] = effectiveness
+      when 0.25, 0.5
+        resistances[attacking_type] = effectiveness
+      when 2.0, 4.0
+        weaknesses[attacking_type] = effectiveness
+      end
+    end
+
+    @weakness_analysis = {
+      weaknesses: weaknesses,
+      resistances: resistances,
+      immunities: immunities
+    }
+  end
+
+  def calculate_type_effectiveness(attacking_type)
+    primary_effectiveness = TypeEffectiveness.get_effectiveness(attacking_type, primary_type)
+    
+    if secondary_type.present?
+      secondary_effectiveness = TypeEffectiveness.get_effectiveness(attacking_type, secondary_type)
+      primary_effectiveness * secondary_effectiveness
+    else
+      primary_effectiveness
+    end
   end
 
   def notes
@@ -104,6 +185,27 @@ class Pokemon < ApplicationRecord
 
   def can_be_in_party?
     alive? && !dead?
+  end
+
+  def self.human_enum_name(enum_name, value)
+    case enum_name.to_sym
+    when :role
+      case value.to_s
+      when 'physical_attacker' then '物理アタッカー'
+      when 'special_attacker' then '特殊アタッカー'
+      when 'physical_tank' then '物理受け'
+      when 'special_tank' then '特殊受け'
+      when 'support' then 'サポート'
+      when 'utility' then 'ユーティリティ'
+      when 'sweeper' then 'スイーパー'
+      when 'wall' then '壁'
+      when 'pivot' then '起点作り'
+      when 'mixed_attacker' then '混合アタッカー'
+      else value.to_s
+      end
+    else
+      value.to_s
+    end
   end
 
   private

@@ -1,0 +1,77 @@
+<div class="card pokemon-card h-100">
+  <div class="card-body">
+    <div class="d-flex justify-content-between align-items-start mb-2">
+      <h6 class="card-title mb-0">
+        <strong><%= pokemon.nickname %></strong>
+        <small class="text-muted">(<%= pokemon.species %>)</small>
+      </h6>
+      <span class="badge <%= pokemon.status_badge_class %>">
+        <%= pokemon.status_icon %> Lv.<%= pokemon.level %>
+      </span>
+    </div>
+
+    <!-- タイプ表示 -->
+    <div class="mb-2">
+      <span class="type-badge type-<%= pokemon.primary_type %>">
+        <%= pokemon.primary_type.capitalize %>
+      </span>
+      <% if pokemon.secondary_type.present? %>
+        <span class="type-badge type-<%= pokemon.secondary_type %>">
+          <%= pokemon.secondary_type.capitalize %>
+        </span>
+      <% end %>
+    </div>
+
+    <!-- 役割表示 -->
+    <div class="mb-2">
+      <small class="text-muted">役割:</small>
+      <span class="badge bg-info text-dark">
+        <%= pokemon.role_display %>
+      </span>
+    </div>
+
+    <!-- 捕獲場所 -->
+    <div class="mb-2">
+      <small class="text-muted">
+        <i class="fas fa-map-marker-alt"></i> <%= pokemon.area&.name %>
+      </small>
+    </div>
+
+    <!-- 弱点・耐性のクイック表示 -->
+    <% weakness_analysis = pokemon.weakness_analysis %>
+    <% if weakness_analysis[:weaknesses].any? %>
+      <div class="mb-2">
+        <small class="text-muted d-block">主な弱点:</small>
+        <% weakness_analysis[:weaknesses].first(3).each do |type, effectiveness| %>
+          <% if effectiveness >= 4.0 %>
+            <span class="weakness-indicator weakness-4x"><%= type.capitalize %> ×4</span>
+          <% elsif effectiveness >= 2.0 %>
+            <span class="weakness-indicator weakness-2x"><%= type.capitalize %> ×2</span>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <!-- アクションボタン -->
+    <div class="d-flex gap-2">
+      <%= link_to challenge_pokemon_path(@challenge, pokemon), class: "btn btn-outline-primary btn-sm flex-fill" do %>
+        <i class="fas fa-eye"></i> 詳細
+      <% end %>
+      <% if pokemon.can_be_in_party? %>
+        <%= link_to challenge_pokemon_path(@challenge, pokemon, pokemon: { in_party: true }), 
+                    method: :patch, 
+                    class: "btn btn-success btn-sm flex-fill",
+                    data: { 
+                      confirm: "#{pokemon.nickname}をパーティに追加しますか？",
+                      turbo_method: :patch
+                    } do %>
+          <i class="fas fa-plus-circle"></i> 追加
+        <% end %>
+      <% else %>
+        <button class="btn btn-secondary btn-sm flex-fill" disabled>
+          <i class="fas fa-ban"></i> 使用不可
+        </button>
+      <% end %>
+    </div>
+  </div>
+</div>

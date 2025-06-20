@@ -1,0 +1,30 @@
+{
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "typescript.suggest.autoImports": false,
+  "typescript.validate.enable": false,
+  "javascript.validate.enable": false,
+  "extensions.ignoreRecommendations": true,
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/tmp/**": true,
+    "**/log/**": true,
+    "**/storage/**": true,
+    "**/public/assets/**": true,
+    "**/vendor/**": true,
+    "**/.git/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/tmp": true,
+    "**/log": true,
+    "**/storage": true,
+    "**/public/assets": true,
+    "**/vendor": true
+  },
+  "typescript.tsserver.maxTsServerMemory": 2048,
+  "extensions.experimental.affinity": {
+    "ms-python.python": 1,
+    "GitHub.copilot": 2,
+    "shopify.ruby-lsp": 3
+  }
+}

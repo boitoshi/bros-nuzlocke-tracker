@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "shopify.ruby-lsp",
+    "GitHub.copilot",
+    "GitHub.copilot-chat"
+  ],
+  "unwantedRecommendations": [
+    "ms-python.python",
+    "ms-python.pylance",
+    "astro-build.astro-vscode",
+    "bradlc.vscode-tailwindcss",
+    "formulahendry.auto-rename-tag"
+  ]
+}

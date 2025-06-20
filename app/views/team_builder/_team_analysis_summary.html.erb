@@ -1,0 +1,93 @@
+<div class="card border-info">
+  <div class="card-header bg-info text-white">
+    <h5 class="mb-0">
+      <i class="fas fa-chart-pie"></i> チーム分析結果
+    </h5>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <!-- 総合スコア -->
+      <div class="col-md-3">
+        <div class="text-center">
+          <div class="display-4 text-primary"><%= analysis[:team_score] %></div>
+          <small class="text-muted">総合スコア</small>
+          <div class="progress mt-2" style="height: 10px;">
+            <div class="progress-bar bg-<%= analysis[:team_score] >= 70 ? 'success' : analysis[:team_score] >= 50 ? 'warning' : 'danger' %>" 
+                 style="width: <%= [analysis[:team_score], 100].min %>%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- タイプカバレッジ -->
+      <div class="col-md-3">
+        <div class="text-center">
+          <div class="h4 text-success"><%= analysis[:type_coverage][:coverage_percentage] %>%</div>
+          <small class="text-muted">タイプカバレッジ</small>
+          <div class="mt-1">
+            <small><%= analysis[:type_coverage][:covered_types].size %>/18タイプ</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- 役割バランス -->
+      <div class="col-md-3">
+        <div class="text-center">
+          <div class="h4 text-<%= analysis[:role_balance][:balanced] ? 'success' : 'warning' %>">
+            <%= analysis[:role_balance][:score] %>%
+          </div>
+          <small class="text-muted">役割バランス</small>
+          <div class="mt-1">
+            <span class="badge bg-<%= analysis[:role_balance][:balanced] ? 'success' : 'warning' %>">
+              <%= analysis[:role_balance][:balanced] ? 'バランス良好' : '要改善' %>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 弱点数 -->
+      <div class="col-md-3">
+        <div class="text-center">
+          <div class="h4 text-<%= analysis[:overall_weaknesses].size <= 3 ? 'success' : 'danger' %>">
+            <%= analysis[:overall_weaknesses].size %>
+          </div>
+          <small class="text-muted">主要弱点数</small>
+          <div class="mt-1">
+            <% if analysis[:overall_weaknesses].any? %>
+              <% analysis[:overall_weaknesses].first(3).each do |type, _| %>
+                <span class="type-badge type-<%= type %> me-1" style="font-size: 0.6rem;">
+                  <%= type.capitalize %>
+                </span>
+              <% end %>
+            <% else %>
+              <span class="badge bg-success">弱点なし</span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 推奨事項 -->
+    <% if analysis[:recommendations].any? %>
+      <div class="mt-3 pt-3 border-top">
+        <h6 class="text-muted mb-2">
+          <i class="fas fa-lightbulb"></i> 推奨事項
+        </h6>
+        <ul class="list-unstyled mb-0">
+          <% analysis[:recommendations].each do |recommendation| %>
+            <li class="mb-1">
+              <i class="fas fa-check-circle text-info me-2"></i>
+              <%= recommendation %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <!-- 詳細分析へのリンク -->
+    <div class="text-center mt-3">
+      <%= link_to challenge_team_builder_analyze_path(@challenge), class: "btn btn-outline-primary btn-sm" do %>
+        <i class="fas fa-chart-line"></i> 詳細分析を見る
+      <% end %>
+    </div>
+  </div>
+</div>
