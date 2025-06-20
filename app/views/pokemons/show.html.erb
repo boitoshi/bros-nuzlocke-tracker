@@ -42,7 +42,7 @@
                   <strong>性別:</strong> <%= @pokemon.gender.present? ? @pokemon.gender : '不明' %>
                 </div>
                 <div class="col-sm-6 mb-2">
-                  <strong>タイプ:</strong> <%= @pokemon.pokemon_type.present? ? @pokemon.pokemon_type : '不明' %>
+                  <strong>タイプ:</strong> <%= @pokemon.type_display %>
                 </div>
               </div>
               
@@ -173,6 +173,167 @@
               捕獲から<%= time_ago_in_words(@pokemon.caught_at) %>経過
             </small>
           </div>
+        </div>
+      </div>
+
+      <!-- IVs/EVs統計カード -->
+      <div class="card shadow mt-3">
+        <div class="card-header">
+          <h5 class="mb-0">🎯 ステータス詳細</h5>
+        </div>
+        <div class="card-body">
+          <!-- 個体値 (IVs) -->
+          <div class="mb-4">
+            <h6 class="text-info border-bottom pb-1 mb-3">
+              <i class="me-1">⭐</i>個体値 (IVs)
+              <small class="text-muted">(<%= @pokemon.iv_percentage %>% - <%= @pokemon.iv_total %>/186)</small>
+            </h6>
+            <div class="row g-2 small">
+              <div class="col-4 col-md-2">
+                <div class="text-center p-2 bg-light rounded">
+                  <div class="fw-bold text-danger"><%= @pokemon.hp_iv %></div>
+                  <div class="text-muted">HP</div>
+                </div>
+              </div>
+              <div class="col-4 col-md-2">
+                <div class="text-center p-2 bg-light rounded">
+                  <div class="fw-bold text-warning"><%= @pokemon.attack_iv %></div>
+                  <div class="text-muted">攻撃</div>
+                </div>
+              </div>
+              <div class="col-4 col-md-2">
+                <div class="text-center p-2 bg-light rounded">
+                  <div class="fw-bold text-primary"><%= @pokemon.defense_iv %></div>
+                  <div class="text-muted">防御</div>
+                </div>
+              </div>
+              <div class="col-4 col-md-2">
+                <div class="text-center p-2 bg-light rounded">
+                  <div class="fw-bold text-info"><%= @pokemon.special_attack_iv %></div>
+                  <div class="text-muted">特攻</div>
+                </div>
+              </div>
+              <div class="col-4 col-md-2">
+                <div class="text-center p-2 bg-light rounded">
+                  <div class="fw-bold text-success"><%= @pokemon.special_defense_iv %></div>
+                  <div class="text-muted">特防</div>
+                </div>
+              </div>
+              <div class="col-4 col-md-2">
+                <div class="text-center p-2 bg-light rounded">
+                  <div class="fw-bold text-secondary"><%= @pokemon.speed_iv %></div>
+                  <div class="text-muted">素早</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 努力値 (EVs) -->
+          <div class="mb-3">
+            <h6 class="text-warning border-bottom pb-1 mb-3">
+              <i class="me-1">💪</i>努力値 (EVs)
+              <small class="text-muted">(<%= @pokemon.total_evs %>/510)</small>
+            </h6>
+            <div class="row g-2 small">
+              <div class="col-4 col-md-2">
+                <div class="text-center p-2 bg-light rounded">
+                  <div class="fw-bold text-danger"><%= @pokemon.hp_ev %></div>
+                  <div class="text-muted">HP</div>
+                </div>
+              </div>
+              <div class="col-4 col-md-2">
+                <div class="text-center p-2 bg-light rounded">
+                  <div class="fw-bold text-warning"><%= @pokemon.attack_ev %></div>
+                  <div class="text-muted">攻撃</div>
+                </div>
+              </div>
+              <div class="col-4 col-md-2">
+                <div class="text-center p-2 bg-light rounded">
+                  <div class="fw-bold text-primary"><%= @pokemon.defense_ev %></div>
+                  <div class="text-muted">防御</div>
+                </div>
+              </div>
+              <div class="col-4 col-md-2">
+                <div class="text-center p-2 bg-light rounded">
+                  <div class="fw-bold text-info"><%= @pokemon.special_attack_ev %></div>
+                  <div class="text-muted">特攻</div>
+                </div>
+              </div>
+              <div class="col-4 col-md-2">
+                <div class="text-center p-2 bg-light rounded">
+                  <div class="fw-bold text-success"><%= @pokemon.special_defense_ev %></div>
+                  <div class="text-muted">特防</div>
+                </div>
+              </div>
+              <div class="col-4 col-md-2">
+                <div class="text-center p-2 bg-light rounded">
+                  <div class="fw-bold text-secondary"><%= @pokemon.speed_ev %></div>
+                  <div class="text-muted">素早</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 努力値プログレスバー -->
+          <div class="mt-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-muted">努力値配分</small>
+              <small class="text-muted"><%= @pokemon.total_evs %> / 510</small>
+            </div>
+            <div class="progress" style="height: 8px;">
+              <div class="progress-bar bg-warning" role="progressbar" 
+                   style="width: <%= (@pokemon.total_evs.to_f / 510 * 100).round(1) %>%"></div>
+            </div>
+          </div>
+
+          <!-- 計算ステータス（簡易版） -->
+          <% if @pokemon.iv_total > 0 || @pokemon.total_evs > 0 %>
+            <div class="mt-4">
+              <h6 class="text-secondary border-bottom pb-1 mb-3">
+                <i class="me-1">🧮</i>推定ステータス
+                <small class="text-muted">（種族値50で計算）</small>
+              </h6>
+              <% stats = @pokemon.calculated_stats %>
+              <div class="row g-2 small">
+                <div class="col-4 col-md-2">
+                  <div class="text-center p-2 border rounded">
+                    <div class="fw-bold text-danger"><%= stats[:hp] %></div>
+                    <div class="text-muted">HP</div>
+                  </div>
+                </div>
+                <div class="col-4 col-md-2">
+                  <div class="text-center p-2 border rounded">
+                    <div class="fw-bold text-warning"><%= stats[:attack] %></div>
+                    <div class="text-muted">攻撃</div>
+                  </div>
+                </div>
+                <div class="col-4 col-md-2">
+                  <div class="text-center p-2 border rounded">
+                    <div class="fw-bold text-primary"><%= stats[:defense] %></div>
+                    <div class="text-muted">防御</div>
+                  </div>
+                </div>
+                <div class="col-4 col-md-2">
+                  <div class="text-center p-2 border rounded">
+                    <div class="fw-bold text-info"><%= stats[:special_attack] %></div>
+                    <div class="text-muted">特攻</div>
+                  </div>
+                </div>
+                <div class="col-4 col-md-2">
+                  <div class="text-center p-2 border rounded">
+                    <div class="fw-bold text-success"><%= stats[:special_defense] %></div>
+                    <div class="text-muted">特防</div>
+                  </div>
+                </div>
+                <div class="col-4 col-md-2">
+                  <div class="text-center p-2 border rounded">
+                    <div class="fw-bold text-secondary"><%= stats[:speed] %></div>
+                    <div class="text-muted">素早</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
         </div>
       </div>
     </div>

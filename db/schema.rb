@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_20_053957) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_20_081320) do
   create_table "areas", force: :cascade do |t|
     t.string "name"
     t.string "area_type"
@@ -18,6 +18,52 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_20_053957) do
     t.integer "order_index"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "battle_participants", force: :cascade do |t|
+    t.integer "battle_record_id", null: false
+    t.integer "pokemon_id", null: false
+    t.integer "starting_level", null: false
+    t.integer "ending_level", null: false
+    t.integer "starting_hp", default: 0
+    t.integer "ending_hp", default: 0
+    t.integer "turns_active", default: 0
+    t.integer "damage_dealt", default: 0
+    t.integer "damage_taken", default: 0
+    t.json "moves_used"
+    t.boolean "was_ko", default: false
+    t.text "performance_notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["battle_record_id", "pokemon_id"], name: "index_battle_participants_unique", unique: true
+    t.index ["battle_record_id"], name: "index_battle_participants_on_battle_record_id"
+    t.index ["pokemon_id"], name: "index_battle_participants_on_pokemon_id"
+    t.index ["was_ko"], name: "index_battle_participants_on_was_ko"
+  end
+
+  create_table "battle_records", force: :cascade do |t|
+    t.integer "challenge_id", null: false
+    t.integer "boss_battle_id"
+    t.integer "battle_type", default: 0, null: false
+    t.integer "result", default: 0, null: false
+    t.datetime "battle_date", null: false
+    t.string "location"
+    t.string "opponent_name", null: false
+    t.json "opponent_data"
+    t.text "battle_notes"
+    t.integer "total_turns", default: 0
+    t.integer "experience_gained", default: 0
+    t.json "casualties"
+    t.integer "mvp_pokemon_id"
+    t.integer "difficulty_rating", default: 3
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["battle_date"], name: "index_battle_records_on_battle_date"
+    t.index ["battle_type"], name: "index_battle_records_on_battle_type"
+    t.index ["boss_battle_id"], name: "index_battle_records_on_boss_battle_id"
+    t.index ["challenge_id"], name: "index_battle_records_on_challenge_id"
+    t.index ["mvp_pokemon_id"], name: "index_battle_records_on_mvp_pokemon_id"
+    t.index ["result"], name: "index_battle_records_on_result"
   end
 
   create_table "boss_battles", force: :cascade do |t|
@@ -118,6 +164,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_20_053957) do
     t.string "primary_type", default: "normal", null: false
     t.string "secondary_type"
     t.integer "role", default: 0
+    t.integer "hp_iv", default: 0, null: false
+    t.integer "attack_iv", default: 0, null: false
+    t.integer "defense_iv", default: 0, null: false
+    t.integer "special_attack_iv", default: 0, null: false
+    t.integer "special_defense_iv", default: 0, null: false
+    t.integer "speed_iv", default: 0, null: false
+    t.integer "hp_ev", default: 0, null: false
+    t.integer "attack_ev", default: 0, null: false
+    t.integer "defense_ev", default: 0, null: false
+    t.integer "special_attack_ev", default: 0, null: false
+    t.integer "special_defense_ev", default: 0, null: false
+    t.integer "speed_ev", default: 0, null: false
+    t.string "gender", limit: 10
+    t.text "notes"
     t.index ["area_id"], name: "index_pokemons_on_area_id"
     t.index ["challenge_id"], name: "index_pokemons_on_challenge_id"
     t.index ["primary_type"], name: "index_pokemons_on_primary_type"
@@ -186,6 +246,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_20_053957) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "battle_participants", "battle_records"
+  add_foreign_key "battle_participants", "pokemons"
+  add_foreign_key "battle_records", "boss_battles"
+  add_foreign_key "battle_records", "challenges"
+  add_foreign_key "battle_records", "pokemons", column: "mvp_pokemon_id"
   add_foreign_key "boss_battles", "areas"
   add_foreign_key "challenges", "users"
   add_foreign_key "event_logs", "challenges"

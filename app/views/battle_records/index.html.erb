@@ -1,0 +1,147 @@
+<div class="container my-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1>⚔️ バトル記録</h1>
+      <small class="text-muted">
+        <%= @challenge.name %> - <%= @challenge.game_title_display %>
+      </small>
+    </div>
+    <div>
+      <%= link_to "新しいバトル記録", new_challenge_battle_record_path(@challenge), class: "btn btn-success" %>
+    </div>
+  </div>
+
+  <!-- バトル統計サマリー -->
+  <% if @battle_statistics.present? && @battle_statistics[:total_battles] > 0 %>
+    <div class="row mb-4">
+      <div class="col-md-3">
+        <div class="card text-center">
+          <div class="card-body">
+            <h3 class="text-primary"><%= @battle_statistics[:total_battles] %></h3>
+            <small class="text-muted">総バトル数</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-center">
+          <div class="card-body">
+            <h3 class="text-success"><%= @battle_statistics[:win_rate] %>%</h3>
+            <small class="text-muted">勝率</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-center">
+          <div class="card-body">
+            <h3 class="text-warning"><%= @battle_statistics[:gym_battles_won] %></h3>
+            <small class="text-muted">ジム戦勝利</small>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card text-center">
+          <div class="card-body">
+            <h3 class="text-info"><%= @battle_statistics[:average_difficulty] %></h3>
+            <small class="text-muted">平均難易度</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- フィルター -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <%= form_with url: challenge_battle_records_path(@challenge), method: :get, local: true, class: "row g-3" do |form| %>
+        <div class="col-md-4">
+          <%= form.label :battle_type, "バトルタイプ", class: "form-label" %>
+          <%= form.select :battle_type, 
+              options_for_select([['すべて', '']] + BattleRecord.battle_types.map { |key, _| [BattleRecord.new(battle_type: key).battle_type_display, key] }, params[:battle_type]), 
+              {}, 
+              { class: "form-select" } %>
+        </div>
+        <div class="col-md-4">
+          <%= form.label :result, "結果", class: "form-label" %>
+          <%= form.select :result, 
+              options_for_select([['すべて', '']] + BattleRecord.results.map { |key, _| [BattleRecord.new(result: key).result_display, key] }, params[:result]), 
+              {}, 
+              { class: "form-select" } %>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+          <%= form.submit "フィルター", class: "btn btn-primary" %>
+          <%= link_to "リセット", challenge_battle_records_path(@challenge), class: "btn btn-outline-secondary ms-2" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- バトル記録一覧 -->
+  <div class="row">
+    <% if @battle_records.any? %>
+      <% @battle_records.each do |battle_record| %>
+        <div class="col-lg-6 mb-4">
+          <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">
+                <%= battle_record.result_icon %> <%= battle_record.opponent_name %>
+              </h5>
+              <span class="badge <%= battle_record.result_badge_class %>">
+                <%= battle_record.result_display %>
+              </span>
+            </div>
+            <div class="card-body">
+              <div class="row mb-2">
+                <div class="col-6">
+                  <small class="text-muted">タイプ:</small><br>
+                  <span class="badge bg-secondary"><%= battle_record.battle_type_display %></span>
+                </div>
+                <div class="col-6">
+                  <small class="text-muted">難易度:</small><br>
+                  <%= battle_record.difficulty_stars %>
+                </div>
+              </div>
+              
+              <div class="row mb-2">
+                <div class="col-6">
+                  <small class="text-muted">参加ポケモン:</small><br>
+                  <strong><%= battle_record.participant_count %>匹</strong>
+                </div>
+                <div class="col-6">
+                  <small class="text-muted">日時:</small><br>
+                  <%= battle_record.battle_date.strftime('%m/%d %H:%M') %>
+                </div>
+              </div>
+
+              <% if battle_record.mvp_pokemon %>
+                <div class="mb-2">
+                  <small class="text-muted">MVP:</small><br>
+                  <span class="text-warning">🏆 <%= battle_record.mvp_pokemon.display_name %></span>
+                </div>
+              <% end %>
+
+              <% if battle_record.battle_notes.present? %>
+                <div class="mb-2">
+                  <small class="text-muted">メモ:</small><br>
+                  <%= truncate(battle_record.battle_notes, length: 100) %>
+                </div>
+              <% end %>
+            </div>
+            <div class="card-footer">
+              <%= link_to "詳細", challenge_battle_record_path(@challenge, battle_record), class: "btn btn-outline-primary btn-sm" %>
+              <%= link_to "編集", edit_challenge_battle_record_path(@challenge, battle_record), class: "btn btn-outline-warning btn-sm" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="col-12">
+        <div class="text-center py-5">
+          <div style="font-size: 4rem; opacity: 0.3;">⚔️</div>
+          <h3 class="text-muted">バトル記録がありません</h3>
+          <p class="text-muted">最初のバトル記録を作成しましょう！</p>
+          <%= link_to "新しいバトル記録", new_challenge_battle_record_path(@challenge), class: "btn btn-success" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

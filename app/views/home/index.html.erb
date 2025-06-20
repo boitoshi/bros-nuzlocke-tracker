@@ -59,6 +59,15 @@
             <i class="btn-icon">🚪</i>
             <span>ログイン</span>
           <% end %>
+          <%= link_to guest_login_path, method: :post, class: "modern-btn modern-btn-secondary" do %>
+            <i class="btn-icon">🎮</i>
+            <span>ゲスト体験</span>
+          <% end %>
+        </div>
+        <div class="mt-3">
+          <small class="text-muted">
+            <i class="text-info">💡</i> ゲスト体験では登録なしでデモ機能をお試しいただけます
+          </small>
         </div>
       </div>
     <% end %>
@@ -141,7 +150,7 @@
         <div class="col-lg-8">
           <h3 class="fw-bold mb-3 text-white">今すぐ始めよう！ 🌟</h3>
           <p class="lead mb-4 text-white opacity-75">無料でアカウントを作成して、最高のナズロック体験を始めましょう</p>
-          <div class="d-flex justify-content-center gap-3">
+          <div class="d-flex justify-content-center gap-3 flex-wrap">
             <%= link_to new_user_registration_path, class: "modern-btn modern-btn-light" do %>
               <i class="btn-icon">📝</i>
               <span>無料で始める</span>
@@ -149,6 +158,10 @@
             <%= link_to new_user_session_path, class: "modern-btn modern-btn-outline-light" do %>
               <i class="btn-icon">🚪</i>
               <span>既にアカウントをお持ちの方</span>
+            <% end %>
+            <%= link_to guest_login_path, method: :post, class: "modern-btn modern-btn-outline-light" do %>
+              <i class="btn-icon">🎮</i>
+              <span>まずは体験</span>
             <% end %>
           </div>
         </div>

@@ -1,6 +1,11 @@
 class Pokemon < ApplicationRecord
   belongs_to :challenge
   belongs_to :area
+  
+  # バトル関連の関連
+  has_many :battle_participants, dependent: :destroy
+  has_many :battle_records, through: :battle_participants
+  has_many :mvp_battles, class_name: 'BattleRecord', foreign_key: 'mvp_pokemon_id'
 
   # ステータスの定義
   enum :status, {
@@ -48,6 +53,16 @@ class Pokemon < ApplicationRecord
   validates :primary_type, presence: true, inclusion: { in: TypeEffectiveness::POKEMON_TYPES }
   validates :secondary_type, inclusion: { in: TypeEffectiveness::POKEMON_TYPES }, allow_blank: true
   validates :role, presence: true
+  validates :gender, inclusion: { in: GENDERS }, allow_blank: true
+  
+  # Individual Values (IVs) validation - 個体値は0-31
+  validates :hp_iv, :attack_iv, :defense_iv, :special_attack_iv, :special_defense_iv, :speed_iv,
+            numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 31 }
+  
+  # Effort Values (EVs) validation - 努力値は0-252、合計最大510
+  validates :hp_ev, :attack_ev, :defense_ev, :special_attack_ev, :special_defense_ev, :speed_ev,
+            numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 252 }
+  validate :total_evs_within_limit
 
   # スコープ
   scope :party_members, -> { where(in_party: true) }
@@ -93,8 +108,8 @@ class Pokemon < ApplicationRecord
   end
 
   def gender
-    # データベースにgenderカラムがない場合は、ランダムまたはデフォルト値を返す
-    GENDERS.sample || "不明"
+    # データベースのgenderカラムがある場合はそれを使用、なければデフォルト値
+    super.presence || "不明"
   end
 
   def types
@@ -168,8 +183,8 @@ class Pokemon < ApplicationRecord
   end
 
   def notes
-    # データベースにnotesカラムがない場合は、空文字を返す
-    ""
+    # データベースのnotesカラムがある場合はそれを使用、なければ空文字
+    super.presence || ""
   end
 
   def survival_days
@@ -185,6 +200,145 @@ class Pokemon < ApplicationRecord
 
   def can_be_in_party?
     alive? && !dead?
+  end
+
+  # バトル統計メソッド ⚔️
+  def battle_statistics
+    return {} if battle_participants.empty?
+    
+    {
+      total_battles: battle_participants.count,
+      victories: battle_records.victories.count,
+      defeats: battle_records.defeats.count,
+      win_rate: calculate_win_rate,
+      ko_count: battle_participants.ko_participants.count,
+      survival_rate: calculate_battle_survival_rate,
+      mvp_count: mvp_battles.count,
+      total_damage_dealt: battle_participants.sum(:damage_dealt),
+      total_damage_taken: battle_participants.sum(:damage_taken),
+      battles_leveled_up: battle_participants.level_up.count,
+      average_performance: battle_participants.average('damage_dealt - damage_taken')&.round(1) || 0
+    }
+  end
+
+  def recent_battle_performance
+    battle_participants.joins(:battle_record)
+                      .order('battle_records.battle_date DESC')
+                      .limit(5)
+                      .includes(:battle_record)
+  end
+
+  def best_battle_performance
+    battle_participants.order(:damage_dealt).last
+  end
+
+  def battle_experience_summary
+    return "バトル経験なし" if battle_participants.empty?
+    
+    stats = battle_statistics
+    summary = "#{stats[:total_battles]}戦"
+    summary += "#{stats[:victories]}勝" if stats[:victories] > 0
+    summary += "#{stats[:defeats]}敗" if stats[:defeats] > 0
+    summary += " (勝率#{stats[:win_rate]}%)" if stats[:total_battles] > 0
+    summary += " MVP#{stats[:mvp_count]}回" if stats[:mvp_count] > 0
+    summary
+  end
+
+  private
+
+  def calculate_win_rate
+    return 0 if battle_records.empty?
+    (battle_records.victories.count.to_f / battle_records.count * 100).round(1)
+  end
+
+  def calculate_battle_survival_rate
+    return 100 if battle_participants.empty?
+    survivors = battle_participants.survivors.count
+    (survivors.to_f / battle_participants.count * 100).round(1)
+  end
+
+  # ステータス計算機能 🎯
+  def ivs
+    {
+      hp: hp_iv,
+      attack: attack_iv,
+      defense: defense_iv,
+      special_attack: special_attack_iv,
+      special_defense: special_defense_iv,
+      speed: speed_iv
+    }
+  end
+
+  def evs
+    {
+      hp: hp_ev,
+      attack: attack_ev,
+      defense: defense_ev,
+      special_attack: special_attack_ev,
+      special_defense: special_defense_ev,
+      speed: speed_ev
+    }
+  end
+
+  def total_evs
+    hp_ev + attack_ev + defense_ev + special_attack_ev + special_defense_ev + speed_ev
+  end
+
+  def iv_total
+    hp_iv + attack_iv + defense_iv + special_attack_iv + special_defense_iv + speed_iv
+  end
+
+  def iv_percentage
+    return 0 if iv_total == 0
+    ((iv_total.to_f / 186) * 100).round(1)  # 186 = 31 * 6
+  end
+
+  # 性格補正を取得
+  def nature_modifier(stat)
+    return 1.0 unless nature.present?
+    
+    nature_effects = {
+      "いじっぱり" => { attack: 1.1, special_attack: 0.9 },
+      "ようき" => { speed: 1.1, special_attack: 0.9 },
+      "ひかえめ" => { special_attack: 1.1, attack: 0.9 },
+      "おくびょう" => { speed: 1.1, attack: 0.9 },
+      "ずぶとい" => { defense: 1.1, attack: 0.9 },
+      "おだやか" => { special_defense: 1.1, attack: 0.9 },
+      "わんぱく" => { defense: 1.1, special_attack: 0.9 },
+      "しんちょう" => { special_defense: 1.1, special_attack: 0.9 }
+    }
+    
+    modifier = nature_effects[nature]
+    return 1.0 unless modifier
+    
+    modifier[stat.to_sym] || 1.0
+  end
+
+  # 実際のステータス値を計算（簡易版）
+  def calculate_stat(stat_name, base_stat = 50)
+    case stat_name.to_sym
+    when :hp
+      # HP計算式: ((種族値 * 2 + 個体値 + 努力値 / 4) * レベル / 100) + レベル + 10
+      ((base_stat * 2 + hp_iv + hp_ev / 4.0) * level / 100.0).floor + level + 10
+    else
+      # その他のステータス計算式: (((種族値 * 2 + 個体値 + 努力値 / 4) * レベル / 100) + 5) * 性格補正
+      base_value = ((base_stat * 2 + send("#{stat_name}_iv") + send("#{stat_name}_ev") / 4.0) * level / 100.0).floor + 5
+      (base_value * nature_modifier(stat_name)).floor
+    end
+  end
+
+  # 実際のステータス一覧
+  def calculated_stats(base_stats = {})
+    default_base = 50  # デフォルトの種族値
+    
+    {
+      hp: calculate_stat(:hp, base_stats[:hp] || default_base),
+      attack: calculate_stat(:attack, base_stats[:attack] || default_base),
+      defense: calculate_stat(:defense, base_stats[:defense] || default_base),
+      special_attack: calculate_stat(:special_attack, base_stats[:special_attack] || default_base),
+      special_defense: calculate_stat(:special_defense, base_stats[:special_defense] || default_base),
+      speed: calculate_stat(:speed, base_stats[:speed] || default_base)
+    }
   end
 
   def self.human_enum_name(enum_name, value)
@@ -229,6 +383,13 @@ class Pokemon < ApplicationRecord
     # ボックス保管時の処理
     if status_changed? && boxed?
       self.in_party = false  # パーティから除外
+    end
+  end
+
+  # EVs合計制限バリデーション
+  def total_evs_within_limit
+    if total_evs > 510
+      errors.add(:base, "努力値の合計は510を超えることはできません (現在: #{total_evs})")
     end
   end
 

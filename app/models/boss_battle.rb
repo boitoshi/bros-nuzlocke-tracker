@@ -1,6 +1,7 @@
 class BossBattle < ApplicationRecord
   belongs_to :area, optional: true
   has_many :strategy_guides, foreign_key: :target_boss_id, dependent: :destroy
+  has_many :battle_records, dependent: :nullify
 
   # ボスタイプの定義
   enum :boss_type, {

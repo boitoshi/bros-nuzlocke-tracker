@@ -97,7 +97,14 @@ class PokemonsController < ApplicationController
   end
 
   def pokemon_params
-    params.expect(pokemon: [ :nickname, :species, :level, :nature, :ability, :area_id, :experience, :in_party, :primary_type, :secondary_type, :role ])
+    params.expect(pokemon: [ 
+      :nickname, :species, :level, :nature, :ability, :area_id, :experience, :in_party, 
+      :primary_type, :secondary_type, :role, :gender, :notes,
+      # Individual Values (IVs)
+      :hp_iv, :attack_iv, :defense_iv, :special_attack_iv, :special_defense_iv, :speed_iv,
+      # Effort Values (EVs)
+      :hp_ev, :attack_ev, :defense_ev, :special_attack_ev, :special_defense_ev, :speed_ev
+    ])
   end
 
   def redirect_back_or_to(fallback_path, **options)

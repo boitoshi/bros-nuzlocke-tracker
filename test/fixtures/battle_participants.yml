@@ -1,0 +1,29 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  battle_record: one
+  pokemon: one
+  starting_level: 1
+  ending_level: 1
+  starting_hp: 1
+  ending_hp: 1
+  turns_active: 1
+  damage_dealt: 1
+  damage_taken: 1
+  moves_used: 
+  was_ko: false
+  performance_notes: MyText
+
+two:
+  battle_record: two
+  pokemon: two
+  starting_level: 1
+  ending_level: 1
+  starting_hp: 1
+  ending_hp: 1
+  turns_active: 1
+  damage_dealt: 1
+  damage_taken: 1
+  moves_used: 
+  was_ko: false
+  performance_notes: MyText

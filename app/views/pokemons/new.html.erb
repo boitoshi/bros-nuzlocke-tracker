@@ -85,11 +85,112 @@
               <div class="form-text">どこで出会ったかを記録しましょう</div>
             </div>
 
+            <div class="col-md-6">
+              <%= form.label :gender, "性別", class: "form-label" %>
+              <%= form.select :gender, 
+                  options_for_select([['性別を選択', '']] + Pokemon::GENDERS.map { |g| [g, g] }), 
+                  {}, 
+                  { class: "form-select" } %>
+            </div>
+
+            <div class="col-md-6">
+              <!-- 空欄（レイアウト調整用） -->
+            </div>
+
             <div class="col-12">
               <%= form.label :experience, "思い出・エピソード", class: "form-label" %>
               <%= form.text_area :experience, class: "form-control", rows: 3, 
                   placeholder: "捕獲時のエピソードや思い出を記録しましょう。例: 最初のポケモン！とても元気で可愛い♪" %>
               <div class="form-text">この子との出会いを大切に記録してください ✨</div>
+            </div>
+
+            <div class="col-12">
+              <%= form.label :notes, "詳細メモ", class: "form-label" %>
+              <%= form.text_area :notes, class: "form-control", rows: 2, 
+                  placeholder: "詳細な情報やメモがあれば記録しましょう" %>
+              <div class="form-text">戦略メモや特徴など、自由に記録できます 📝</div>
+            </div>
+
+            <!-- Individual Values (IVs) Section -->
+            <div class="col-12">
+              <div class="card bg-info bg-opacity-10 border-info">
+                <div class="card-body">
+                  <h6 class="card-title text-info mb-3">
+                    <i class="me-2">🎯</i>個体値 (IVs) - 0～31
+                    <small class="text-muted">（上級者向け・任意）</small>
+                  </h6>
+                  <div class="row g-2">
+                    <div class="col-md-2">
+                      <%= form.label :hp_iv, "HP", class: "form-label small" %>
+                      <%= form.number_field :hp_iv, class: "form-control form-control-sm", min: 0, max: 31, value: 0 %>
+                    </div>
+                    <div class="col-md-2">
+                      <%= form.label :attack_iv, "攻撃", class: "form-label small" %>
+                      <%= form.number_field :attack_iv, class: "form-control form-control-sm", min: 0, max: 31, value: 0 %>
+                    </div>
+                    <div class="col-md-2">
+                      <%= form.label :defense_iv, "防御", class: "form-label small" %>
+                      <%= form.number_field :defense_iv, class: "form-control form-control-sm", min: 0, max: 31, value: 0 %>
+                    </div>
+                    <div class="col-md-2">
+                      <%= form.label :special_attack_iv, "特攻", class: "form-label small" %>
+                      <%= form.number_field :special_attack_iv, class: "form-control form-control-sm", min: 0, max: 31, value: 0 %>
+                    </div>
+                    <div class="col-md-2">
+                      <%= form.label :special_defense_iv, "特防", class: "form-label small" %>
+                      <%= form.number_field :special_defense_iv, class: "form-control form-control-sm", min: 0, max: 31, value: 0 %>
+                    </div>
+                    <div class="col-md-2">
+                      <%= form.label :speed_iv, "素早", class: "form-label small" %>
+                      <%= form.number_field :speed_iv, class: "form-control form-control-sm", min: 0, max: 31, value: 0 %>
+                    </div>
+                  </div>
+                  <div class="form-text mt-2">
+                    💡 個体値は各ステータスの個体差です。分からない場合は0のままでOK！
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Effort Values (EVs) Section -->
+            <div class="col-12">
+              <div class="card bg-warning bg-opacity-10 border-warning">
+                <div class="card-body">
+                  <h6 class="card-title text-warning-emphasis mb-3">
+                    <i class="me-2">💪</i>努力値 (EVs) - 0～252 (合計最大510)
+                    <small class="text-muted">（上級者向け・任意）</small>
+                  </h6>
+                  <div class="row g-2">
+                    <div class="col-md-2">
+                      <%= form.label :hp_ev, "HP", class: "form-label small" %>
+                      <%= form.number_field :hp_ev, class: "form-control form-control-sm", min: 0, max: 252, value: 0 %>
+                    </div>
+                    <div class="col-md-2">
+                      <%= form.label :attack_ev, "攻撃", class: "form-label small" %>
+                      <%= form.number_field :attack_ev, class: "form-control form-control-sm", min: 0, max: 252, value: 0 %>
+                    </div>
+                    <div class="col-md-2">
+                      <%= form.label :defense_ev, "防御", class: "form-label small" %>
+                      <%= form.number_field :defense_ev, class: "form-control form-control-sm", min: 0, max: 252, value: 0 %>
+                    </div>
+                    <div class="col-md-2">
+                      <%= form.label :special_attack_ev, "特攻", class: "form-label small" %>
+                      <%= form.number_field :special_attack_ev, class: "form-control form-control-sm", min: 0, max: 252, value: 0 %>
+                    </div>
+                    <div class="col-md-2">
+                      <%= form.label :special_defense_ev, "特防", class: "form-label small" %>
+                      <%= form.number_field :special_defense_ev, class: "form-control form-control-sm", min: 0, max: 252, value: 0 %>
+                    </div>
+                    <div class="col-md-2">
+                      <%= form.label :speed_ev, "素早", class: "form-label small" %>
+                      <%= form.number_field :speed_ev, class: "form-control form-control-sm", min: 0, max: 252, value: 0 %>
+                    </div>
+                  </div>
+                  <div class="form-text mt-2">
+                    💡 努力値はトレーニングで鍛えた部分です。分からない場合は0のままでOK！
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div class="col-12">

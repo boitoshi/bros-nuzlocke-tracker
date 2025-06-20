@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
   devise_for :users
+  
+  # ゲストログイン機能 🎮
+  post 'guest_login', to: 'guest_sessions#create'
+  delete 'guest_logout', to: 'guest_sessions#destroy'
 
   # ポケモン図鑑ルート 📖
   resources :pokedex, only: [:index, :show] do
@@ -26,6 +30,13 @@ Rails.application.routes.draw do
         patch :update_multiple
         post :create_custom
         get :violations_check
+      end
+    end
+
+    # バトル記録機能 ⚔️
+    resources :battle_records, except: [:destroy] do
+      member do
+        get :participants
       end
     end
 

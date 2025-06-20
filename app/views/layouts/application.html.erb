@@ -88,13 +88,23 @@
                   <span class="nav-text"><%= current_user.display_name %></span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end modern-dropdown">
-                  <li><%= link_to edit_user_registration_path, class: "dropdown-item modern-dropdown-item", data: { action: "click->navbar#closeMenuOnLinkClick" } do %>
-                    <i class="me-2">⚙️</i>設定
-                  <% end %></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><%= link_to destroy_user_session_path, method: :delete, class: "dropdown-item modern-dropdown-item", data: { action: "click->navbar#closeMenuOnLinkClick" } do %>
-                    <i class="me-2">🚪</i>ログアウト
-                  <% end %></li>
+                  <% if current_user.username == 'demouser' %>
+                    <li><span class="dropdown-item-text text-muted">
+                      <i class="me-2">🎮</i>ゲスト体験モード
+                    </span></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><%= link_to guest_logout_path, method: :delete, class: "dropdown-item modern-dropdown-item", data: { action: "click->navbar#closeMenuOnLinkClick" } do %>
+                      <i class="me-2">👋</i>ゲスト終了
+                    <% end %></li>
+                  <% else %>
+                    <li><%= link_to edit_user_registration_path, class: "dropdown-item modern-dropdown-item", data: { action: "click->navbar#closeMenuOnLinkClick" } do %>
+                      <i class="me-2">⚙️</i>設定
+                    <% end %></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><%= link_to destroy_user_session_path, method: :delete, class: "dropdown-item modern-dropdown-item", data: { action: "click->navbar#closeMenuOnLinkClick" } do %>
+                      <i class="me-2">🚪</i>ログアウト
+                    <% end %></li>
+                  <% end %>
                 </ul>
               </li>
             <% else %>

@@ -4,6 +4,7 @@ class Challenge < ApplicationRecord
   has_many :rules, dependent: :destroy
   has_many :milestones, dependent: :destroy
   has_many :event_logs, dependent: :destroy
+  has_many :battle_records, dependent: :destroy
 
   # ステータスの定義
   enum :status, {
@@ -87,6 +88,60 @@ class Challenge < ApplicationRecord
 
   def can_add_to_party?
     party_slots_available > 0
+  end
+
+  # バトル統計メソッド 🏆
+  def battle_statistics
+    return {} if battle_records.empty?
+    
+    battle_records.battle_statistics.merge({
+      recent_battles: battle_records.recent.limit(5),
+      gym_battles_won: battle_records.gym_battle.victories.count,
+      total_gym_battles: battle_records.gym_battle.count,
+      elite_four_progress: battle_records.elite_four.victories.count,
+      champion_defeated: battle_records.champion.victories.exists?,
+      most_active_pokemon: most_active_battle_pokemon
+    })
+  end
+
+  def recent_battle_records
+    battle_records.recent.includes(:participating_pokemon, :mvp_pokemon)
+  end
+
+  def total_battles
+    battle_records.count
+  end
+
+  def battle_win_rate
+    return 0 if total_battles == 0
+    (battle_records.victories.count.to_f / total_battles * 100).round(1)
+  end
+
+  def gym_battle_progress
+    {
+      completed: battle_records.gym_battle.victories.count,
+      attempted: battle_records.gym_battle.count,
+      remaining: [8 - battle_records.gym_battle.victories.count, 0].max
+    }
+  end
+
+  private
+
+  def most_active_battle_pokemon
+    return nil if battle_records.empty?
+    
+    # バトル参加回数が最も多いポケモンを取得
+    BattleParticipant.joins(:battle_record)
+                     .where(battle_records: { challenge: self })
+                     .joins(:pokemon)
+                     .group('pokemons.id', 'pokemons.nickname', 'pokemons.species')
+                     .order('COUNT(*) DESC')
+                     .limit(1)
+                     .pluck('pokemons.nickname', 'pokemons.species', 'COUNT(*)')
+                     .first
+                     &.then { |nickname, species, count| 
+                       { name: "#{nickname} (#{species})", battle_count: count } 
+                     }
   end
 
   # コールバック

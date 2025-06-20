@@ -1,0 +1,33 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  challenge: one
+  boss_battle: one
+  battle_type: 1
+  result: 1
+  battle_date: 2025-06-20 08:13:12
+  location: MyString
+  opponent_name: MyString
+  opponent_data: 
+  battle_notes: MyText
+  total_turns: 1
+  experience_gained: 1
+  casualties: 
+  mvp_pokemon: one
+  difficulty_rating: 1
+
+two:
+  challenge: two
+  boss_battle: two
+  battle_type: 1
+  result: 1
+  battle_date: 2025-06-20 08:13:12
+  location: MyString
+  opponent_name: MyString
+  opponent_data: 
+  battle_notes: MyText
+  total_turns: 1
+  experience_gained: 1
+  casualties: 
+  mvp_pokemon: two
+  difficulty_rating: 1
