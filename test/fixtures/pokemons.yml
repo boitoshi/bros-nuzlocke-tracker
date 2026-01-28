@@ -1,5 +1,33 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+treecko:
+  nickname: "キモリ"
+  species: "キモリ"
+  level: 5
+  nature: "ようき"
+  ability: "しんりょく"
+  status: 0
+  caught_at: <%= 1.week.ago %>
+  died_at: null
+  experience: "最初のパートナー"
+  in_party: true
+  challenge: emerald_challenge
+  area: one
+
+demo_pokemon:
+  nickname: "アチャモ"
+  species: "アチャモ"
+  level: 5
+  nature: "いじっぱり"
+  ability: "もうか"
+  status: 0
+  caught_at: <%= 2.weeks.ago %>
+  died_at: null
+  experience: "炎の戦士"
+  in_party: true
+  challenge: demo_challenge
+  area: one
+
 one:
   nickname: "ピカ"
   species: "ピカチュウ"

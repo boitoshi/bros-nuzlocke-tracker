@@ -1,5 +1,21 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+emerald_challenge:
+  name: "エメラルド Nuzlocke"
+  game_title: "emerald"
+  status: 0
+  started_at: <%= 1.week.ago %>
+  completed_at: null
+  user: testuser
+
+demo_challenge:
+  name: "ルビー チャレンジ"
+  game_title: "ruby"
+  status: 0
+  started_at: <%= 2.weeks.ago %>
+  completed_at: null
+  user: demouser
+
 one:
   name: "ポケモン赤チャレンジ"
   game_title: "red"
