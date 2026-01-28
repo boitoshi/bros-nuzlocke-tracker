@@ -20,6 +20,10 @@
 - **Backend**: Ruby on Rails 8.0 + PostgreSQL
 - **Frontend**: Bootstrap 5 + Stimulus + Turbo
 - **認証**: Devise
+- **認可**: Pundit 🔒
+- **テスト**: Minitest（44テスト、100%通過）
+- **セキュリティ**: Brakeman（警告0件）
+- **コード品質**: RuboCop
 - **デプロイ**: Render.com
 - **アセット**: Importmap + Sass
 
@@ -240,9 +244,31 @@ bin/rails importmap:install         # importmap再インストール
 
 ## 📚 関連ドキュメント
 
+- [**セキュリティサマリー**](docs/SECURITY_SUMMARY.md) - セキュリティ対策の詳細（Brakeman警告0件！🔒）
+- [**テストガイド**](docs/TESTING_GUIDE.md) - テストの実行方法とベストプラクティス（44テスト、100%通過！🧪）
 - [**開発ガイド**](DEVELOPMENT_GUIDE.md) - 機能開発・修正の詳細手順
 - [**シンプルガイド**](SIMPLE_GUIDE.md) - アプリケーション構成の解説
 - [**デプロイガイド**](SSH_CONNECTION_GUIDE.md) - 本番環境の設定方法
+
+## 🔒 セキュリティ
+
+このアプリケーションは、以下のセキュリティ対策を実施しています：
+- ✅ **認証**: Deviseによるユーザー認証
+- ✅ **認可**: Punditによるアクセス制御
+- ✅ **CSRF保護**: Rails標準のCSRF対策
+- ✅ **XSS対策**: セキュリティヘッダー設定
+- ✅ **SQLインジェクション対策**: ActiveRecordのパラメータ化クエリ
+- ✅ **セキュリティスキャン**: Brakeman（警告0件）
+
+詳細は[セキュリティサマリー](docs/SECURITY_SUMMARY.md)をご覧ください。
+
+## 🧪 テスト
+
+- **総テスト数**: 44テスト
+- **成功率**: 100% ✅
+- **カバレッジ**: Policyテスト、モデルテスト
+
+テストの実行方法は[テストガイド](docs/TESTING_GUIDE.md)をご覧ください。
 
 ## 🤝 コントリビューション
 
