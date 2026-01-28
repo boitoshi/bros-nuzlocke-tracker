@@ -1,7 +1,7 @@
-# 最小限のRuboCop設定（エラー回避）
+# RuboCop設定 - プロダクションレベルの品質基準
 AllCops:
   TargetRubyVersion: 3.3
-  NewCops: disable  # 新しいCopは無効化してエラー回避
+  NewCops: enable  # 新しいCopを有効化して品質向上
   Exclude:
     - 'bin/**/*'
     - 'db/**/*'
@@ -17,10 +17,31 @@ AllCops:
 Style/AsciiComments:
   Enabled: false
 
-# 文字列リテラル（あまり厳格にしない）
-Style/StringLiterals:
-  Enabled: false
-
-# 長い行を許可
+# 長い行を許可（ただし合理的な範囲で）
 Layout/LineLength:
-  Enabled: false
+  Max: 120
+  Enabled: true
+
+# ドキュメントコメントは必須（品質向上のため）
+Style/Documentation:
+  Enabled: false  # 段階的に有効化
+
+# Frozen String Literalは推奨
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: always
+
+# メソッドの長さ制限
+Metrics/MethodLength:
+  Max: 20
+  Enabled: true
+
+# クラスの長さ制限
+Metrics/ClassLength:
+  Max: 200
+  Enabled: true
+
+# ABC Metricは緩めに設定
+Metrics/AbcSize:
+  Max: 25
+  Enabled: true

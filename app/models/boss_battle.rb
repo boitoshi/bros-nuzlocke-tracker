@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BossBattle < ApplicationRecord
   belongs_to :area, optional: true
   has_many :strategy_guides, foreign_key: :target_boss_id, dependent: :destroy
@@ -16,11 +18,11 @@ class BossBattle < ApplicationRecord
 
   # 難易度の定義（1〜5）
   DIFFICULTY_LEVELS = {
-    1 => { name: "簡単", color: "success", icon: "😊" },
-    2 => { name: "普通", color: "info", icon: "🙂" },
-    3 => { name: "やや難", color: "warning", icon: "😐" },
-    4 => { name: "難しい", color: "danger", icon: "😰" },
-    5 => { name: "超難", color: "dark", icon: "💀" }
+    1 => { name: '簡単', color: 'success', icon: '😊' },
+    2 => { name: '普通', color: 'info', icon: '🙂' },
+    3 => { name: 'やや難', color: 'warning', icon: '😐' },
+    4 => { name: '難しい', color: 'danger', icon: '😰' },
+    5 => { name: '超難', color: 'dark', icon: '💀' }
   }.freeze
 
   # バリデーション
@@ -39,27 +41,27 @@ class BossBattle < ApplicationRecord
   # メソッド
   def boss_type_display
     case boss_type
-    when "gym_leader" then "ジムリーダー"
-    when "elite_four" then "四天王"
-    when "champion" then "チャンピオン"
-    when "rival" then "ライバル"
-    when "evil_team" then "悪の組織"
-    when "legendary" then "伝説ポケモン"
-    when "special" then "特殊ボス"
+    when 'gym_leader' then 'ジムリーダー'
+    when 'elite_four' then '四天王'
+    when 'champion' then 'チャンピオン'
+    when 'rival' then 'ライバル'
+    when 'evil_team' then '悪の組織'
+    when 'legendary' then '伝説ポケモン'
+    when 'special' then '特殊ボス'
     else boss_type
     end
   end
 
   def boss_type_icon
     case boss_type
-    when "gym_leader" then "🏟️"
-    when "elite_four" then "👑"
-    when "champion" then "🏆"
-    when "rival" then "⚔️"
-    when "evil_team" then "💀"
-    when "legendary" then "✨"
-    when "special" then "🌟"
-    else "👤"
+    when 'gym_leader' then '🏟️'
+    when 'elite_four' then '👑'
+    when 'champion' then '🏆'
+    when 'rival' then '⚔️'
+    when 'evil_team' then '💀'
+    when 'legendary' then '✨'
+    when 'special' then '🌟'
+    else '👤'
     end
   end
 
@@ -77,6 +79,7 @@ class BossBattle < ApplicationRecord
 
   def pokemon_team
     return [] unless pokemon_data.is_a?(Array)
+
     pokemon_data
   end
 
@@ -85,7 +88,7 @@ class BossBattle < ApplicationRecord
   end
 
   def area_name
-    area&.name || "不明"
+    area&.name || '不明'
   end
 
   def display_name
@@ -95,9 +98,9 @@ class BossBattle < ApplicationRecord
   # ポケモンデータのバリデーション
   def validate_pokemon_data
     return if pokemon_data.blank?
-    
+
     unless pokemon_data.is_a?(Array)
-      errors.add(:pokemon_data, "must be an array")
+      errors.add(:pokemon_data, 'must be an array')
       return
     end
 
@@ -109,9 +112,7 @@ class BossBattle < ApplicationRecord
 
       required_fields = %w[species level]
       required_fields.each do |field|
-        unless pokemon[field].present?
-          errors.add(:pokemon_data, "pokemon at index #{index} missing #{field}")
-        end
+        errors.add(:pokemon_data, "pokemon at index #{index} missing #{field}") unless pokemon[field].present?
       end
     end
   end
@@ -136,57 +137,56 @@ class BossBattle < ApplicationRecord
     return if exists?(game_title: game_title)
 
     case game_title
-    when "red", "green", "blue", "yellow"
+    when 'red', 'green', 'blue', 'yellow'
       create_kanto_bosses(game_title)
-    when "gold", "silver", "crystal"
+    when 'gold', 'silver', 'crystal'
       create_johto_bosses(game_title)
     end
   end
-
-  private
 
   def self.create_kanto_bosses(game_title)
     # ジムリーダー
     gym_leaders = [
       {
-        name: "タケシ", boss_type: :gym_leader, level: 14, difficulty: 1, order_index: 1,
-        description: "ニビジムのジムリーダー。いわタイプの使い手。",
+        name: 'タケシ', boss_type: :gym_leader, level: 14, difficulty: 1, order_index: 1,
+        description: 'ニビジムのジムリーダー。いわタイプの使い手。',
         pokemon_data: create_pokemon_team([
-          { species: "イシツブテ", level: 12, moves: ["たいあたり", "まるくなる"] },
-          { species: "イワーク", level: 14, moves: ["たいあたり", "いやなおと", "しめつける"] }
-        ]),
-        strategy_notes: "みずタイプやくさタイプが有効。フシギダネやゼニガメがおすすめ。"
+                                            { species: 'イシツブテ', level: 12, moves: %w[たいあたり まるくなる] },
+                                            { species: 'イワーク', level: 14, moves: %w[たいあたり いやなおと しめつける] }
+                                          ]),
+        strategy_notes: 'みずタイプやくさタイプが有効。フシギダネやゼニガメがおすすめ。'
       },
       {
-        name: "カスミ", boss_type: :gym_leader, level: 21, difficulty: 2, order_index: 2,
-        description: "ハナダジムのジムリーダー。みずタイプの使い手。",
+        name: 'カスミ', boss_type: :gym_leader, level: 21, difficulty: 2, order_index: 2,
+        description: 'ハナダジムのジムリーダー。みずタイプの使い手。',
         pokemon_data: create_pokemon_team([
-          { species: "ヒトデマン", level: 18, moves: ["たいあたり", "かたくなる"] },
-          { species: "スターミー", level: 21, moves: ["みずでっぽう", "でんこうせっか", "かたくなる"] }
-        ]),
-        strategy_notes: "でんきタイプやくさタイプが有効。ピカチュウやナゾノクサがおすすめ。"
+                                            { species: 'ヒトデマン', level: 18, moves: %w[たいあたり かたくなる] },
+                                            { species: 'スターミー', level: 21, moves: %w[みずでっぽう でんこうせっか かたくなる] }
+                                          ]),
+        strategy_notes: 'でんきタイプやくさタイプが有効。ピカチュウやナゾノクサがおすすめ。'
       }
       # 他のジムリーダーも追加可能
     ]
 
     gym_leaders.each do |leader_data|
-      area = Area.find_by(name: "#{leader_data[:name].gsub(/[カスミタケシ]/, {'タケシ' => 'ニビ', 'カスミ' => 'ハナダ'})}ジム", game_title: game_title)
+      area = Area.find_by(name: "#{leader_data[:name].gsub(/[カスミタケシ]/, { 'タケシ' => 'ニビ', 'カスミ' => 'ハナダ' })}ジム",
+                          game_title: game_title)
       create!(leader_data.merge(game_title: game_title, area: area))
     end
 
     # 四天王・チャンピオン
     elite_four = [
       {
-        name: "カンナ", boss_type: :elite_four, level: 54, difficulty: 4, order_index: 1,
-        description: "四天王の一人。こおりタイプの使い手。",
+        name: 'カンナ', boss_type: :elite_four, level: 54, difficulty: 4, order_index: 1,
+        description: '四天王の一人。こおりタイプの使い手。',
         pokemon_data: create_pokemon_team([
-          { species: "ジュゴン", level: 54 },
-          { species: "パルシェン", level: 53 },
-          { species: "ヤドラン", level: 54 },
-          { species: "ルージュラ", level: 56 },
-          { species: "ラプラス", level: 56 }
-        ]),
-        strategy_notes: "ほのおタイプやでんきタイプ、かくとうタイプが有効。"
+                                            { species: 'ジュゴン', level: 54 },
+                                            { species: 'パルシェン', level: 53 },
+                                            { species: 'ヤドラン', level: 54 },
+                                            { species: 'ルージュラ', level: 56 },
+                                            { species: 'ラプラス', level: 56 }
+                                          ]),
+        strategy_notes: 'ほのおタイプやでんきタイプ、かくとうタイプが有効。'
       }
       # 他の四天王・チャンピオンも追加可能
     ]

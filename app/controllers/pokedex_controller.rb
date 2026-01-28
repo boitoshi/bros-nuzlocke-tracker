@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # ポケモン図鑑コントローラー 📖
 # JSONベースのポケモンデータを表示・検索する機能を提供
 class PokedexController < ApplicationController
@@ -10,20 +12,20 @@ class PokedexController < ApplicationController
     @pokemon_species = filter_by_type if params[:type].present?
     @pokemon_species = filter_by_generation if params[:generation].present?
     @pokemon_species = @pokemon_species.order(:national_id)
-    
+
     # ページネーション（1ページ30匹）
     @pokemon_species = @pokemon_species.page(params[:page]).per(30)
-    
+
     # 統計情報（キャッシュ化で最適化）
-    @total_species = Rails.cache.fetch("pokemon_species_count", expires_in: 1.hour) do
+    @total_species = Rails.cache.fetch('pokemon_species_count', expires_in: 1.hour) do
       PokemonSpecies.count
     end
-    
-    @generations = Rails.cache.fetch("pokemon_generations", expires_in: 1.hour) do
+
+    @generations = Rails.cache.fetch('pokemon_generations', expires_in: 1.hour) do
       PokemonSpecies.pluck_generations.uniq.sort
     end
-    
-    @types = Rails.cache.fetch("pokemon_types", expires_in: 1.hour) do
+
+    @types = Rails.cache.fetch('pokemon_types', expires_in: 1.hour) do
       PokemonSpecies.pluck_types.uniq.sort
     end
   end

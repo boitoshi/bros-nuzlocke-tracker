@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BattleParticipant < ApplicationRecord
   belongs_to :battle_record
   belongs_to :pokemon
@@ -35,7 +37,7 @@ class BattleParticipant < ApplicationRecord
   end
 
   def leveled_up?
-    level_gained > 0
+    level_gained.positive?
   end
 
   def hp_lost
@@ -43,32 +45,34 @@ class BattleParticipant < ApplicationRecord
   end
 
   def hp_percentage_remaining
-    return 0 if starting_hp == 0
+    return 0 if starting_hp.zero?
+
     ((ending_hp.to_f / starting_hp) * 100).round(1)
   end
 
   def damage_ratio
-    return 0 if damage_taken == 0
-    return Float::INFINITY if damage_dealt == 0
+    return 0 if damage_taken.zero?
+    return Float::INFINITY if damage_dealt.zero?
+
     (damage_dealt.to_f / damage_taken).round(2)
   end
 
   def performance_rating
     score = 0
-    
+
     # ダメージ効率
     score += 3 if damage_ratio >= 2.0
     score += 2 if damage_ratio >= 1.5
     score += 1 if damage_ratio >= 1.0
-    
+
     # 生存性
     score += 2 unless was_ko?
     score += 1 if hp_percentage_remaining >= 50
-    
+
     # 活躍度
     score += 1 if turns_active >= 3
     score += 1 if leveled_up?
-    
+
     # 最大10点
     [score, 10].min
   end
@@ -85,6 +89,7 @@ class BattleParticipant < ApplicationRecord
 
   def moves_used_list
     return [] unless moves_used.present?
+
     moves_used.is_a?(Array) ? moves_used : []
   end
 
@@ -95,38 +100,41 @@ class BattleParticipant < ApplicationRecord
   def battle_summary
     summary = "#{pokemon_name} (Lv.#{starting_level}"
     summary += "→#{ending_level}" if leveled_up?
-    summary += ")"
-    
-    if was_ko?
-      summary += " 💀戦闘不能"
-    elsif hp_percentage_remaining < 25
-      summary += " 🩸重傷"
-    elsif hp_percentage_remaining < 50
-      summary += " 🤕負傷"
-    else
-      summary += " ✅無事"
-    end
-    
+    summary += ')'
+
+    summary += if was_ko?
+                 ' 💀戦闘不能'
+               elsif hp_percentage_remaining < 25
+                 ' 🩸重傷'
+               elsif hp_percentage_remaining < 50
+                 ' 🤕負傷'
+               else
+                 ' ✅無事'
+               end
+
     summary
   end
 
   # 統計用クラスメソッド
   class << self
     def average_performance_rating
-      return 0 if count == 0
-      average('CASE 
-        WHEN was_ko = 1 THEN 0 
-        ELSE (damage_dealt * 1.0 / NULLIF(damage_taken, 0)) 
+      return 0 if count.zero?
+
+      average('CASE
+        WHEN was_ko = 1 THEN 0
+        ELSE (damage_dealt * 1.0 / NULLIF(damage_taken, 0))
       END').round(2) || 0
     end
 
     def ko_rate
-      return 0 if count == 0
+      return 0 if count.zero?
+
       (ko_participants.count.to_f / count * 100).round(1)
     end
 
     def level_up_rate
-      return 0 if count == 0
+      return 0 if count.zero?
+
       (level_up.count.to_f / count * 100).round(1)
     end
 
@@ -155,20 +163,20 @@ class BattleParticipant < ApplicationRecord
 
   def ending_level_not_less_than_starting
     return unless starting_level && ending_level
-    
-    if ending_level < starting_level
-      errors.add(:ending_level, 'バトル後のレベルは開始時より低くできません')
-    end
+
+    return unless ending_level < starting_level
+
+    errors.add(:ending_level, 'バトル後のレベルは開始時より低くできません')
   end
 
   def moves_used_format
     return unless moves_used.present?
-    
+
     unless moves_used.is_a?(Array)
       errors.add(:moves_used, '技リストは配列形式である必要があります')
       return
     end
-    
+
     moves_used.each do |move|
       unless move.is_a?(String)
         errors.add(:moves_used, '技名は文字列である必要があります')
@@ -183,27 +191,27 @@ class BattleParticipant < ApplicationRecord
 
   def update_pokemon_stats
     return unless leveled_up?
-    
+
     # ポケモンのレベルを更新
     pokemon.update!(level: ending_level) if pokemon.level < ending_level
-    
+
     # レベルアップのイベントログを作成
-    if level_gained > 0
-      EventLog.create!(
-        challenge: battle_record.challenge,
-        pokemon: pokemon,
-        event_type: 'level_up',
-        title: "#{pokemon.display_name}がレベルアップ！",
-        description: "#{battle_record.battle_summary}でLv.#{starting_level}からLv.#{ending_level}にレベルアップ",
-        event_data: {
-          battle_record_id: battle_record.id,
-          starting_level: starting_level,
-          ending_level: ending_level,
-          levels_gained: level_gained
-        },
-        occurred_at: battle_record.battle_date,
-        importance: level_gained >= 5 ? 4 : 3
-      )
-    end
+    return unless level_gained.positive?
+
+    EventLog.create!(
+      challenge: battle_record.challenge,
+      pokemon: pokemon,
+      event_type: 'level_up',
+      title: "#{pokemon.display_name}がレベルアップ！",
+      description: "#{battle_record.battle_summary}でLv.#{starting_level}からLv.#{ending_level}にレベルアップ",
+      event_data: {
+        battle_record_id: battle_record.id,
+        starting_level: starting_level,
+        ending_level: ending_level,
+        levels_gained: level_gained
+      },
+      occurred_at: battle_record.battle_date,
+      importance: level_gained >= 5 ? 4 : 3
+    )
   end
 end

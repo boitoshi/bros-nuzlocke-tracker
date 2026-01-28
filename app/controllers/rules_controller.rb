@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 class RulesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_challenge
-  before_action :set_rule, only: [ :show, :edit, :update, :destroy ]
+  before_action :set_rule, only: %i[show edit update destroy]
 
   def index
     @rules = @challenge.rules.ordered
@@ -41,24 +43,24 @@ class RulesController < ApplicationController
 
     if error_rules.empty?
       redirect_to challenge_rules_path(@challenge),
-                  notice: t("rules.notices.updated_multiple", count: success_count)
+                  notice: t('rules.notices.updated_multiple', count: success_count)
     else
       redirect_to challenge_rules_path(@challenge),
-                  alert: t("rules.notices.update_failed")
+                  alert: t('rules.notices.update_failed')
     end
   end
 
   def create_custom
     @rule = @challenge.rules.build(custom_rule_params)
-    @rule.rule_type = "custom"
+    @rule.rule_type = 'custom'
     @rule.sort_order = @challenge.rules.maximum(:sort_order).to_i + 1
 
     if @rule.save
       redirect_to challenge_rules_path(@challenge),
-                  notice: t("rules.notices.created", name: @rule.name)
+                  notice: t('rules.notices.created', name: @rule.name)
     else
       redirect_to challenge_rules_path(@challenge),
-                  alert: t("rules.notices.create_failed")
+                  alert: t('rules.notices.create_failed')
     end
   end
 
@@ -88,14 +90,14 @@ class RulesController < ApplicationController
   end
 
   def rule_params
-    params.expect(rule: [ :enabled, :custom_value, :description ])
+    params.expect(rule: %i[enabled custom_value description])
   end
 
   def rules_params
-    params.expect(rules: [ rules: [ :enabled, :custom_value, :description ] ])
+    params.expect(rules: [rules: %i[enabled custom_value description]])
   end
 
   def custom_rule_params
-    params.expect(rule: [ :name, :description, :default_value, :enabled ])
+    params.expect(rule: %i[name description default_value enabled])
   end
 end

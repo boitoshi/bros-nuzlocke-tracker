@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class BossBattlesController < ApplicationController
   before_action :set_boss_battle, only: [:show]
 
@@ -5,19 +7,13 @@ class BossBattlesController < ApplicationController
     @boss_battles = BossBattle.all
 
     # ゲームタイトルでフィルタ
-    if params[:game_title].present?
-      @boss_battles = @boss_battles.by_game(params[:game_title])
-    end
+    @boss_battles = @boss_battles.by_game(params[:game_title]) if params[:game_title].present?
 
     # ボスタイプでフィルタ
-    if params[:boss_type].present?
-      @boss_battles = @boss_battles.by_type(params[:boss_type])
-    end
+    @boss_battles = @boss_battles.by_type(params[:boss_type]) if params[:boss_type].present?
 
     # 難易度でフィルタ
-    if params[:difficulty].present?
-      @boss_battles = @boss_battles.by_difficulty(params[:difficulty])
-    end
+    @boss_battles = @boss_battles.by_difficulty(params[:difficulty]) if params[:difficulty].present?
 
     @boss_battles = @boss_battles.by_order.includes(:area)
 

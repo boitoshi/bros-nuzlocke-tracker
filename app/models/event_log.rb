@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EventLog < ApplicationRecord
   belongs_to :challenge
   belongs_to :pokemon, optional: true
@@ -20,11 +22,11 @@ class EventLog < ApplicationRecord
 
   # 重要度の定義（1〜5）
   IMPORTANCE_LEVELS = {
-    1 => { name: "通常", color: "secondary", icon: "ℹ️" },
-    2 => { name: "やや重要", color: "info", icon: "📝" },
-    3 => { name: "重要", color: "warning", icon: "⚠️" },
-    4 => { name: "とても重要", color: "primary", icon: "❗" },
-    5 => { name: "超重要", color: "danger", icon: "💀" }
+    1 => { name: '通常', color: 'secondary', icon: 'ℹ️' },
+    2 => { name: 'やや重要', color: 'info', icon: '📝' },
+    3 => { name: '重要', color: 'warning', icon: '⚠️' },
+    4 => { name: 'とても重要', color: 'primary', icon: '❗' },
+    5 => { name: '超重要', color: 'danger', icon: '💀' }
   }.freeze
 
   # バリデーション
@@ -44,37 +46,37 @@ class EventLog < ApplicationRecord
   # メソッド
   def event_type_display
     case event_type
-    when "pokemon_caught" then "ポケモン捕獲"
-    when "pokemon_evolved" then "進化"
-    when "pokemon_died" then "死亡"
-    when "pokemon_boxed" then "ボックス保管"
-    when "level_up" then "レベルアップ"
-    when "gym_battle" then "ジム戦"
-    when "trainer_battle" then "トレーナー戦"
-    when "milestone_completed" then "マイルストーン達成"
-    when "area_entered" then "エリア到達"
-    when "item_obtained" then "アイテム入手"
-    when "story_event" then "ストーリーイベント"
-    when "custom" then "カスタム"
+    when 'pokemon_caught' then 'ポケモン捕獲'
+    when 'pokemon_evolved' then '進化'
+    when 'pokemon_died' then '死亡'
+    when 'pokemon_boxed' then 'ボックス保管'
+    when 'level_up' then 'レベルアップ'
+    when 'gym_battle' then 'ジム戦'
+    when 'trainer_battle' then 'トレーナー戦'
+    when 'milestone_completed' then 'マイルストーン達成'
+    when 'area_entered' then 'エリア到達'
+    when 'item_obtained' then 'アイテム入手'
+    when 'story_event' then 'ストーリーイベント'
+    when 'custom' then 'カスタム'
     else event_type
     end
   end
 
   def event_type_icon
     case event_type
-    when "pokemon_caught" then "⚾"
-    when "pokemon_evolved" then "✨"
-    when "pokemon_died" then "💀"
-    when "pokemon_boxed" then "📦"
-    when "level_up" then "📈"
-    when "gym_battle" then "🏟️"
-    when "trainer_battle" then "⚔️"
-    when "milestone_completed" then "🎯"
-    when "area_entered" then "🗺️"
-    when "item_obtained" then "🎁"
-    when "story_event" then "📖"
-    when "custom" then "📝"
-    else "📍"
+    when 'pokemon_caught' then '⚾'
+    when 'pokemon_evolved' then '✨'
+    when 'pokemon_died' then '💀'
+    when 'pokemon_boxed' then '📦'
+    when 'level_up' then '📈'
+    when 'gym_battle' then '🏟️'
+    when 'trainer_battle' then '⚔️'
+    when 'milestone_completed' then '🎯'
+    when 'area_entered' then '🗺️'
+    when 'item_obtained' then '🎁'
+    when 'story_event' then '📖'
+    when 'custom' then '📝'
+    else '📍'
     end
   end
 
@@ -87,7 +89,7 @@ class EventLog < ApplicationRecord
   end
 
   def pokemon_name
-    pokemon&.display_name || "不明"
+    pokemon&.display_name || '不明'
   end
 
   def time_ago
@@ -140,7 +142,7 @@ class EventLog < ApplicationRecord
       challenge: challenge,
       event_type: :milestone_completed,
       title: "#{milestone.name}達成！",
-      description: milestone.description || "マイルストーンを達成しました",
+      description: milestone.description || 'マイルストーンを達成しました',
       location: milestone.game_area,
       occurred_at: milestone.completed_at || Time.current,
       importance: milestone.milestone_type == 'champion' ? 5 : 4,
@@ -160,7 +162,7 @@ class EventLog < ApplicationRecord
       title: "#{pokemon.nickname}がレベルアップ！",
       description: "Lv.#{old_level} → Lv.#{new_level}",
       occurred_at: Time.current,
-      importance: new_level % 10 == 0 ? 3 : 1,
+      importance: (new_level % 10).zero? ? 3 : 1,
       event_data: {
         species: pokemon.species,
         nickname: pokemon.nickname,
@@ -173,7 +175,7 @@ class EventLog < ApplicationRecord
   # 統計メソッド
   def self.daily_summary(challenge, date = Date.current)
     events = where(challenge: challenge, occurred_at: date.all_day)
-    
+
     {
       total_events: events.count,
       pokemon_caught: events.pokemon_caught.count,

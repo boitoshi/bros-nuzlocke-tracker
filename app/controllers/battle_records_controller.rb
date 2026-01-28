@@ -1,57 +1,59 @@
+# frozen_string_literal: true
+
 class BattleRecordsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_challenge
-  before_action :set_battle_record, only: [:show, :edit, :update, :participants]
+  before_action :set_battle_record, only: %i[show edit update participants]
 
   def index
     @battle_records = @challenge.battle_records
-                              .recent
-                              .includes(:mvp_pokemon, :boss_battle, :participating_pokemon)
-                              .limit(20)
-    
+                                .recent
+                                .includes(:mvp_pokemon, :boss_battle, :participating_pokemon)
+                                .limit(20)
+
     # フィルタリング
     @battle_records = @battle_records.by_battle_type(params[:battle_type]) if params[:battle_type].present?
     @battle_records = @battle_records.where(result: params[:result]) if params[:result].present?
-    
+
     @battle_statistics = @challenge.battle_statistics
   end
 
   def show
     @participants = @battle_record.battle_participants
-                                 .includes(:pokemon)
-                                 .order(:created_at)
+                                  .includes(:pokemon)
+                                  .order(:created_at)
   end
 
   def new
     @battle_record = @challenge.battle_records.build
     @battle_record.battle_date = Time.current
     @battle_record.difficulty_rating = 3
-    
+
     # 利用可能なポケモンとボス戦情報を取得
     @available_pokemon = @challenge.pokemons.alive_pokemon.order(:nickname)
     @boss_battles = BossBattle.where(game_title: @challenge.game_title).order(:name)
-    
+
     # 選択されたボス戦がある場合は情報を設定
-    if params[:boss_battle_id].present?
-      @selected_boss = @boss_battles.find_by(id: params[:boss_battle_id])
-      if @selected_boss
-        @battle_record.boss_battle = @selected_boss
-        @battle_record.opponent_name = @selected_boss.name
-        @battle_record.battle_type = @selected_boss.boss_type
-        @battle_record.location = @selected_boss.area&.name
-        @battle_record.difficulty_rating = @selected_boss.difficulty || 3
-      end
-    end
+    return unless params[:boss_battle_id].present?
+
+    @selected_boss = @boss_battles.find_by(id: params[:boss_battle_id])
+    return unless @selected_boss
+
+    @battle_record.boss_battle = @selected_boss
+    @battle_record.opponent_name = @selected_boss.name
+    @battle_record.battle_type = @selected_boss.boss_type
+    @battle_record.location = @selected_boss.area&.name
+    @battle_record.difficulty_rating = @selected_boss.difficulty || 3
   end
 
   def create
     @battle_record = @challenge.battle_records.build(battle_record_params)
-    
+
     if @battle_record.save
       # 参加ポケモンの情報を作成
       create_battle_participants if participant_params_present?
-      
-      redirect_to challenge_battle_record_path(@challenge, @battle_record), 
+
+      redirect_to challenge_battle_record_path(@challenge, @battle_record),
                   notice: '⚔️ バトル記録が正常に作成されました！'
     else
       @available_pokemon = @challenge.pokemons.alive_pokemon.order(:nickname)
@@ -69,8 +71,8 @@ class BattleRecordsController < ApplicationController
     if @battle_record.update(battle_record_params)
       # 参加ポケモン情報の更新
       update_battle_participants if participant_params_present?
-      
-      redirect_to challenge_battle_record_path(@challenge, @battle_record), 
+
+      redirect_to challenge_battle_record_path(@challenge, @battle_record),
                   notice: '⚔️ バトル記録が正常に更新されました！'
     else
       @available_pokemon = @challenge.pokemons.order(:nickname)
@@ -82,8 +84,8 @@ class BattleRecordsController < ApplicationController
   def participants
     # バトル参加ポケモンの詳細ページ
     @participants = @battle_record.battle_participants
-                                 .includes(:pokemon)
-                                 .order(:performance_rating).reverse_order
+                                  .includes(:pokemon)
+                                  .order(:performance_rating).reverse_order
   end
 
   private
@@ -112,14 +114,14 @@ class BattleRecordsController < ApplicationController
 
   def create_battle_participants
     return unless params[:battle_participants].present?
-    
+
     ActiveRecord::Base.transaction do
       params[:battle_participants].each do |participant_data|
         next unless participant_data[:pokemon_id].present?
-        
+
         begin
           pokemon = @challenge.pokemons.find(participant_data[:pokemon_id])
-          
+
           @battle_record.battle_participants.create!(
             pokemon: pokemon,
             starting_level: participant_data[:starting_level] || pokemon.level,
@@ -145,23 +147,23 @@ class BattleRecordsController < ApplicationController
     false
   rescue StandardError => e
     Rails.logger.error "Unexpected error during battle participants creation: #{e.message}"
-    @battle_record.errors.add(:base, "予期しないエラーが発生しました")
+    @battle_record.errors.add(:base, '予期しないエラーが発生しました')
     false
   end
 
   def update_battle_participants
     return unless params[:battle_participants].present?
-    
+
     # 既存の参加記録を削除
     @battle_record.battle_participants.destroy_all
-    
+
     # 新しい参加記録を作成
     create_battle_participants
   end
 
   def parse_moves_used(moves_string)
     return [] if moves_string.blank?
-    
+
     # カンマ区切りの文字列を配列に変換
     moves_string.split(',').map(&:strip).reject(&:blank?)
   end

@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 class Pokemon < ApplicationRecord
   belongs_to :challenge
   belongs_to :area
-  
+
   # バトル関連の関連
   has_many :battle_participants, dependent: :destroy
   has_many :battle_records, through: :battle_participants
@@ -29,16 +31,16 @@ class Pokemon < ApplicationRecord
   }
 
   # ポケモンの性格一覧
-  NATURES = [
-    "がんばりや", "さみしがり", "ゆうかん", "いじっぱり", "やんちゃ",
-    "ずぶとい", "すなお", "のんき", "わんぱく", "のうてんき",
-    "おくびょう", "せっかち", "まじめ", "ようき", "むじゃき",
-    "ひかえめ", "おっとり", "れいせい", "てれや", "うっかりや",
-    "おだやか", "おとなしい", "なまいき", "しんちょう", "きまぐれ"
+  NATURES = %w[
+    がんばりや さみしがり ゆうかん いじっぱり やんちゃ
+    ずぶとい すなお のんき わんぱく のうてんき
+    おくびょう せっかち まじめ ようき むじゃき
+    ひかえめ おっとり れいせい てれや うっかりや
+    おだやか おとなしい なまいき しんちょう きまぐれ
   ].freeze
 
   # ポケモンの性別一覧
-  GENDERS = [ "♂", "♀", "不明" ].freeze
+  GENDERS = ['♂', '♀', '不明'].freeze
 
   # バリデーション
   validates :nickname, presence: true, length: { minimum: 1, maximum: 20 }
@@ -54,11 +56,11 @@ class Pokemon < ApplicationRecord
   validates :secondary_type, inclusion: { in: TypeEffectiveness::POKEMON_TYPES }, allow_blank: true
   validates :role, presence: true
   validates :gender, inclusion: { in: GENDERS }, allow_blank: true
-  
+
   # Individual Values (IVs) validation - 個体値は0-31
   validates :hp_iv, :attack_iv, :defense_iv, :special_attack_iv, :special_defense_iv, :speed_iv,
             numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 31 }
-  
+
   # Effort Values (EVs) validation - 努力値は0-252、合計最大510
   validates :hp_ev, :attack_ev, :defense_ev, :special_attack_ev, :special_defense_ev, :speed_ev,
             numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 252 }
@@ -82,34 +84,34 @@ class Pokemon < ApplicationRecord
   # メソッド
   def status_display
     case status
-    when "alive" then "生存"
-    when "dead" then "死亡"
-    when "boxed" then "ボックス"
+    when 'alive' then '生存'
+    when 'dead' then '死亡'
+    when 'boxed' then 'ボックス'
     else status
     end
   end
 
   def status_badge_class
     case status
-    when "alive" then "bg-success"
-    when "dead" then "bg-danger"
-    when "boxed" then "bg-secondary"
-    else "bg-primary"
+    when 'alive' then 'bg-success'
+    when 'dead' then 'bg-danger'
+    when 'boxed' then 'bg-secondary'
+    else 'bg-primary'
     end
   end
 
   def status_icon
     case status
-    when "alive" then "💚"
-    when "dead" then "💀"
-    when "boxed" then "📦"
-    else "❓"
+    when 'alive' then '💚'
+    when 'dead' then '💀'
+    when 'boxed' then '📦'
+    else '❓'
     end
   end
 
   def gender
     # データベースのgenderカラムがある場合はそれを使用、なければデフォルト値
-    super.presence || "不明"
+    super.presence || '不明'
   end
 
   def types
@@ -122,16 +124,16 @@ class Pokemon < ApplicationRecord
 
   def role_display
     case role
-    when "physical_attacker" then "物理アタッカー"
-    when "special_attacker" then "特殊アタッカー"
-    when "physical_tank" then "物理受け"
-    when "special_tank" then "特殊受け"
-    when "support" then "サポート"
-    when "utility" then "ユーティリティ"
-    when "sweeper" then "スイーパー"
-    when "wall" then "壁"
-    when "pivot" then "起点作り"
-    when "mixed_attacker" then "混合アタッカー"
+    when 'physical_attacker' then '物理アタッカー'
+    when 'special_attacker' then '特殊アタッカー'
+    when 'physical_tank' then '物理受け'
+    when 'special_tank' then '特殊受け'
+    when 'support' then 'サポート'
+    when 'utility' then 'ユーティリティ'
+    when 'sweeper' then 'スイーパー'
+    when 'wall' then '壁'
+    when 'pivot' then '起点作り'
+    when 'mixed_attacker' then '混合アタッカー'
     else role
     end
   end
@@ -153,7 +155,7 @@ class Pokemon < ApplicationRecord
 
     TypeEffectiveness::POKEMON_TYPES.each do |attacking_type|
       effectiveness = calculate_type_effectiveness(attacking_type)
-      
+
       case effectiveness
       when 0.0
         immunities[attacking_type] = effectiveness
@@ -173,7 +175,7 @@ class Pokemon < ApplicationRecord
 
   def calculate_type_effectiveness(attacking_type)
     primary_effectiveness = TypeEffectiveness.get_effectiveness(attacking_type, primary_type)
-    
+
     if secondary_type.present?
       secondary_effectiveness = TypeEffectiveness.get_effectiveness(attacking_type, secondary_type)
       primary_effectiveness * secondary_effectiveness
@@ -184,7 +186,7 @@ class Pokemon < ApplicationRecord
 
   def notes
     # データベースのnotesカラムがある場合はそれを使用、なければ空文字
-    super.presence || ""
+    super.presence || ''
   end
 
   def survival_days
@@ -205,7 +207,7 @@ class Pokemon < ApplicationRecord
   # バトル統計メソッド ⚔️
   def battle_statistics
     return {} if battle_participants.empty?
-    
+
     {
       total_battles: battle_participants.count,
       victories: battle_records.victories.count,
@@ -223,9 +225,9 @@ class Pokemon < ApplicationRecord
 
   def recent_battle_performance
     battle_participants.joins(:battle_record)
-                      .order('battle_records.battle_date DESC')
-                      .limit(5)
-                      .includes(:battle_record)
+                       .order('battle_records.battle_date DESC')
+                       .limit(5)
+                       .includes(:battle_record)
   end
 
   def best_battle_performance
@@ -233,14 +235,14 @@ class Pokemon < ApplicationRecord
   end
 
   def battle_experience_summary
-    return "バトル経験なし" if battle_participants.empty?
-    
+    return 'バトル経験なし' if battle_participants.empty?
+
     stats = battle_statistics
     summary = "#{stats[:total_battles]}戦"
-    summary += "#{stats[:victories]}勝" if stats[:victories] > 0
-    summary += "#{stats[:defeats]}敗" if stats[:defeats] > 0
-    summary += " (勝率#{stats[:win_rate]}%)" if stats[:total_battles] > 0
-    summary += " MVP#{stats[:mvp_count]}回" if stats[:mvp_count] > 0
+    summary += "#{stats[:victories]}勝" if stats[:victories].positive?
+    summary += "#{stats[:defeats]}敗" if stats[:defeats].positive?
+    summary += " (勝率#{stats[:win_rate]}%)" if stats[:total_battles].positive?
+    summary += " MVP#{stats[:mvp_count]}回" if stats[:mvp_count].positive?
     summary
   end
 
@@ -248,11 +250,13 @@ class Pokemon < ApplicationRecord
 
   def calculate_win_rate
     return 0 if battle_records.empty?
+
     (battle_records.victories.count.to_f / battle_records.count * 100).round(1)
   end
 
   def calculate_battle_survival_rate
     return 100 if battle_participants.empty?
+
     survivors = battle_participants.survivors.count
     (survivors.to_f / battle_participants.count * 100).round(1)
   end
@@ -289,28 +293,29 @@ class Pokemon < ApplicationRecord
   end
 
   def iv_percentage
-    return 0 if iv_total == 0
-    ((iv_total.to_f / 186) * 100).round(1)  # 186 = 31 * 6
+    return 0 if iv_total.zero?
+
+    ((iv_total.to_f / 186) * 100).round(1) # 186 = 31 * 6
   end
 
   # 性格補正を取得
   def nature_modifier(stat)
     return 1.0 unless nature.present?
-    
+
     nature_effects = {
-      "いじっぱり" => { attack: 1.1, special_attack: 0.9 },
-      "ようき" => { speed: 1.1, special_attack: 0.9 },
-      "ひかえめ" => { special_attack: 1.1, attack: 0.9 },
-      "おくびょう" => { speed: 1.1, attack: 0.9 },
-      "ずぶとい" => { defense: 1.1, attack: 0.9 },
-      "おだやか" => { special_defense: 1.1, attack: 0.9 },
-      "わんぱく" => { defense: 1.1, special_attack: 0.9 },
-      "しんちょう" => { special_defense: 1.1, special_attack: 0.9 }
+      'いじっぱり' => { attack: 1.1, special_attack: 0.9 },
+      'ようき' => { speed: 1.1, special_attack: 0.9 },
+      'ひかえめ' => { special_attack: 1.1, attack: 0.9 },
+      'おくびょう' => { speed: 1.1, attack: 0.9 },
+      'ずぶとい' => { defense: 1.1, attack: 0.9 },
+      'おだやか' => { special_defense: 1.1, attack: 0.9 },
+      'わんぱく' => { defense: 1.1, special_attack: 0.9 },
+      'しんちょう' => { special_defense: 1.1, special_attack: 0.9 }
     }
-    
+
     modifier = nature_effects[nature]
     return 1.0 unless modifier
-    
+
     modifier[stat.to_sym] || 1.0
   end
 
@@ -329,8 +334,8 @@ class Pokemon < ApplicationRecord
 
   # 実際のステータス一覧
   def calculated_stats(base_stats = {})
-    default_base = 50  # デフォルトの種族値
-    
+    default_base = 50 # デフォルトの種族値
+
     {
       hp: calculate_stat(:hp, base_stats[:hp] || default_base),
       attack: calculate_stat(:attack, base_stats[:attack] || default_base),
@@ -362,35 +367,33 @@ class Pokemon < ApplicationRecord
     end
   end
 
-  private
-
   def party_size_limit
     return unless in_party? && challenge_id
 
     party_count = challenge.pokemons.party_members.where.not(id: id).count
-    if party_count >= 6
-      errors.add(:in_party, "パーティには最大6匹までしか入れられません")
-    end
+    return unless party_count >= 6
+
+    errors.add(:in_party, 'パーティには最大6匹までしか入れられません')
   end
 
   def handle_status_changes
     # 死亡時の処理
     if status_changed? && dead?
       self.died_at = Time.current if died_at.blank?
-      self.in_party = false  # パーティから除外
+      self.in_party = false # パーティから除外
     end
 
     # ボックス保管時の処理
-    if status_changed? && boxed?
-      self.in_party = false  # パーティから除外
-    end
+    return unless status_changed? && boxed?
+
+    self.in_party = false # パーティから除外
   end
 
   # EVs合計制限バリデーション
   def total_evs_within_limit
-    if total_evs > 510
-      errors.add(:base, "努力値の合計は510を超えることはできません (現在: #{total_evs})")
-    end
+    return unless total_evs > 510
+
+    errors.add(:base, "努力値の合計は510を超えることはできません (現在: #{total_evs})")
   end
 
   # 統計メソッド
@@ -410,7 +413,7 @@ class Pokemon < ApplicationRecord
     # 種族別統計（TOP 10）
     def species_popularity_stats(limit = 10)
       group(:species)
-        .order("count_species DESC")
+        .order('count_species DESC')
         .limit(limit)
         .count(:species)
     end
@@ -424,17 +427,17 @@ class Pokemon < ApplicationRecord
 
     # 性格別統計
     def nature_stats
-      where.not(nature: [ nil, "" ])
-        .group(:nature)
-        .count
-        .sort_by { |_, count| -count }
-        .to_h
+      where.not(nature: [nil, ''])
+           .group(:nature)
+           .count
+           .sort_by { |_, count| -count }
+           .to_h
     end
 
     # エリア別捕獲統計
     def area_catch_stats
       joins(:area)
-        .group("areas.name")
+        .group('areas.name')
         .count
         .sort_by { |_, count| -count }
         .to_h
@@ -444,23 +447,23 @@ class Pokemon < ApplicationRecord
     def monthly_catch_stats(months = 12)
       pokemons = where(caught_at: months.months.ago..Time.current)
       monthly_counts = {}
-      
+
       pokemons.each do |pokemon|
         month_key = pokemon.caught_at.beginning_of_month
         monthly_counts[month_key] = (monthly_counts[month_key] || 0) + 1
       end
-      
+
       monthly_counts.sort.to_h
     end
 
     # パーティメンバー使用頻度
     def party_usage_stats
       species_usage = joins(:challenge)
-        .where(in_party: true)
-        .group(:species)
-        .count
-        .sort_by { |_, count| -count }
-        .to_h
+                      .where(in_party: true)
+                      .group(:species)
+                      .count
+                      .sort_by { |_, count| -count }
+                      .to_h
 
       { most_used_in_party: species_usage }
     end
@@ -469,7 +472,7 @@ class Pokemon < ApplicationRecord
 
     def calculate_survival_rate
       total = count
-      return 0 if total == 0
+      return 0 if total.zero?
 
       alive_count = alive_pokemon.count
       ((alive_count.to_f / total) * 100).round(1)

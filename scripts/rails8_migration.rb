@@ -1,39 +1,41 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
+
 # Rails 8対応のための一括修正スクリプト 🚀
 
 require 'find'
 require 'fileutils'
 
-puts "🚀 Rails 8対応の一括修正を開始します..."
+puts '🚀 Rails 8対応の一括修正を開始します...'
 
 # 修正対象のディレクトリ
-VIEW_DIRS = ['app/views']
-EXCLUDE_DIRS = ['.git', 'vendor', 'node_modules', 'tmp', 'log']
+VIEW_DIRS = ['app/views'].freeze
+EXCLUDE_DIRS = ['.git', 'vendor', 'node_modules', 'tmp', 'log'].freeze
 
 # 修正パターン
 REPLACEMENTS = [
   # method: :delete を data: { "turbo-method": :delete } に変更
   [/method:\s*:delete/, 'data: { "turbo-method": :delete }'],
-  
-  # method: :patch を data: { "turbo-method": :patch } に変更  
+
+  # method: :patch を data: { "turbo-method": :patch } に変更
   [/method:\s*:patch/, 'data: { "turbo-method": :patch }'],
-  
+
   # method: :put を data: { "turbo-method": :put } に変更
   [/method:\s*:put/, 'data: { "turbo-method": :put }'],
-  
+
   # confirm: を "turbo-confirm": に変更
   [/confirm:\s*"([^"]*)"/, '"turbo-confirm": "\1"'],
-  
+
   # data: { confirm: を data: { "turbo-confirm": に変更
   [/data:\s*{\s*confirm:\s*"([^"]*)"/, 'data: { "turbo-confirm": "\1"']
-]
+].freeze
 
 # GETメソッドは変更しないファイルパターン
 GET_KEEP_PATTERNS = [
   /method:\s*:get/,
   /html:\s*{\s*method:\s*:get\s*}/,
   /url:.*method:\s*:get/
-]
+].freeze
 
 def should_exclude_dir?(path)
   EXCLUDE_DIRS.any? { |exclude| path.include?(exclude) }
@@ -46,15 +48,15 @@ end
 def process_file(file_path)
   return unless File.exist?(file_path)
   return unless file_path.end_with?('.erb', '.rb')
-  
+
   content = File.read(file_path, encoding: 'UTF-8')
-  original_content = content.dup
+  content.dup
   modified = false
-  
+
   REPLACEMENTS.each do |pattern, replacement|
     content.gsub!(pattern) do |match|
       # GETメソッドの場合は変更しない
-      if should_keep_get_method?($&)
+      if should_keep_get_method?(Regexp.last_match(0))
         match
       else
         modified = true
@@ -62,13 +64,13 @@ def process_file(file_path)
       end
     end
   end
-  
+
   if modified
     File.write(file_path, content, encoding: 'UTF-8')
     puts "✅ 修正: #{file_path}"
     return true
   end
-  
+
   false
 end
 
@@ -78,36 +80,35 @@ modified_files = 0
 
 VIEW_DIRS.each do |dir|
   next unless Dir.exist?(dir)
-  
+
   Find.find(dir) do |path|
     if File.directory?(path)
       Find.prune if should_exclude_dir?(path)
       next
     end
-    
+
     next unless File.file?(path)
+
     total_files += 1
-    
-    if process_file(path)
-      modified_files += 1
-    end
+
+    modified_files += 1 if process_file(path)
   end
 end
 
-puts ""
-puts "🎉 Rails 8対応修正完了!"
+puts ''
+puts '🎉 Rails 8対応修正完了!'
 puts "📊 処理したファイル: #{total_files}"
 puts "✨ 修正されたファイル: #{modified_files}"
-puts ""
+puts ''
 
-if modified_files > 0
-  puts "📝 主な修正内容:"
-  puts "  - method: :delete → data: { \"turbo-method\": :delete }"
-  puts "  - method: :patch → data: { \"turbo-method\": :patch }"
-  puts "  - method: :put → data: { \"turbo-method\": :put }"
-  puts "  - confirm: → \"turbo-confirm\":"
-  puts ""
-  puts "⚠️  注意: GETメソッドは変更していません（正常な動作のため）"
+if modified_files.positive?
+  puts '📝 主な修正内容:'
+  puts '  - method: :delete → data: { "turbo-method": :delete }'
+  puts '  - method: :patch → data: { "turbo-method": :patch }'
+  puts '  - method: :put → data: { "turbo-method": :put }'
+  puts '  - confirm: → "turbo-confirm":'
+  puts ''
+  puts '⚠️  注意: GETメソッドは変更していません（正常な動作のため）'
 else
-  puts "ℹ️  修正が必要なファイルは見つかりませんでした。"
+  puts 'ℹ️  修正が必要なファイルは見つかりませんでした。'
 end

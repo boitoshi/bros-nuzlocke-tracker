@@ -21,8 +21,8 @@ module Challengeable
   # チャレンジが見つからない場合の処理
   def handle_challenge_not_found
     respond_to do |format|
-      format.html { redirect_to challenges_path, alert: "指定されたチャレンジが見つかりません。" }
-      format.json { render json: { error: "Challenge not found" }, status: :not_found }
+      format.html { redirect_to challenges_path, alert: '指定されたチャレンジが見つかりません。' }
+      format.json { render json: { error: 'Challenge not found' }, status: :not_found }
     end
   end
 
@@ -41,8 +41,8 @@ module Challengeable
   # 不正なチャレンジアクセスの処理
   def handle_unauthorized_challenge_access
     respond_to do |format|
-      format.html { redirect_to challenges_path, alert: "このチャレンジにアクセスする権限がありません。" }
-      format.json { render json: { error: "Unauthorized" }, status: :unauthorized }
+      format.html { redirect_to challenges_path, alert: 'このチャレンジにアクセスする権限がありません。' }
+      format.json { render json: { error: 'Unauthorized' }, status: :unauthorized }
     end
   end
 
@@ -51,8 +51,8 @@ module Challengeable
     return if @challenge&.in_progress?
 
     respond_to do |format|
-      format.html { redirect_to challenge_path(@challenge), alert: "完了または失敗したチャレンジは編集できません。" }
-      format.json { render json: { error: "Challenge not editable" }, status: :unprocessable_entity }
+      format.html { redirect_to challenge_path(@challenge), alert: '完了または失敗したチャレンジは編集できません。' }
+      format.json { render json: { error: 'Challenge not editable' }, status: :unprocessable_entity }
     end
   end
 

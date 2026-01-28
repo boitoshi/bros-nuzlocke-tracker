@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # ポケモン種族データモデル 🐾
 # JSONベースのポケモン図鑑データを管理
 class PokemonSpecies < ApplicationRecord
@@ -5,25 +7,25 @@ class PokemonSpecies < ApplicationRecord
   validates :national_id, presence: true, uniqueness: true
   validates :name_ja, presence: true
   validates :generation, presence: true, inclusion: { in: 1..9 }
-  
+
   # スコープ
   scope :by_generation, ->(gen) { where(generation: gen) }
-  scope :by_type, ->(type) { where("types @> ?", [type].to_json) }
+  scope :by_type, ->(type) { where('types @> ?', [type].to_json) }
   scope :legendary, -> { where(is_legendary: true) }
   scope :mythical, -> { where(is_mythical: true) }
   scope :regular, -> { where(is_legendary: false, is_mythical: false) }
-  
+
   # 検索スコープ 🔍
-  scope :search_by_name, ->(query) {
-    where("name_ja ILIKE ? OR name_en ILIKE ? OR name_kana ILIKE ?", 
+  scope :search_by_name, lambda { |query|
+    where('name_ja ILIKE ? OR name_en ILIKE ? OR name_kana ILIKE ?',
           "%#{query}%", "%#{query}%", "%#{query}%")
   }
 
-  scope :filter_by_type, ->(type) {
+  scope :filter_by_type, lambda { |type|
     where("data -> 'types' @> ?", [type].to_json)
   }
 
-  scope :filter_by_generation, ->(gen) {
+  scope :filter_by_generation, lambda { |gen|
     where("data ->> 'generation' = ?", gen.to_s)
   }
 
@@ -63,21 +65,21 @@ class PokemonSpecies < ApplicationRecord
 
   def sprite_url
     return nil unless national_id
-    
+
     # Pokemon APIの公式スプライト画像URL
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/#{national_id}.png"
   end
 
   def official_artwork_url
     return nil unless national_id
-    
+
     # 高解像度の公式アートワーク
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/#{national_id}.png"
   end
 
   def shiny_sprite_url
     return nil unless national_id
-    
+
     # 色違いスプライト
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/#{national_id}.png"
   end
@@ -101,7 +103,7 @@ class PokemonSpecies < ApplicationRecord
 
   # 表示用名前（日本語優先）
   def display_name
-    name_ja.presence || name_en || "不明なポケモン"
+    name_ja.presence || name_en || '不明なポケモン'
   end
 
   # 図鑑番号をゼロ埋めで表示

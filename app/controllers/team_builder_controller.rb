@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TeamBuilderController < ApplicationController
   before_action :authenticate_user!
   before_action :set_challenge
@@ -15,16 +17,16 @@ class TeamBuilderController < ApplicationController
       @team_analysis = analyze_current_team(@selected_pokemon)
       @weaknesses_chart = generate_weaknesses_chart(@team_analysis)
       @roles_chart = generate_roles_chart(@selected_pokemon)
-      
+
       render json: {
         analysis: @team_analysis,
         weaknesses_chart: @weaknesses_chart,
         roles_chart: @roles_chart,
-        html: render_to_string(partial: 'analysis_results', locals: { 
-          team_analysis: @team_analysis,
-          weaknesses_chart: @weaknesses_chart,
-          roles_chart: @roles_chart 
-        })
+        html: render_to_string(partial: 'analysis_results', locals: {
+                                 team_analysis: @team_analysis,
+                                 weaknesses_chart: @weaknesses_chart,
+                                 roles_chart: @roles_chart
+                               })
       }
     else
       @party_pokemon = @challenge.pokemons.party_members.alive_pokemon.includes(:area)
@@ -35,12 +37,12 @@ class TeamBuilderController < ApplicationController
   def suggest
     @party_pokemon = @challenge.pokemons.party_members.alive_pokemon.includes(:area)
     @team_analysis = analyze_current_team(@party_pokemon) if @party_pokemon.any?
-    
-    if @team_analysis
-      @weaknesses = @team_analysis[:overall_weaknesses]
-      @missing_roles = analyze_missing_roles(@party_pokemon)
-      @suggestions = generate_pokemon_suggestions(@weaknesses, @missing_roles)
-    end
+
+    return unless @team_analysis
+
+    @weaknesses = @team_analysis[:overall_weaknesses]
+    @missing_roles = analyze_missing_roles(@party_pokemon)
+    @suggestions = generate_pokemon_suggestions(@weaknesses, @missing_roles)
   end
 
   private
@@ -56,7 +58,7 @@ class TeamBuilderController < ApplicationController
     type_coverage = analyze_type_coverage(pokemon_list)
     overall_weaknesses = calculate_overall_weaknesses(pokemon_list)
     overall_resistances = calculate_overall_resistances(pokemon_list)
-    
+
     # 役割分析
     role_distribution = analyze_role_distribution(pokemon_list)
     role_balance = calculate_role_balance(role_distribution)
@@ -82,7 +84,7 @@ class TeamBuilderController < ApplicationController
       covered_types.add(pokemon.primary_type)
       covered_types.add(pokemon.secondary_type) if pokemon.secondary_type.present?
     end
-    
+
     {
       covered_types: covered_types.to_a,
       coverage_percentage: (covered_types.size.to_f / TypeEffectiveness::POKEMON_TYPES.size * 100).round(1)
@@ -91,17 +93,15 @@ class TeamBuilderController < ApplicationController
 
   def calculate_overall_weaknesses(pokemon_list)
     weakness_counts = Hash.new(0)
-    
+
     TypeEffectiveness::POKEMON_TYPES.each do |attacking_type|
       total_damage = 0
       pokemon_list.each do |pokemon|
         effectiveness = pokemon.calculate_type_effectiveness(attacking_type)
         total_damage += effectiveness
       end
-      
-      if total_damage > pokemon_list.size
-        weakness_counts[attacking_type] = (total_damage / pokemon_list.size).round(2)
-      end
+
+      weakness_counts[attacking_type] = (total_damage / pokemon_list.size).round(2) if total_damage > pokemon_list.size
     end
 
     weakness_counts.sort_by { |_, damage| -damage }.to_h
@@ -109,14 +109,14 @@ class TeamBuilderController < ApplicationController
 
   def calculate_overall_resistances(pokemon_list)
     resistance_counts = Hash.new(0)
-    
+
     TypeEffectiveness::POKEMON_TYPES.each do |attacking_type|
       total_damage = 0
       pokemon_list.each do |pokemon|
         effectiveness = pokemon.calculate_type_effectiveness(attacking_type)
         total_damage += effectiveness
       end
-      
+
       if total_damage < pokemon_list.size
         resistance_counts[attacking_type] = (total_damage / pokemon_list.size).round(2)
       end
@@ -135,7 +135,7 @@ class TeamBuilderController < ApplicationController
 
   def calculate_role_balance(role_distribution)
     total_pokemon = role_distribution.values.sum
-    return { balanced: false, score: 0 } if total_pokemon == 0
+    return { balanced: false, score: 0 } if total_pokemon.zero?
 
     # 理想的な役割バランス（攻撃:防御:サポート = 3:2:1）
     ideal_ratios = {
@@ -176,9 +176,7 @@ class TeamBuilderController < ApplicationController
     end
 
     # 役割バランスに関する推奨事項
-    unless role_balance[:balanced]
-      recommendations << "チームの役割バランスが偏っています。異なる役割のポケモンを追加してバランスを改善しましょう。"
-    end
+    recommendations << 'チームの役割バランスが偏っています。異なる役割のポケモンを追加してバランスを改善しましょう。' unless role_balance[:balanced]
 
     recommendations
   end
@@ -195,28 +193,28 @@ class TeamBuilderController < ApplicationController
     available_pokemon = @challenge.pokemons.alive_pokemon.not_in_party
 
     # 弱点をカバーできるポケモンを提案
-    weaknesses.each do |weak_type, _|
+    weaknesses.each_key do |weak_type|
       resistant_pokemon = available_pokemon.select do |pokemon|
         pokemon.calculate_type_effectiveness(weak_type) < 1.0
       end.first(3)
-      
-      if resistant_pokemon.any?
-        suggestions << {
-          reason: "#{weak_type.capitalize}タイプの攻撃に耐性があります",
-          pokemon: resistant_pokemon
-        }
-      end
+
+      next unless resistant_pokemon.any?
+
+      suggestions << {
+        reason: "#{weak_type.capitalize}タイプの攻撃に耐性があります",
+        pokemon: resistant_pokemon
+      }
     end
 
     # 不足している役割を補完できるポケモンを提案
     missing_roles.each do |role|
       role_pokemon = available_pokemon.select { |p| p.role == role.to_s }.first(2)
-      if role_pokemon.any?
-        suggestions << {
-          reason: "#{Pokemon.human_enum_name(:role, role)}として活躍できます",
-          pokemon: role_pokemon
-        }
-      end
+      next unless role_pokemon.any?
+
+      suggestions << {
+        reason: "#{Pokemon.human_enum_name(:role, role)}として活躍できます",
+        pokemon: role_pokemon
+      }
     end
 
     suggestions.uniq { |s| s[:pokemon].map(&:id) }.first(5)
@@ -235,7 +233,7 @@ class TeamBuilderController < ApplicationController
 
   def generate_roles_chart(pokemon_list)
     role_counts = pokemon_list.group(:role).count
-    
+
     {
       labels: role_counts.keys.map { |role| Pokemon.human_enum_name(:role, role) },
       data: role_counts.values,

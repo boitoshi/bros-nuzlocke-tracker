@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Challenge < ApplicationRecord
   belongs_to :user
   has_many :pokemons, dependent: :destroy
@@ -15,16 +17,16 @@ class Challenge < ApplicationRecord
 
   # ゲームタイトルの定義
   GAME_TITLES = [
-    [ "ポケットモンスター 赤", "red" ],
-    [ "ポケットモンスター 緑", "green" ],
-    [ "ポケットモンスター 青", "blue" ],
-    [ "ポケットモンスター ピカチュウ", "yellow" ],
-    [ "ポケットモンスター 金", "gold" ],
-    [ "ポケットモンスター 銀", "silver" ],
-    [ "ポケットモンスター クリスタル", "crystal" ],
-    [ "ポケットモンスター ルビー", "ruby" ],
-    [ "ポケットモンスター サファイア", "sapphire" ],
-    [ "ポケットモンスター エメラルド", "emerald" ]
+    ['ポケットモンスター 赤', 'red'],
+    ['ポケットモンスター 緑', 'green'],
+    ['ポケットモンスター 青', 'blue'],
+    ['ポケットモンスター ピカチュウ', 'yellow'],
+    ['ポケットモンスター 金', 'gold'],
+    ['ポケットモンスター 銀', 'silver'],
+    ['ポケットモンスター クリスタル', 'crystal'],
+    ['ポケットモンスター ルビー', 'ruby'],
+    ['ポケットモンスター サファイア', 'sapphire'],
+    ['ポケットモンスター エメラルド', 'emerald']
   ].freeze
 
   # バリデーション
@@ -51,10 +53,10 @@ class Challenge < ApplicationRecord
 
   def status_badge_class
     case status
-    when "in_progress" then "bg-primary"
-    when "completed" then "bg-success"
-    when "failed" then "bg-danger"
-    else "bg-secondary"
+    when 'in_progress' then 'bg-primary'
+    when 'completed' then 'bg-success'
+    when 'failed' then 'bg-danger'
+    else 'bg-secondary'
     end
   end
 
@@ -78,7 +80,8 @@ class Challenge < ApplicationRecord
   end
 
   def survival_rate
-    return 0 if total_caught == 0
+    return 0 if total_caught.zero?
+
     ((total_caught - total_dead).to_f / total_caught * 100).round(1)
   end
 
@@ -87,21 +90,21 @@ class Challenge < ApplicationRecord
   end
 
   def can_add_to_party?
-    party_slots_available > 0
+    party_slots_available.positive?
   end
 
   # バトル統計メソッド 🏆
   def battle_statistics
     return {} if battle_records.empty?
-    
+
     battle_records.battle_statistics.merge({
-      recent_battles: battle_records.recent.limit(5),
-      gym_battles_won: battle_records.gym_battle.victories.count,
-      total_gym_battles: battle_records.gym_battle.count,
-      elite_four_progress: battle_records.elite_four.victories.count,
-      champion_defeated: battle_records.champion.victories.exists?,
-      most_active_pokemon: most_active_battle_pokemon
-    })
+                                             recent_battles: battle_records.recent.limit(5),
+                                             gym_battles_won: battle_records.gym_battle.victories.count,
+                                             total_gym_battles: battle_records.gym_battle.count,
+                                             elite_four_progress: battle_records.elite_four.victories.count,
+                                             champion_defeated: battle_records.champion.victories.exists?,
+                                             most_active_pokemon: most_active_battle_pokemon
+                                           })
   end
 
   def recent_battle_records
@@ -113,7 +116,8 @@ class Challenge < ApplicationRecord
   end
 
   def battle_win_rate
-    return 0 if total_battles == 0
+    return 0 if total_battles.zero?
+
     (battle_records.victories.count.to_f / total_battles * 100).round(1)
   end
 
@@ -129,7 +133,7 @@ class Challenge < ApplicationRecord
 
   def most_active_battle_pokemon
     return nil if battle_records.empty?
-    
+
     # バトル参加回数が最も多いポケモンを取得（N+1クエリ対策済み）
     result = BattleParticipant.joins(:battle_record, :pokemon)
                               .where(battle_records: { challenge: self })
@@ -138,9 +142,9 @@ class Challenge < ApplicationRecord
                               .limit(1)
                               .pluck('pokemons.nickname', 'pokemons.species', 'COUNT(*)')
                               .first
-    
+
     return nil unless result
-    
+
     nickname, species, count = result
     { name: "#{nickname} (#{species})", battle_count: count }
   end
@@ -191,15 +195,11 @@ class Challenge < ApplicationRecord
 
     pokemons.each do |pokemon|
       violations = check_rule_violations(pokemon)
-      if violations.any?
-        summary[pokemon.id] = violations
-      end
+      summary[pokemon.id] = violations if violations.any?
     end
 
     summary
   end
-
-  private
 
   def setup_default_rules
     Rule.create_default_rules_for_challenge(self)
@@ -233,12 +233,12 @@ class Challenge < ApplicationRecord
     def monthly_creation_stats(months = 12)
       challenges = where(created_at: months.months.ago..Time.current)
       monthly_counts = {}
-      
+
       challenges.each do |challenge|
         month_key = challenge.created_at.beginning_of_month
         monthly_counts[month_key] = (monthly_counts[month_key] || 0) + 1
       end
-      
+
       monthly_counts.sort.to_h
     end
 
@@ -258,7 +258,7 @@ class Challenge < ApplicationRecord
 
     def calculate_success_rate
       total = count
-      return 0 if total == 0
+      return 0 if total.zero?
 
       success_count = completed.count
       ((success_count.to_f / total) * 100).round(1)

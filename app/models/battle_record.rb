@@ -1,15 +1,17 @@
+# frozen_string_literal: true
+
 class BattleRecord < ApplicationRecord
   belongs_to :challenge
   belongs_to :boss_battle, optional: true
   belongs_to :mvp_pokemon, class_name: 'Pokemon', optional: true
-  
+
   has_many :battle_participants, dependent: :destroy
   has_many :participating_pokemon, through: :battle_participants, source: :pokemon
 
   # バトルタイプの定義
   enum :battle_type, {
     gym_battle: 0,      # ジム戦
-    elite_four: 1,      # 四天王戦  
+    elite_four: 1,      # 四天王戦
     champion: 2,        # チャンピオン戦
     rival: 3,           # ライバル戦
     trainer: 4,         # 一般トレーナー戦
@@ -110,6 +112,7 @@ class BattleRecord < ApplicationRecord
   # 統計メソッド
   def average_level
     return 0 if battle_participants.empty?
+
     battle_participants.average(:starting_level).round(1)
   end
 
@@ -145,30 +148,34 @@ class BattleRecord < ApplicationRecord
   # Milestone連携
   def update_related_milestone
     return unless win? && boss_battle.present?
-    
+
     milestone_type = battle_type_to_milestone_type
     return unless milestone_type
-    
+
     milestone = challenge.milestones.find_or_create_by(
       milestone_type: milestone_type,
       name: milestone_name_for_battle
     )
-    
+
+    return if milestone.completed_at
+
     milestone.update!(
       completed_at: battle_date,
       description: "#{opponent_name}に勝利"
-    ) unless milestone.completed_at
+    )
   end
 
   # 統計用クラスメソッド
   class << self
     def win_rate
-      return 0 if count == 0
+      return 0 if count.zero?
+
       (victories.count.to_f / count * 100).round(1)
     end
 
     def average_difficulty
-      return 0 if count == 0
+      return 0 if count.zero?
+
       average(:difficulty_rating).round(1)
     end
 
@@ -190,7 +197,8 @@ class BattleRecord < ApplicationRecord
     private
 
     def calculate_casualty_rate
-      return 0 if count == 0
+      return 0 if count.zero?
+
       battles_with_casualties = where.not(casualties: [nil, []]).count
       (battles_with_casualties.to_f / count * 100).round(1)
     end
@@ -211,7 +219,6 @@ class BattleRecord < ApplicationRecord
     when 'gym_battle' then 'gym_badge'
     when 'elite_four' then 'elite_four'
     when 'champion' then 'champion'
-    else nil
     end
   end
 
@@ -228,7 +235,7 @@ class BattleRecord < ApplicationRecord
     desc += " (#{location})" if location.present?
     desc += "\n結果: #{result_display}"
     desc += "\n参加ポケモン: #{participant_count}匹"
-    desc += "\n戦闘不能: #{ko_count}匹" if ko_count > 0
+    desc += "\n戦闘不能: #{ko_count}匹" if ko_count.positive?
     desc
   end
 
@@ -246,17 +253,16 @@ class BattleRecord < ApplicationRecord
     }
   end
 
+  # デフォルト
   def calculate_log_importance
-    importance = 3 # デフォルト
-
     # バトルタイプによる重要度調整
-    case battle_type
-    when 'champion' then importance = 5
-    when 'elite_four', 'gym_battle' then importance = 4
-    when 'legendary' then importance = 4
-    when 'rival' then importance = 3
-    else importance = 2
-    end
+    importance = case battle_type
+                 when 'champion' then 5
+                 when 'elite_four', 'gym_battle' then 4
+                 when 'legendary' then 4
+                 when 'rival' then 3
+                 else 2
+                 end
 
     # 結果による調整
     importance -= 1 if loss?

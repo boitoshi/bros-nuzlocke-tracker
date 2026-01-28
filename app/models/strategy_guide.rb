@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class StrategyGuide < ApplicationRecord
   belongs_to :target_boss, class_name: 'BossBattle', optional: true
 
@@ -33,29 +35,29 @@ class StrategyGuide < ApplicationRecord
   # メソッド
   def guide_type_display
     case guide_type
-    when "general" then "一般攻略"
-    when "team_building" then "パーティ構成"
-    when "specific_pokemon" then "特定ポケモン攻略"
-    when "nuzlocke_tips" then "ナズロック攻略"
-    when "early_game" then "序盤攻略"
-    when "mid_game" then "中盤攻略"
-    when "late_game" then "終盤攻略"
-    when "emergency" then "緊急時対策"
+    when 'general' then '一般攻略'
+    when 'team_building' then 'パーティ構成'
+    when 'specific_pokemon' then '特定ポケモン攻略'
+    when 'nuzlocke_tips' then 'ナズロック攻略'
+    when 'early_game' then '序盤攻略'
+    when 'mid_game' then '中盤攻略'
+    when 'late_game' then '終盤攻略'
+    when 'emergency' then '緊急時対策'
     else guide_type
     end
   end
 
   def guide_type_icon
     case guide_type
-    when "general" then "📝"
-    when "team_building" then "👥"
-    when "specific_pokemon" then "🎯"
-    when "nuzlocke_tips" then "⚡"
-    when "early_game" then "🌱"
-    when "mid_game" then "🌿"
-    when "late_game" then "🌳"
-    when "emergency" then "🚨"
-    else "📖"
+    when 'general' then '📝'
+    when 'team_building' then '👥'
+    when 'specific_pokemon' then '🎯'
+    when 'nuzlocke_tips' then '⚡'
+    when 'early_game' then '🌱'
+    when 'mid_game' then '🌿'
+    when 'late_game' then '🌳'
+    when 'emergency' then '🚨'
+    else '📖'
     end
   end
 
@@ -72,7 +74,7 @@ class StrategyGuide < ApplicationRecord
   end
 
   def target_boss_name
-    target_boss&.name || "汎用"
+    target_boss&.name || '汎用'
   end
 
   def display_title
@@ -81,15 +83,16 @@ class StrategyGuide < ApplicationRecord
 
   def tag_list
     return [] if tags.blank?
+
     tags.split(',').map(&:strip)
   end
 
   def tag_list=(new_tags)
-    if new_tags.is_a?(Array)
-      self.tags = new_tags.join(', ')
-    else
-      self.tags = new_tags
-    end
+    self.tags = if new_tags.is_a?(Array)
+                  new_tags.join(', ')
+                else
+                  new_tags
+                end
   end
 
   def increment_views!
@@ -101,7 +104,7 @@ class StrategyGuide < ApplicationRecord
   end
 
   def decrement_likes!
-    decrement!(:likes_count) if likes_count > 0
+    decrement!(:likes_count) if likes_count.positive?
   end
 
   def popularity_score
@@ -111,17 +114,17 @@ class StrategyGuide < ApplicationRecord
   # 検索メソッド
   def self.search(query)
     return all if query.blank?
-    
-    where("title LIKE ? OR content LIKE ? OR tags LIKE ?", 
+
+    where('title LIKE ? OR content LIKE ? OR tags LIKE ?',
           "%#{query}%", "%#{query}%", "%#{query}%")
   end
 
   def self.by_tags(tag_list)
     return all if tag_list.blank?
-    
-    tag_conditions = tag_list.map { |tag| "tags LIKE ?" }
+
+    tag_conditions = tag_list.map { |_tag| 'tags LIKE ?' }
     tag_values = tag_list.map { |tag| "%#{tag}%" }
-    
+
     where(tag_conditions.join(' OR '), *tag_values)
   end
 
@@ -130,22 +133,20 @@ class StrategyGuide < ApplicationRecord
     return if exists?(game_title: game_title, guide_type: :general)
 
     case game_title
-    when "red", "green", "blue", "yellow"
+    when 'red', 'green', 'blue', 'yellow'
       create_kanto_guides(game_title)
-    when "gold", "silver", "crystal"
+    when 'gold', 'silver', 'crystal'
       create_johto_guides(game_title)
     end
   end
 
-  private
-
   def self.create_kanto_guides(game_title)
     guides = [
       {
-        title: "ナズロック基本攻略 - カントー編",
+        title: 'ナズロック基本攻略 - カントー編',
         guide_type: :nuzlocke_tips,
         difficulty: 2,
-        author: "攻略班",
+        author: '攻略班',
         content: <<~CONTENT
           ## カントー地方ナズロック攻略の基本
 
@@ -161,10 +162,10 @@ class StrategyGuide < ApplicationRecord
         CONTENT
       },
       {
-        title: "パーティ構成の基本",
+        title: 'パーティ構成の基本',
         guide_type: :team_building,
         difficulty: 2,
-        author: "攻略班",
+        author: '攻略班',
         content: <<~CONTENT
           ## 理想的なパーティ構成
 

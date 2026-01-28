@@ -66,7 +66,7 @@ class StatisticsService
       {
         species: species,
         total_usage: data[:total],
-        survival_rate: data[:total] > 0 ? ((data[:total] - data[:dead]).to_f / data[:total] * 100).round(1) : 0,
+        survival_rate: data[:total].positive? ? ((data[:total] - data[:dead]).to_f / data[:total] * 100).round(1) : 0,
         deaths: data[:dead],
         popularity_score: calculate_popularity_score(data)
       }
@@ -94,8 +94,8 @@ class StatisticsService
       {
         level_range: level_range[:range],
         total_count: total,
-        survival_rate: total > 0 ? (alive.to_f / total * 100).round(1) : 0,
-        death_rate: total > 0 ? ((total - alive).to_f / total * 100).round(1) : 0
+        survival_rate: total.positive? ? (alive.to_f / total * 100).round(1) : 0,
+        death_rate: total.positive? ? ((total - alive).to_f / total * 100).round(1) : 0
       }
     end
   end
@@ -116,7 +116,7 @@ class StatisticsService
     end
 
     area_data.map do |area_name, data|
-      danger_rate = data[:total] > 0 ? (data[:deaths].to_f / data[:total] * 100).round(1) : 0
+      danger_rate = data[:total].positive? ? (data[:deaths].to_f / data[:total] * 100).round(1) : 0
 
       {
         area_name: area_name,
@@ -172,7 +172,7 @@ class StatisticsService
 
   def calculate_overall_survival_rate
     total = total_pokemon_count
-    return 0 if total == 0
+    return 0 if total.zero?
 
     deaths = total_death_count
     ((total - deaths).to_f / total * 100).round(1)
@@ -227,7 +227,7 @@ class StatisticsService
 
   def monthly_survival_rate(date)
     caught = pokemon_caught_in_month(date)
-    return 0 if caught == 0
+    return 0 if caught.zero?
 
     deaths = pokemon_deaths_in_month(date)
     ((caught - deaths).to_f / caught * 100).round(1)
@@ -237,7 +237,7 @@ class StatisticsService
   def calculate_popularity_score(data)
     # 使用回数 + 生存率ボーナス
     usage_score = data[:total] * 2
-    survival_bonus = data[:total] > 0 ? ((data[:total] - data[:dead]).to_f / data[:total]) * 10 : 0
+    survival_bonus = data[:total].positive? ? ((data[:total] - data[:dead]).to_f / data[:total]) * 10 : 0
     usage_score + survival_bonus
   end
 
@@ -259,9 +259,9 @@ class StatisticsService
     when 'pokemon_died'
       "#{event.pokemon.display_name}が戦闘不能になりました"
     when 'gym_battle'
-      "ジム戦に挑戦しました"
+      'ジム戦に挑戦しました'
     else
-      "イベントが発生しました"
+      'イベントが発生しました'
     end
   end
 
@@ -287,7 +287,7 @@ class StatisticsService
     {
       total: total_milestones,
       completed: completed_milestones,
-      progress_percentage: total_milestones > 0 ? (completed_milestones.to_f / total_milestones * 100).round(1) : 0
+      progress_percentage: total_milestones.positive? ? (completed_milestones.to_f / total_milestones * 100).round(1) : 0
     }
   end
 

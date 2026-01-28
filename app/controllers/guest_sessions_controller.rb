@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 class GuestSessionsController < ApplicationController
   # ゲストログイン機能 - デバッグ・デモ用 🎮
-  
+
   def create
     # デモユーザーとしてログイン
     demo_user = User.find_by(username: 'demouser')
-    
+
     if demo_user
       sign_in(demo_user)
       redirect_to root_path, notice: '🎮 ゲストユーザーとしてログインしました！デモ機能をお楽しみください ✨'
@@ -20,7 +22,7 @@ class GuestSessionsController < ApplicationController
       end
     end
   end
-  
+
   def destroy
     if user_signed_in? && current_user.username == 'demouser'
       sign_out(current_user)
