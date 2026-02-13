@@ -71,6 +71,7 @@ Rubyでコードを生成してくれる！コードのコメントは技術的�
 | docs/SECURITY_GUIDE.md | セキュリティガイド |
 | docs/COMMERCIAL_USE_GUIDE.md | 商用利用ガイド |
 | docs/POKEMON_DATABASE_DESIGN.md | ポケモン図鑑DB設計書 |
+| docs/CLOUD_RUN_GUIDE.md | Cloud Runデプロイガイド |
 | docs/SSH_CONNECTION_GUIDE_PUBLIC.md | SSH接続ガイド |
 
 ## 開発環境のセットアップと一般的なコマンド

@@ -1,0 +1,28 @@
+# Git関連
+.git
+.gitignore
+
+# ログ・一時ファイル
+log/*
+tmp/*
+storage/*
+
+# 開発用パッケージ（ビルドステージで再インストールする）
+vendor/bundle
+node_modules
+
+# 環境設定ファイル（機密情報）
+.env*
+config/master.key
+
+# テスト・ドキュメント（本番イメージには不要）
+test/
+docs/
+*.md
+
+# エディタ・IDE設定
+.vscode/
+.devcontainer/
+
+# その他不要ファイル
+cookies.txt
