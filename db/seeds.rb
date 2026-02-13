@@ -138,4 +138,50 @@ end
 # ルールはチャレンジ作成時にafter_createコールバックで自動生成されるため、
 # 独立したルール作成は不要（Ruleモデルはchallenge_idが必須）
 
+# =============================================================================
+# タイプ相性データ投入 ⚡
+# 18タイプ × 18タイプ = 324件の相性データ
+# =============================================================================
+puts "タイプ相性データを投入中..."
+TypeEffectiveness.seed_type_chart!
+puts "✅ タイプ相性データ投入完了！（#{TypeEffectiveness.count}件）"
+
+# =============================================================================
+# ポケモン図鑑データ投入 📖
+# 第1〜3世代（No.1〜No.386）= 386匹
+# =============================================================================
+puts "📖 ポケモン図鑑データを投入中..."
+
+# シードデータファイルを読み込み
+Dir[Rails.root.join('db/seeds/pokemon_species_gen*.rb')].sort.each do |file|
+  require file
+end
+
+# 各世代のデータを結合して投入
+all_pokemon_data = []
+all_pokemon_data.concat(POKEMON_GEN1_DATA) if defined?(POKEMON_GEN1_DATA)
+all_pokemon_data.concat(POKEMON_GEN2_DATA) if defined?(POKEMON_GEN2_DATA)
+all_pokemon_data.concat(POKEMON_GEN3_DATA) if defined?(POKEMON_GEN3_DATA)
+
+created_count = 0
+skipped_count = 0
+
+all_pokemon_data.each do |pokemon|
+  species = PokemonSpecies.find_or_initialize_by(national_id: pokemon[:national_id])
+  if species.new_record?
+    species.assign_attributes(
+      name_ja: pokemon[:name_ja],
+      name_en: pokemon[:name_en],
+      name_kana: pokemon[:name_kana],
+      data: pokemon[:data]
+    )
+    species.save!
+    created_count += 1
+  else
+    skipped_count += 1
+  end
+end
+
+puts "✅ ポケモン図鑑データ投入完了！（新規: #{created_count}匹, スキップ: #{skipped_count}匹, 合計: #{PokemonSpecies.count}匹）"
+
 puts "🎉 シードデータ作成完了!"

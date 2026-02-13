@@ -4,14 +4,44 @@ class PokemonSpecies < ApplicationRecord
   # バリデーション
   validates :national_id, presence: true, uniqueness: true
   validates :name_ja, presence: true
-  validates :generation, presence: true, inclusion: { in: 1..9 }
+  validate :validate_generation_in_data
   
-  # スコープ
-  scope :by_generation, ->(gen) { where(generation: gen) }
-  scope :by_type, ->(type) { where("types @> ?", [type].to_json) }
-  scope :legendary, -> { where(is_legendary: true) }
-  scope :mythical, -> { where(is_mythical: true) }
-  scope :regular, -> { where(is_legendary: false, is_mythical: false) }
+  # スコープ（generation/is_legendary/is_mythicalはdataカラムのJSON内に格納）
+  scope :by_generation, ->(gen) {
+    if connection.adapter_name == 'PostgreSQL'
+      where("data ->> 'generation' = ?", gen.to_s)
+    else
+      where("json_extract(data, '$.generation') = ?", gen)
+    end
+  }
+  scope :by_type, ->(type) {
+    if connection.adapter_name == 'PostgreSQL'
+      where("data -> 'types' @> ?", [type].to_json)
+    else
+      where("json_extract(data, '$.types') LIKE ?", "%#{type}%")
+    end
+  }
+  scope :legendary, -> {
+    if connection.adapter_name == 'PostgreSQL'
+      where("(data ->> 'is_legendary')::boolean = true")
+    else
+      where("json_extract(data, '$.is_legendary') = 1")
+    end
+  }
+  scope :mythical, -> {
+    if connection.adapter_name == 'PostgreSQL'
+      where("(data ->> 'is_mythical')::boolean = true")
+    else
+      where("json_extract(data, '$.is_mythical') = 1")
+    end
+  }
+  scope :regular, -> {
+    if connection.adapter_name == 'PostgreSQL'
+      where("((data ->> 'is_legendary')::boolean IS NOT TRUE) AND ((data ->> 'is_mythical')::boolean IS NOT TRUE)")
+    else
+      where("(json_extract(data, '$.is_legendary') IS NULL OR json_extract(data, '$.is_legendary') != 1) AND (json_extract(data, '$.is_mythical') IS NULL OR json_extract(data, '$.is_mythical') != 1)")
+    end
+  }
   
   # 検索スコープ 🔍（SQLite/PostgreSQL両対応）
   scope :search_by_name, ->(query) {
@@ -124,6 +154,16 @@ class PokemonSpecies < ApplicationRecord
   end
 
   private
+
+  # generationをdata JSON内から検証するカスタムバリデーション
+  def validate_generation_in_data
+    gen = data&.dig('generation')
+    if gen.nil?
+      errors.add(:base, '世代情報(generation)がdataに含まれていません')
+    elsif !(1..9).include?(gen.to_i)
+      errors.add(:base, '世代情報(generation)は1〜9の範囲で指定してください')
+    end
+  end
 
   def type_color(type_name)
     case type_name&.downcase
