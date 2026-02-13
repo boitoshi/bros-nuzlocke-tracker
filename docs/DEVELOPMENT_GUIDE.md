@@ -5,13 +5,165 @@ Rails初心者でも理解できるよう、具体例とともに解説してい
 
 ## 📚 目次
 
-1. [開発環境の準備](#開発環境の準備)
-2. [プロジェクト構成の理解](#プロジェクト構成の理解)
-3. [機能別開発ガイド](#機能別開発ガイド)
-4. [データベース操作](#データベース操作)
-5. [フロントエンド修正](#フロントエンド修正)
-6. [テスト作成](#テスト作成)
-7. [デプロイ手順](#デプロイ手順)
+1. [アプリ概要](#アプリ概要)
+2. [クイックリファレンス](#クイックリファレンス)
+3. [開発環境の準備](#開発環境の準備)
+4. [プロジェクト構成の理解](#プロジェクト構成の理解)
+5. [機能別開発ガイド](#機能別開発ガイド)
+6. [データベース操作](#データベース操作)
+7. [フロントエンド修正](#フロントエンド修正)
+8. [テスト作成](#テスト作成)
+9. [デプロイ手順](#デプロイ手順)
+
+---
+
+## 🎯 アプリ概要
+
+### このアプリの目的
+ポケモンナズロックチャレンジの記録・管理を簡単にする！
+
+### メイン機能（4つ）
+
+| 機能 | 説明 | 主要ファイル |
+|------|------|-------------|
+| 👤 ユーザー管理 | ログイン・ログアウト・アカウント登録（Devise使用） | `User`モデル |
+| 🎮 チャレンジ管理 | ナズロックチャレンジの作成・進行状況管理 | `ChallengesController`, `Challenge`モデル |
+| 🐾 ポケモン管理 | 捕獲ポケモンの記録・パーティ管理・状態管理 | `PokemonsController`, `Pokemon`モデル |
+| 📊 統計ダッシュボード | チャレンジ成功率・捕獲統計・グラフ表示（Chart.js） | `DashboardController` |
+
+### 技術構成
+
+- **フロントエンド**: Bootstrap 5 + Stimulus + Turbo + Chart.js
+- **バックエンド**: Ruby on Rails 8 + PostgreSQL + Devise
+- **デプロイ**: Render.com（`render.yaml`で設定）
+
+---
+
+## ⚡ クイックリファレンス
+
+### よく使うコマンド一覧
+
+```bash
+# 🖥️ サーバー・コンソール
+bin/rails server                 # 開発サーバー起動
+bin/rails console               # Railsコンソール
+
+# 🗄️ データベース
+bin/rails db:migrate            # マイグレーション実行
+bin/rails db:seed              # 初期データ投入
+bin/rails db:reset             # DB完全リセット
+bin/rails db:rollback          # マイグレーション取り消し
+
+# 🧪 テスト
+bin/rails test                 # 全テスト実行
+bin/rails test test/models/    # モデルテストのみ
+bin/rails test test/controllers/ # コントローラーテストのみ
+
+# 🎨 アセット
+yarn install                   # JS依存関係更新
+bin/rails assets:precompile    # アセットビルド
+bin/rails assets:clobber       # アセットキャッシュクリア
+
+# 🔧 生成コマンド
+bin/rails generate model Name field:type
+bin/rails generate controller Names action1 action2
+bin/rails generate migration AddFieldToModel field:type
+```
+
+### よく使うActiveRecordメソッド
+
+```ruby
+# データ取得
+Pokemon.all                    # 全件取得
+Pokemon.find(1)               # ID指定取得
+Pokemon.find_by(name: "ピカチュウ")  # 条件指定取得
+Pokemon.where(level: 5)       # 条件で絞り込み
+Pokemon.order(:level)         # ソート
+Pokemon.limit(10)             # 件数制限
+
+# データ作成
+pokemon = Pokemon.new(name: "ピカチュウ")
+pokemon.save                  # 保存
+Pokemon.create(name: "ピカチュウ")  # 作成と保存を同時
+
+# データ更新
+pokemon = Pokemon.find(1)
+pokemon.update(name: "ライチュウ")
+
+# データ削除
+pokemon = Pokemon.find(1)
+pokemon.destroy
+
+# 統計・集計
+Pokemon.count                 # 件数
+Pokemon.group(:species).count # 種族別カウント
+Pokemon.average(:level)       # レベル平均
+Pokemon.maximum(:level)       # 最大レベル
+```
+
+### Bootstrapクラス早見表
+
+```erb
+<!-- レイアウト -->
+<div class="container">        <!-- 固定幅コンテナ -->
+<div class="container-fluid">  <!-- 全幅コンテナ -->
+<div class="row">              <!-- 行 -->
+<div class="col-md-6">         <!-- 列（中画面で6/12幅） -->
+
+<!-- ボタン -->
+<%= link_to "保存", path, class: "btn btn-primary" %>
+<%= link_to "編集", path, class: "btn btn-secondary" %>
+<%= link_to "削除", path, class: "btn btn-danger" %>
+
+<!-- フォーム -->
+<div class="mb-3">
+  <%= form.label :name, class: "form-label" %>
+  <%= form.text_field :name, class: "form-control" %>
+</div>
+
+<!-- カード -->
+<div class="card">
+  <div class="card-header">タイトル</div>
+  <div class="card-body">内容</div>
+</div>
+
+<!-- バッジ -->
+<span class="badge bg-primary">プライマリ</span>
+<span class="badge bg-success">成功</span>
+<span class="badge bg-danger">危険</span>
+
+<!-- アラート -->
+<div class="alert alert-success">成功メッセージ</div>
+<div class="alert alert-danger">エラーメッセージ</div>
+```
+
+### よくあるエラーと対処法
+
+```bash
+# ❌ サーバーが起動しない → Gemfileの依存関係エラー
+bundle install
+
+# ❌ マイグレーションエラー → データベースリセット
+bin/rails db:drop db:create db:migrate db:seed
+
+# ❌ アセットが読み込まれない → アセットリビルド
+bin/rails assets:clobber
+bin/rails assets:precompile
+
+# ❌ テストエラー → フィクスチャ確認、データベース状態確認
+bin/rails db:test:prepare
+
+# ❌ ルーティングエラー → routes.rb確認
+bin/rails routes | grep pokemon
+```
+
+### 開発のコツ
+
+1. **小さく始める**: 最小限の機能から実装
+2. **テストを書く**: バグを早期発見
+3. **コミットを細かく**: 変更履歴を明確に
+4. **命名を意識**: わかりやすい変数名・メソッド名
+5. **READMEを更新**: チーム開発では重要
 
 ---
 
@@ -690,6 +842,15 @@ def pokemon_params
   params.require(:pokemon).permit(:nickname, :species, :level, :image)
 end
 ```
+
+---
+
+## 🔗 参考リンク
+
+- [Rails Guide (日本語)](https://railsguides.jp/)
+- [Bootstrap 5 Documentation](https://getbootstrap.com/docs/5.0/)
+- [Ruby on Rails API](https://api.rubyonrails.org/)
+- [Render.com Docs](https://render.com/docs)
 
 ---
 

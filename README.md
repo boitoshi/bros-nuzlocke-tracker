@@ -17,10 +17,10 @@
 
 ## 🛠 技術スタック（シンプル構成）
 
-- **Backend**: Ruby on Rails 8.0 + PostgreSQL
+- **Backend**: Ruby on Rails 8.0 + PostgreSQL (Supabase) / テスト環境: SQLite
 - **Frontend**: Bootstrap 5 + Stimulus + Turbo
 - **認証**: Devise
-- **デプロイ**: Render.com
+- **デプロイ**: Render.com（Cloud Run移行予定）
 - **アセット**: Importmap + Sass
 
 ## 🚀 開発環境セットアップ
@@ -29,7 +29,7 @@
 - **Ruby**: system (GitHub Codespaces推奨)
 - **Rails**: 8.0.2
 - **Node.js**: 18+ (Bootstrap/Stimulus用)
-- **PostgreSQL**: 開発時はローカル、本番はRender管理
+- **PostgreSQL**: 本番はSupabase、テストはSQLite
 
 ### セットアップ手順
 
@@ -140,7 +140,7 @@ git push origin main
 
 ### デプロイ構成（render.yaml）
 - **Web Service**: Rails アプリケーション
-- **Database**: PostgreSQL (Render管理)
+- **Database**: PostgreSQL (Supabase)
 - **環境変数**: 自動設定（DATABASE_URL等）
 
 ## 📁 プロジェクト構成
@@ -148,22 +148,30 @@ git push origin main
 ```
 bros-nuzlocke-tracker/
 ├── app/
-│   ├── controllers/         # 4つのメインコントローラー
+│   ├── controllers/         # 12コントローラー
 │   │   ├── challenges_controller.rb    # チャレンジ管理
 │   │   ├── pokemons_controller.rb      # ポケモン管理
+│   │   ├── battle_records_controller.rb # バトル記録
+│   │   ├── team_builder_controller.rb  # チームビルダー
 │   │   ├── dashboard_controller.rb     # 統計・ダッシュボード
-│   │   └── home_controller.rb          # トップページ
-│   ├── models/              # 4つのメインモデル
+│   │   ├── statistics_controller.rb    # 詳細統計
+│   │   ├── boss_battles_controller.rb  # ボス戦情報
+│   │   └── ...
+│   ├── models/              # 14モデル
 │   │   ├── user.rb          # ユーザー情報
 │   │   ├── challenge.rb     # チャレンジ情報
 │   │   ├── pokemon.rb       # ポケモン情報
-│   │   └── area.rb          # ゲーム内エリア
+│   │   ├── battle_record.rb # バトル記録
+│   │   ├── area.rb          # ゲーム内エリア
+│   │   ├── boss_battle.rb   # ボス戦データ
+│   │   └── ...
 │   └── views/               # HTMLテンプレート
 ├── config/
-│   ├── database.yml         # DB設定（シンプル構成）
-│   └── routes.rb           # URL設定
-├── render.yaml             # デプロイ設定
-└── README.md              # このファイル
+│   ├── database.yml         # DB設定
+│   └── routes.rb            # URL設定
+├── docs/                    # ドキュメント（8ファイル）
+├── render.yaml              # Renderデプロイ設定
+└── README.md                # このファイル
 ```
 
 ## 🎮 主要機能の詳細
@@ -240,9 +248,16 @@ bin/rails importmap:install         # importmap再インストール
 
 ## 📚 関連ドキュメント
 
-- [**開発ガイド**](DEVELOPMENT_GUIDE.md) - 機能開発・修正の詳細手順
-- [**シンプルガイド**](SIMPLE_GUIDE.md) - アプリケーション構成の解説
-- [**デプロイガイド**](SSH_CONNECTION_GUIDE.md) - 本番環境の設定方法
+| ドキュメント | 内容 |
+|---|---|
+| [開発ガイド](docs/DEVELOPMENT_GUIDE.md) | 環境構築・機能追加・テスト |
+| [データセットアップ](docs/DATA_SETUP_GUIDE.md) | DB・シード・フィクスチャ |
+| [Supabaseガイド](docs/SUPABASE_GUIDE.md) | Supabase設定・接続 |
+| [トラブルシューティング](docs/TROUBLESHOOTING_GUIDE.md) | よくある問題と解決 |
+| [要件定義書](docs/REQUIREMENTS.md) | 機能要件・非機能要件 |
+| [セキュリティ](docs/SECURITY_GUIDE.md) | セキュリティ対策 |
+| [商用利用](docs/COMMERCIAL_USE_GUIDE.md) | 商用利用ガイド |
+| [ポケモン図鑑DB](docs/POKEMON_DATABASE_DESIGN.md) | 図鑑データベース設計 |
 
 ## 🤝 コントリビューション
 

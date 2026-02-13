@@ -3,40 +3,41 @@ require "test_helper"
 
 class PokemonSpeciesTest < ActiveSupport::TestCase
   def setup
+    # フィクスチャのnational_id: 25と重複しないよう、別の番号を使用
     @pokemon_species = PokemonSpecies.new(
-      national_id: 25,
-      name_ja: "ピカチュウ",
-      name_en: "Pikachu",
-      name_kana: "ピカチュウ",
+      national_id: 9999,
+      name_ja: "テストポケモン",
+      name_en: "TestPokemon",
+      name_kana: "テストポケモン",
       data: {
-        types: ["electric"],
-        generation: 1,
-        height: 4,
-        weight: 60,
-        stats: {
-          hp: 35,
-          attack: 55,
-          defense: 40,
-          "special-attack": 50,
-          "special-defense": 50,
-          speed: 90
+        "types" => ["electric"],
+        "generation" => 1,
+        "height" => 4,
+        "weight" => 60,
+        "stats" => {
+          "hp" => 35,
+          "attack" => 55,
+          "defense" => 40,
+          "special-attack" => 50,
+          "special-defense" => 50,
+          "speed" => 90
         },
-        abilities: [
+        "abilities" => [
           {
-            name: "せいでんき",
-            description: "接触技を受けると30%の確率で相手をまひ状態にする。",
-            is_hidden: false
+            "name" => "せいでんき",
+            "description" => "接触技を受けると30%の確率で相手をまひ状態にする。",
+            "is_hidden" => false
           }
         ],
-        moves: [
-          { name: "でんきショック", type: "electric", power: 40 }
+        "moves" => [
+          { "name" => "でんきショック", "type" => "electric", "power" => 40 }
         ]
       }
     )
   end
 
   test "should be valid" do
-    assert @pokemon_species.valid?
+    assert @pokemon_species.valid?, "Errors: #{@pokemon_species.errors.full_messages}"
   end
 
   test "national_id should be present" do
@@ -61,13 +62,14 @@ class PokemonSpeciesTest < ActiveSupport::TestCase
   end
 
   test "should return correct stats_data" do
+    # JSONから読み込むと文字列キーになるため、文字列キーで比較
     expected = {
-      hp: 35,
-      attack: 55,
-      defense: 40,
-      "special-attack": 50,
-      "special-defense": 50,
-      speed: 90
+      "hp" => 35,
+      "attack" => 55,
+      "defense" => 40,
+      "special-attack" => 50,
+      "special-defense" => 50,
+      "speed" => 90
     }
     assert_equal expected, @pokemon_species.stats_data
   end
@@ -81,48 +83,48 @@ class PokemonSpeciesTest < ActiveSupport::TestCase
   end
 
   test "should return correct formatted dex number" do
-    assert_equal "#025", @pokemon_species.formatted_dex_number
+    assert_equal "#9999", @pokemon_species.formatted_dex_number
   end
 
   test "should return correct sprite URL" do
-    expected = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png"
+    expected = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9999.png"
     assert_equal expected, @pokemon_species.sprite_url
   end
 
   test "should return correct official artwork URL" do
-    expected = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png"
+    expected = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/9999.png"
     assert_equal expected, @pokemon_species.official_artwork_url
   end
 
   test "should return display_name preferring Japanese" do
-    assert_equal "ピカチュウ", @pokemon_species.display_name
+    assert_equal "テストポケモン", @pokemon_species.display_name
   end
 
   test "should return English name when Japanese is blank" do
     @pokemon_species.name_ja = ""
-    assert_equal "Pikachu", @pokemon_species.display_name
+    assert_equal "TestPokemon", @pokemon_species.display_name
   end
 
   test "should search by Japanese name" do
-    @pokemon_species.save
-    results = PokemonSpecies.search_by_name("ピカチュウ")
+    @pokemon_species.save!
+    results = PokemonSpecies.search_by_name("テスト")
     assert_includes results, @pokemon_species
   end
 
   test "should search by English name" do
-    @pokemon_species.save
-    results = PokemonSpecies.search_by_name("Pikachu")
+    @pokemon_species.save!
+    results = PokemonSpecies.search_by_name("Test")
     assert_includes results, @pokemon_species
   end
 
   test "should filter by type" do
-    @pokemon_species.save
+    @pokemon_species.save!
     results = PokemonSpecies.filter_by_type("electric")
     assert_includes results, @pokemon_species
   end
 
   test "should filter by generation" do
-    @pokemon_species.save
+    @pokemon_species.save!
     results = PokemonSpecies.filter_by_generation(1)
     assert_includes results, @pokemon_species
   end

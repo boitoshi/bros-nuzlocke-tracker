@@ -1,26 +1,76 @@
-# 最小限のRuboCop設定（エラー回避）
+# RuboCop設定 - ポケモンNuzlockeトラッカー
 AllCops:
   TargetRubyVersion: 3.3
-  NewCops: disable  # 新しいCopは無効化してエラー回避
+  NewCops: enable
   Exclude:
     - 'bin/**/*'
-    - 'db/**/*'
     - 'node_modules/**/*'
     - 'vendor/**/*'
     - 'tmp/**/*'
     - 'log/**/*'
     - 'storage/**/*'
-    - 'test/**/*'
-    - 'config/**/*'
+    - 'db/schema.rb'        # 自動生成ファイルは除外
+    - 'db/migrate/**/*'     # マイグレーションはそのまま
+    - 'config/initializers/devise.rb'  # Deviseの自動生成設定
 
-# 日本語コメント許可
+# Rails向けCopは rubocop-rails gem を有効化したら使う
+# require:
+#   - rubocop-rails
+
+# 日本語コメント許可（プロジェクトの慣例）
 Style/AsciiComments:
   Enabled: false
 
-# 文字列リテラル（あまり厳格にしない）
+# 文字列リテラル: シングルクォート推奨だが強制しない
 Style/StringLiterals:
   Enabled: false
 
-# 長い行を許可
+# 長い行を許可（ビューヘルパーやルーティングで長くなりがち）
 Layout/LineLength:
+  Max: 150
+  Exclude:
+    - 'config/routes.rb'
+    - 'db/seeds.rb'
+
+# メソッドの長さ制限を緩和（モデルに複雑なロジックあり）
+Metrics/MethodLength:
+  Max: 30
+
+# クラスの長さ制限を緩和（Pokemonモデルが479行）
+Metrics/ClassLength:
+  Max: 500
+
+# ブロックの長さ制限を緩和
+Metrics/BlockLength:
+  Exclude:
+    - 'config/**/*'
+    - 'test/**/*'
+    - 'db/seeds.rb'
+
+# ABCサイズ制限を緩和
+Metrics/AbcSize:
+  Max: 40
+
+# 循環的複雑度の制限を緩和
+Metrics/CyclomaticComplexity:
+  Max: 15
+
+# 認知的複雑度の制限を緩和
+Metrics/PerceivedComplexity:
+  Max: 15
+
+# ドキュメントコメント不要（日本語コメントで対応済み）
+Style/Documentation:
+  Enabled: false
+
+# frozen_string_literal 強制しない
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+# ガード節の強制を緩和
+Style/GuardClause:
+  Enabled: false
+
+# if/unless修飾子の強制を緩和
+Style/IfUnlessModifier:
   Enabled: false

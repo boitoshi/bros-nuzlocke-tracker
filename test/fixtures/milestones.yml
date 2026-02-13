@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  challenge: one
+  name: "ニビジムバッジ"
+  milestone_type: "gym_badge"
+  description: "タケシに勝利してグレーバッジを獲得"
+  completed_at: <%= 5.days.ago %>
+  order_index: 1
+  is_required: true
+
+two:
+  challenge: one
+  name: "ハナダジムバッジ"
+  milestone_type: "gym_badge"
+  description: "カスミに勝利してブルーバッジを獲得"
+  completed_at: null
+  order_index: 2
+  is_required: true

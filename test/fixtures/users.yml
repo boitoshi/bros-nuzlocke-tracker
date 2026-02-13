@@ -2,12 +2,14 @@
 
 one:
   email: user1@example.com
+  username: testuser1
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>
 
-two:  
+two:
   email: user2@example.com
+  username: testuser2
   encrypted_password: <%= Devise::Encryptor.digest(User, 'password') %>
   created_at: <%= Time.current %>
   updated_at: <%= Time.current %>

@@ -26,5 +26,7 @@
     "ms-python.python": 1,
     "GitHub.copilot": 2,
     "shopify.ruby-lsp": 3
-  }
+  },
+  "python-envs.defaultEnvManager": "ms-python.python:system",
+  "python-envs.pythonProjects": []
 }

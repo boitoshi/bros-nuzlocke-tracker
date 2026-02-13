@@ -2,6 +2,8 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
+puts "🌱 シードデータの作成を開始します..."
+
 # 🔑 検証用管理者ユーザー作成
 admin_email = "admin@bros-nuzlocke-tracker.com"
 admin_username = "admin"
@@ -14,9 +16,7 @@ admin_user = User.find_or_create_by(email: admin_email) do |user|
 end
 
 puts "🔑 検証用管理者アカウント作成完了!"
-puts "Username: #{admin_username}"
-puts "Email: #{admin_email}"
-puts "Password: #{admin_password}"
+puts "   Username: #{admin_username} / Email: #{admin_email}"
 
 # 👤 テスト用一般ユーザー
 test_email = "test@example.com"
@@ -30,9 +30,7 @@ test_user = User.find_or_create_by(email: test_email) do |user|
 end
 
 puts "👤 テスト用一般ユーザー作成完了!"
-puts "Username: #{test_username}"
-puts "Email: #{test_email}"
-puts "Password: #{test_password}"
+puts "   Username: #{test_username} / Email: #{test_email}"
 
 # 🎮 追加のテストユーザー（統計ダッシュボード確認用）
 demo_email = "demo@example.com"
@@ -46,95 +44,98 @@ demo_user = User.find_or_create_by(email: demo_email) do |user|
 end
 
 puts "🎮 デモユーザー作成完了!"
-puts "Username: #{demo_username}"
-puts "Email: #{demo_email}"
-puts "Password: #{demo_password}"
+puts "   Username: #{demo_username} / Email: #{demo_email}"
+
+# 🌍 エリアデータの作成（ポケモンより先に作成する必要あり）
+emerald_areas = [
+  { name: "ミシロタウン", area_type: "city", game_title: "emerald", order_index: 0 },
+  { name: "コトキタウン", area_type: "city", game_title: "emerald", order_index: 1 },
+  { name: "ルート101", area_type: "route", game_title: "emerald", order_index: 2 },
+  { name: "ルート102", area_type: "route", game_title: "emerald", order_index: 3 },
+  { name: "トウカシティ", area_type: "city", game_title: "emerald", order_index: 4 },
+  { name: "カナズミシティ", area_type: "city", game_title: "emerald", order_index: 5 },
+  { name: "ルート104", area_type: "route", game_title: "emerald", order_index: 6 },
+  { name: "トウカの森", area_type: "forest", game_title: "emerald", order_index: 7 },
+  { name: "カナズミジム", area_type: "gym", game_title: "emerald", order_index: 8 },
+  { name: "ムロタウン", area_type: "city", game_title: "emerald", order_index: 9 },
+  { name: "ムロジム", area_type: "gym", game_title: "emerald", order_index: 10 },
+  { name: "カイナシティ", area_type: "city", game_title: "emerald", order_index: 11 },
+  { name: "キンセツシティ", area_type: "city", game_title: "emerald", order_index: 12 },
+  { name: "キンセツジム", area_type: "gym", game_title: "emerald", order_index: 13 },
+  { name: "シダケタウン", area_type: "city", game_title: "emerald", order_index: 14 }
+]
+
+emerald_areas.each do |area_data|
+  Area.find_or_create_by(name: area_data[:name], game_title: area_data[:game_title]) do |area|
+    area.area_type = area_data[:area_type]
+    area.order_index = area_data[:order_index]
+  end
+end
+
+puts "🗺️ エメラルド用エリアデータ作成完了! (#{emerald_areas.length}箇所)"
 
 # 🎮 サンプルデータ作成（デモユーザー用）
 if demo_user&.persisted? && demo_user.challenges.empty?
-  # サンプルチャレンジ作成
+  # サンプルチャレンジ作成（descriptionカラムは存在しないので除外）
   demo_challenge = demo_user.challenges.create!(
     name: "デモンストレーション ナズロック",
     game_title: "emerald",
-    description: "統計ダッシュボード確認用のサンプルデータです", 
-    status: "in_progress"
+    status: "in_progress",
+    started_at: 30.days.ago
   )
-  
+
   puts "🎮 デモチャレンジ作成完了!"
-  
+
   # サンプルポケモンと統計データを作成
   if demo_challenge.persisted?
-    # サンプルエリア取得
-    areas = Area.limit(10).to_a
-    
-    # サンプルポケモンデータ
+    # エリアを取得（先に作成済み）
+    areas = Area.where(game_title: "emerald").order(:order_index).to_a
+
+    # サンプルポケモンデータ（正しいカラム名: nickname, in_party）
     sample_pokemons = [
-      { name: "アチャモ", species: "アチャモ", level: 25, status: "alive", is_party_member: true, area: areas[0] },
-      { name: "ラルトス", species: "ラルトス", level: 18, status: "alive", is_party_member: true, area: areas[1] },
-      { name: "マクノシタ", species: "マクノシタ", level: 20, status: "dead", is_party_member: false, area: areas[2] },
-      { name: "エネコ", species: "エネコ", level: 15, status: "boxed", is_party_member: false, area: areas[3] },
-      { name: "キャモメ", species: "キャモメ", level: 22, status: "alive", is_party_member: true, area: areas[4] },
-      { name: "タマザラシ", species: "タマザラシ", level: 19, status: "alive", is_party_member: true, area: areas[5] }
+      { nickname: "アチャモ", species: "アチャモ", level: 25, status: "alive", in_party: true, area: areas[0], primary_type: "fire" },
+      { nickname: "ラルトス", species: "ラルトス", level: 18, status: "alive", in_party: true, area: areas[1], primary_type: "psychic" },
+      { nickname: "マクノシタ", species: "マクノシタ", level: 20, status: "dead", in_party: false, area: areas[2], primary_type: "fighting" },
+      { nickname: "エネコ", species: "エネコ", level: 15, status: "boxed", in_party: false, area: areas[3], primary_type: "normal" },
+      { nickname: "キャモメ", species: "キャモメ", level: 22, status: "alive", in_party: true, area: areas[4], primary_type: "water", secondary_type: "flying" },
+      { nickname: "タマザラシ", species: "タマザラシ", level: 19, status: "alive", in_party: true, area: areas[5], primary_type: "ice", secondary_type: "water" }
     ]
-    
+
     sample_pokemons.each do |pokemon_data|
       demo_challenge.pokemons.create!(
-        name: pokemon_data[:name],
+        nickname: pokemon_data[:nickname],
         species: pokemon_data[:species],
         level: pokemon_data[:level],
         status: pokemon_data[:status],
-        is_party_member: pokemon_data[:is_party_member],
+        in_party: pokemon_data[:in_party],
         area: pokemon_data[:area],
+        primary_type: pokemon_data[:primary_type],
+        secondary_type: pokemon_data[:secondary_type],
         caught_at: rand(30.days).seconds.ago
       )
     end
-    
-    # マイルストーンデータ
+
+    # マイルストーンデータ（order_indexは必須）
     demo_challenge.milestones.create!([
-      { milestone_type: "gym_badge", name: "カナズミジム", description: "ツツジに勝利", completed_at: 10.days.ago },
-      { milestone_type: "gym_badge", name: "ムロジム", description: "トウキに勝利", completed_at: 8.days.ago },
-      { milestone_type: "gym_badge", name: "キンセツジム", description: "テッセンに勝利", completed_at: 5.days.ago }
+      { milestone_type: "gym_badge", name: "カナズミジム", description: "ツツジに勝利", completed_at: 10.days.ago, order_index: 1 },
+      { milestone_type: "gym_badge", name: "ムロジム", description: "トウキに勝利", completed_at: 8.days.ago, order_index: 2 },
+      { milestone_type: "gym_badge", name: "キンセツジム", description: "テッセンに勝利", completed_at: 5.days.ago, order_index: 3 }
     ])
-    
-    # イベントログデータ
+
+    # イベントログデータ（title, occurred_atは必須）
     demo_challenge.event_logs.create!([
-      { event_type: "pokemon_caught", description: "アチャモを捕獲", created_at: 20.days.ago },
-      { event_type: "pokemon_caught", description: "ラルトスを捕獲", created_at: 18.days.ago },
-      { event_type: "pokemon_died", description: "マクノシタが戦闘不能", created_at: 15.days.ago },
-      { event_type: "gym_battle", description: "カナズミジムに挑戦", created_at: 10.days.ago },
-      { event_type: "gym_battle", description: "ムロジムに挑戦", created_at: 8.days.ago }
+      { event_type: "pokemon_caught", title: "アチャモを捕獲！", description: "最初のパートナー", occurred_at: 20.days.ago },
+      { event_type: "pokemon_caught", title: "ラルトスを捕獲！", description: "ルート102で遭遇", occurred_at: 18.days.ago },
+      { event_type: "pokemon_died", title: "マクノシタが戦闘不能...", description: "カナズミジムで倒された", occurred_at: 15.days.ago, importance: 5 },
+      { event_type: "gym_battle", title: "カナズミジムに挑戦", description: "ツツジに勝利！", occurred_at: 10.days.ago, importance: 4 },
+      { event_type: "gym_battle", title: "ムロジムに挑戦", description: "トウキに勝利！", occurred_at: 8.days.ago, importance: 4 }
     ])
-    
+
     puts "📊 デモ用統計データ作成完了! (ポケモン: #{sample_pokemons.length}匹, マイルストーン: 3個, イベント: 5個)"
   end
 end
 
-# 🌍 エリアデータの作成
-areas_data = [
-  "ミシロタウン", "コトキタウン", "トウカシティ", "カナズミシティ",
-  "ムロタウン", "カイナシティ", "キンセツシティ", "シダケタウン",
-  "ハジツゲタウン", "フエンタウン", "ヒワマキシティ", "ミナモシティ",
-  "トクサネシティ", "ルネシティ", "サイユウシティ"
-]
+# ルールはチャレンジ作成時にafter_createコールバックで自動生成されるため、
+# 独立したルール作成は不要（Ruleモデルはchallenge_idが必須）
 
-areas_data.each do |area_name|
-  Area.find_or_create_by(name: area_name)
-end
-
-puts "🗺️ エリアデータ作成完了! (#{areas_data.length}箇所)"
-
-# 📏 ルールデータの作成  
-rules_data = [
-  "各エリアで最初に出会ったポケモンのみ捕獲可能",
-  "ポケモンが気絶したら永久にボックス送り",
-  "すべてのポケモンにニックネームをつける",
-  "重複したポケモンは捕獲しない",
-  "レベル制限: ジムリーダーのエースレベル+2まで"
-]
-
-rules_data.each do |rule_description|
-  Rule.find_or_create_by(description: rule_description)
-end
-
-puts "📏 ルールデータ作成完了! (#{rules_data.length}個)"
 puts "🎉 シードデータ作成完了!"

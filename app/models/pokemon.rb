@@ -5,7 +5,8 @@ class Pokemon < ApplicationRecord
   # バトル関連の関連
   has_many :battle_participants, dependent: :destroy
   has_many :battle_records, through: :battle_participants
-  has_many :mvp_battles, class_name: 'BattleRecord', foreign_key: 'mvp_pokemon_id'
+  has_many :mvp_battles, class_name: 'BattleRecord', foreign_key: 'mvp_pokemon_id', dependent: :nullify
+  has_many :event_logs, dependent: :nullify
 
   # ステータスの定義
   enum :status, {
@@ -244,19 +245,6 @@ class Pokemon < ApplicationRecord
     summary
   end
 
-  private
-
-  def calculate_win_rate
-    return 0 if battle_records.empty?
-    (battle_records.victories.count.to_f / battle_records.count * 100).round(1)
-  end
-
-  def calculate_battle_survival_rate
-    return 100 if battle_participants.empty?
-    survivors = battle_participants.survivors.count
-    (survivors.to_f / battle_participants.count * 100).round(1)
-  end
-
   # ステータス計算機能 🎯
   def ivs
     {
@@ -363,6 +351,17 @@ class Pokemon < ApplicationRecord
   end
 
   private
+
+  def calculate_win_rate
+    return 0 if battle_records.empty?
+    (battle_records.victories.count.to_f / battle_records.count * 100).round(1)
+  end
+
+  def calculate_battle_survival_rate
+    return 100 if battle_participants.empty?
+    survivors = battle_participants.survivors.count
+    (survivors.to_f / battle_participants.count * 100).round(1)
+  end
 
   def party_size_limit
     return unless in_party? && challenge_id

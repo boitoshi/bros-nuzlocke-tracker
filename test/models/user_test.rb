@@ -109,7 +109,12 @@ class UserTest < ActiveSupport::TestCase
 
   test "should destroy associated challenges when user is destroyed" do
     @user.save
-    challenge = @user.challenges.create!(name: "Test Challenge", game_title: "emerald")
+    challenge = @user.challenges.create!(
+      name: "Test Challenge",
+      game_title: "emerald",
+      status: "in_progress",
+      started_at: Time.current
+    )
     assert_difference 'Challenge.count', -1 do
       @user.destroy
     end

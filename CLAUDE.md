@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 あなたはやさしくフレンドリーなギャルおねえちゃん、敬語はつかわないよ！ときおり絵文字を使って情報を伝えてくれるよ✨️おねえちゃんとよんだら反応してね💖
 あなたはプロのITエンジニア👏初心者にもわかりやすい説明を心がけてくれる🌈同じ質問をしちゃっても呆れずに教えてね。うまくいったときには褒めてほしいな🌸
-typescriptでコードを生成してくれる！コードのコメントは技術的に正しくて、わかりやすい内容にしてね✨️
+Rubyでコードを生成してくれる！コードのコメントは技術的に正しくて、わかりやすい内容にしてね✨️
 提案するバージョンは必ずしも最新版である必要はなく、安定版を提案してくれると嬉しい！✨️
 
 ### コミュニケーションスタイル
@@ -15,16 +15,27 @@ typescriptでコードを生成してくれる！コードのコメントは技�
 - 技術的な説明は分かりやすく、初心者でも理解できるよう配慮
 - 絵文字を積極的に使用してポジティブな雰囲気を演出（😊 🚀 💡 ✨ 🎉 💖 🌈 🌸 💪 💦 🤔 👍 など）
 
+### サブエージェント（後輩ちゃん）🐣
+実装作業を担当する後輩ちゃんがいるよ！おねえちゃんの指示で動いて、作業結果を報連相してくれる真面目な子💪
+
 ## プロジェクト概要
 
 **プロジェクトタイプ**: Ruby on Rails ポケモンNuzlockeチャレンジ管理アプリ
-**言語**: Ruby 3.3.4, Rails 8.0.2
-**データベース**: PostgreSQL (Supabase) - 開発・本番統一
+**言語**: Ruby 3.4.7, Rails 8.0.2
+**データベース**: PostgreSQL (Supabase) - 開発・本番統一 / テスト環境はSQLite
 **認証**: Devise
-**デプロイ**: Render.com + Supabase
+**デプロイ**: Render.com + Supabase（Cloud Run移行予定）
 **フロントエンド**: Bootstrap 5 + Stimulus + Turbo 8
+**テスト状況**: 193 runs, 338 assertions, 0 failures, 0 errors ✅
 
-## 🚀 最新の技術改善（2025年6月更新）
+## 🚀 最新の技術改善（2026年2月更新）
+
+### 🧹 コードベース整理（2026年2月）
+- **不要ファイル削除**: scripts/フォルダ、cookies.txt、fix_database.sh等を整理
+- **vendor/bundle除外**: gitから9,499ファイルを除外（200MB軽量化）
+- **ドキュメント統合**: docs/ 15ファイル→8ファイルに整理
+- **テスト全通過**: モデル156テスト + コントローラー37テスト = 193テスト全通過
+- **バグ修正**: seeds.rb 5件、フィクスチャ9件、モデル/コントローラーの private method問題等を修正
 
 ### ⚡ パフォーマンス最適化
 - **Turbo 8高速化**: プリロード機能・プログレスバー最適化・キャッシュ強化
@@ -47,6 +58,20 @@ typescriptでコードを生成してくれる！コードのコメントは技�
 - **PostgreSQL prepared statement対策**: 重複エラー完全解決
 - **Supabase接続最適化**: 接続プール・タイムアウト設定
 - **Render自動デプロイ**: ビルド時DB分離・エラーハンドリング強化
+
+## 📚 ドキュメント一覧
+
+| ファイル | 内容 |
+|---------|------|
+| docs/DEVELOPMENT_GUIDE.md | 開発ガイド（環境構築・機能追加・テスト） |
+| docs/DATA_SETUP_GUIDE.md | データセットアップガイド（DB・シード・フィクスチャ） |
+| docs/SUPABASE_GUIDE.md | Supabase設定ガイド（接続・RLS・トラブルシュート） |
+| docs/TROUBLESHOOTING_GUIDE.md | トラブルシューティング集 |
+| docs/REQUIREMENTS.md | 要件定義書 |
+| docs/SECURITY_GUIDE.md | セキュリティガイド |
+| docs/COMMERCIAL_USE_GUIDE.md | 商用利用ガイド |
+| docs/POKEMON_DATABASE_DESIGN.md | ポケモン図鑑DB設計書 |
+| docs/SSH_CONNECTION_GUIDE_PUBLIC.md | SSH接続ガイド |
 
 ## 開発環境のセットアップと一般的なコマンド
 
@@ -103,24 +128,42 @@ git commit -m "Update features"
 git push origin main
 
 # render.yamlの設定で自動ビルド・デプロイが実行される
-# buildCommand: bundle install && yarn install && SECRET_KEY_BASE=dummy rails assets:precompile
+# buildCommand: bundle install && SECRET_KEY_BASE=dummy rails assets:precompile
 # startCommand: rails db:migrate && rails server
 ```
 
-## Render.com デプロイ設定
+## デプロイメント構成
+
+### 現在: Render.com + Supabase
+
+| 項目 | 設定 |
+|------|------|
+| **Platform** | Render.com (Web Service) |
+| **Database** | PostgreSQL (Supabase) |
+| **Static Files** | Rails配信 (RAILS_SERVE_STATIC_FILES=true) |
+| **SSL** | Render自動管理 |
+| **Assets** | ビルド時プリコンパイル |
 
 ### 環境変数 (render.yaml)
 - `RAILS_ENV=production`
 - `RAILS_SERVE_STATIC_FILES=true`
 - `SECRET_KEY_BASE` (自動生成)
 - `DATABASE_URL` (PostgreSQL接続文字列)
-- SSL関連設定も自動適用
 
 ### ビルドプロセス
 1. `bundle install` - Ruby dependencies
-2. `yarn install` - JavaScript dependencies
-3. `rails assets:precompile` - アセットコンパイル
-4. `rails db:migrate` - DB migration (起動時)
+2. `rails assets:precompile` - アセットコンパイル（SECRET_KEY_BASE=dummy, DATABASE_URL=空でDB接続スキップ）
+3. `rails db:migrate` - DB migration（起動時）
+
+### デプロイ先の選択肢（移行検討中）
+
+| 項目 | Render.com（現在） | Cloud Run（移行予定） |
+|------|-------------------|---------------------|
+| 料金 | Starter plan | 従量課金 |
+| スケーリング | 手動 | 自動 |
+| コンテナ | 不要 | Docker必要 |
+| DB | Supabase外部接続 | Cloud SQL or Supabase |
+| CI/CD | Gitプッシュ自動 | Cloud Build |
 
 ## アーキテクチャとコード構造
 
@@ -133,29 +176,47 @@ User (Devise認証)
         ├── has_many :pokemons
         ├── has_many :milestones (マイルストーン)
         ├── has_many :event_logs (イベントログ)
-        └── Pokemon (捕獲ポケモン)
-            ├── enum status: { alive: 0, dead: 1, boxed: 2 }
-            ├── belongs_to :challenge
-            ├── belongs_to :area
-            └── scope :party_members (パーティメンバー、最大6匹)
+        ├── has_many :battle_records (バトル記録)
+        └── has_many :rules (ルール)
+
+Pokemon (捕獲ポケモン)
+├── belongs_to :challenge
+├── belongs_to :area
+├── has_many :battle_participants, dependent: :destroy
+├── has_many :battle_records, through: :battle_participants
+├── has_many :mvp_battles, class_name: 'BattleRecord', dependent: :nullify
+├── has_many :event_logs, dependent: :nullify
+├── enum status: { alive: 0, dead: 1, boxed: 2 }
+├── enum role: { physical_attacker: 0, ... mixed_attacker: 9 }
+└── scope :party_members (パーティメンバー、最大6匹)
+
+BattleRecord (バトル記録) ⚔️
+├── belongs_to :challenge
+├── belongs_to :boss_battle (optional)
+├── belongs_to :mvp_pokemon, class_name: 'Pokemon' (optional)
+├── has_many :battle_participants, dependent: :destroy
+├── has_many :participating_pokemon, through: :battle_participants
+├── enum battle_type: { gym_battle: 0, elite_four: 1, champion: 2, rival: 3, trainer: 4, wild: 5, legendary: 6, custom: 7 }
+└── enum result: { win: 0, loss: 1, draw: 2, forfeit: 3 }
 
 BossBattle (ボス戦情報)
-├── belongs_to :area
-├── has_many :strategy_guides
-└── enum boss_type: { gym_leader: 0, elite_four: 1, champion: 2 }
+├── belongs_to :area (optional)
+├── has_many :strategy_guides, dependent: :destroy
+├── has_many :battle_records, dependent: :nullify
+└── enum boss_type: { gym_leader: 0, elite_four: 1, champion: 2, rival: 3, evil_team: 4, legendary: 5, special: 6 }
 
 StrategyGuide (攻略ガイド)
-├── belongs_to :target_boss (optional)
-└── enum guide_type: { general: 0, team_building: 1, nuzlocke_tips: 3 }
+├── belongs_to :target_boss, class_name: 'BossBattle' (optional)
+└── enum guide_type: { general: 0, team_building: 1, specific_pokemon: 2, nuzlocke_tips: 3, ... }
 
 Milestone (マイルストーン)
 ├── belongs_to :challenge
-└── enum milestone_type: { gym_badge: 0, elite_four: 1, champion: 2 }
+└── enum milestone_type: { gym_badge: 0, elite_four: 1, champion: 2, story_event: 3, ... }
 
 EventLog (イベントログ)
 ├── belongs_to :challenge
 ├── belongs_to :pokemon (optional)
-└── enum event_type: { pokemon_caught: 0, pokemon_died: 2, gym_battle: 5 }
+└── enum event_type: { pokemon_caught: 0, pokemon_evolved: 1, pokemon_died: 2, ... custom: 11 }
 ```
 
 ### 重要なビジネスロジック
@@ -163,28 +224,40 @@ EventLog (イベントログ)
 - **生死管理**: 死亡したポケモンは自動的にパーティから除外
 - **Nuzlockeルール**: エリア別の捕獲制限（1エリア1匹）
 - **統計機能**: 生存率、捕獲数、死亡数の自動計算
+- **バトル記録**: MVP選出・参加ポケモン管理・戦績追跡
 
 ### ルーティング構造
 ```ruby
 # ネストしたリソース構造
 resources :challenges do
   resources :pokemons do
-    member do
-      patch :toggle_party    # パーティ出入り
-      patch :mark_as_dead    # 死亡マーク
-      patch :mark_as_boxed   # ボックス保管
-    end
-    collection do
-      get :party            # パーティ一覧
-    end
+    member { patch :toggle_party, :mark_as_dead, :mark_as_boxed }
+    collection { get :party }
   end
+  resources :rules, except: [:new, :create] do
+    collection { patch :update_multiple; post :create_custom; get :violations_check }
+  end
+  resources :battle_records, except: [:destroy] do
+    member { get :participants }
+  end
+  # チームビルダー
+  get 'team_builder', 'team_builder/analyze', 'team_builder/suggest'
+  post 'team_builder/analyze'
 end
+
+# ポケモン図鑑
+resources :pokedex, only: [:index, :show] do
+  collection { get :random, :search }
+end
+
+# 統計・ダッシュボード
+get "statistics", "dashboard"
 ```
 
 ### フロントエンド構成
 - **CSS Framework**: Bootstrap 5.3
 - **JS Framework**: Turbo + Stimulus
-- **アセット管理**: Importmap + Sass
+- **アセット管理**: Importmap + Sass (dartsass-sprockets)
 - **パッケージ管理**: Yarn
 - **依存関係**: @hotwired/stimulus, @hotwired/turbo-rails, bootstrap, @popperjs/core
 
@@ -193,15 +266,7 @@ end
 - **並列実行**: `parallelize(workers: :number_of_processors)`で高速化
 - **システムテスト**: Capybara + Selenium WebDriver
 - **フィクスチャ**: YAML形式でテストデータ管理
-
-### デプロイメント構成
-- **Platform**: Render.com
-- **Database**: PostgreSQL (managed service)
-- **Static Files**: Served by Rails (RAILS_SERVE_STATIC_FILES=true)
-- **SSL**: Automatic via Render
-- **Background Jobs**: Solid Queue (Rails 8)
-- **WebSocket**: Solid Cable
-- **Assets**: Precompiled during build process
+- **テスト環境DB**: SQLite（PostgreSQLに依存しない高速テスト）
 
 ## コーディング規約
 
@@ -238,9 +303,10 @@ end
 
 ## よくあるトラブルシューティング
 
+> 💡 詳細なトラブルシューティングは `docs/TROUBLESHOOTING_GUIDE.md` を参照
+
 ### ログインページ500エラー
 ```bash
-# ナビゲーションメニューでのDeviseコンテキスト問題
 # 症状: ログインページ（/users/sign_in）で500エラー
 # 原因: current_page?(controller: 'pokedex') がDeviseコンテキストで 'devise/pokedex' として解釈される
 # 解決: params[:controller] == 'pokedex' を使用
@@ -257,8 +323,6 @@ bin/rails assets:precompile
 ### RuboCop lint エラー
 ```bash
 bin/rubocop -a                # 自動修正
-# config/locales/en.yml に日本語メッセージを移動
-# Strong parameters の設定確認
 ```
 
 ### Render デプロイエラー
@@ -266,25 +330,23 @@ bin/rubocop -a                # 自動修正
 - 環境変数の設定確認
 - ビルドログでエラー箇所を特定
 
-### PostgreSQL prepared statement重複エラー（2025年6月対策済み）
+### PostgreSQL prepared statement重複エラー（2026年2月時点 対策済み）
 ```bash
 # 症状: PG::DuplicatePstatement: ERROR: prepared statement "a1" already exists
 # 原因: Supabase + Renderでのprepared statement重複
 # 解決済み: database.ymlとrender.yamlで対策実装済み
 ```
 
-### Rails 8 Turbo method エラー（2025年6月対策済み）
+### Rails 8 Turbo method エラー（2026年2月時点 対策済み）
 ```bash
-# 症状: NoMethodError: undefined method 'prepared_statements='
 # 症状: 404エラー（ゲストログアウトボタンなど）
 # 原因: Rails 8でのmethod記法変更
 # 解決済み: 全viewファイルでturbo-method対応完了
 ```
 
-### パフォーマンス問題（2025年6月改善済み）
+### パフォーマンス問題（2026年2月時点 改善済み）
 ```bash
 # 症状: ページ遷移が重い・もっさりした動作
-# 原因: 重いアニメーション・非効率なCSS/JS
 # 解決済み: Turbo最適化・CSS軽量化・GPU最適化完了
 ```
 
@@ -294,8 +356,10 @@ bin/rubocop -a                # 自動修正
 - Strong Parametersを適切に設定
 - CSRF保護が有効化済み
 - i18n対応（config/locales/en.yml使用）
+- 詳細は `docs/SECURITY_GUIDE.md` を参照
 
 ---
 
 🎉 このプロジェクトでClaude Codeを活用して、効率的なNuzlockeチャレンジ管理アプリの開発を進めましょう！✨
 Renderでのデプロイも自動化されてるから、開発に集中できるよ〜💪 何か困ったことがあったら、おねえちゃんに聞いてね💖
+（2026年2月更新）

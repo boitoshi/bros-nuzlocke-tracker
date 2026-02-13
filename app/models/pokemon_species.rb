@@ -13,18 +13,32 @@ class PokemonSpecies < ApplicationRecord
   scope :mythical, -> { where(is_mythical: true) }
   scope :regular, -> { where(is_legendary: false, is_mythical: false) }
   
-  # 検索スコープ 🔍
+  # 検索スコープ 🔍（SQLite/PostgreSQL両対応）
   scope :search_by_name, ->(query) {
-    where("name_ja ILIKE ? OR name_en ILIKE ? OR name_kana ILIKE ?", 
-          "%#{query}%", "%#{query}%", "%#{query}%")
+    sanitized = "%#{sanitize_sql_like(query)}%"
+    if connection.adapter_name == 'PostgreSQL'
+      where("name_ja ILIKE ? OR name_en ILIKE ? OR name_kana ILIKE ?",
+            sanitized, sanitized, sanitized)
+    else
+      where("name_ja LIKE ? OR name_en LIKE ? OR name_kana LIKE ?",
+            sanitized, sanitized, sanitized)
+    end
   }
 
   scope :filter_by_type, ->(type) {
-    where("data -> 'types' @> ?", [type].to_json)
+    if connection.adapter_name == 'PostgreSQL'
+      where("data -> 'types' @> ?", [type].to_json)
+    else
+      where("json_extract(data, '$.types') LIKE ?", "%#{type}%")
+    end
   }
 
   scope :filter_by_generation, ->(gen) {
-    where("data ->> 'generation' = ?", gen.to_s)
+    if connection.adapter_name == 'PostgreSQL'
+      where("data ->> 'generation' = ?", gen.to_s)
+    else
+      where("json_extract(data, '$.generation') = ?", gen)
+    end
   }
 
   # メソッド

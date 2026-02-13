@@ -2,18 +2,18 @@
 
 one:
   challenge: one
-  name: MyString
-  description: MyText
-  rule_type: MyString
-  enabled: false
-  default_value: MyString
-  custom_value: MyString
+  name: "ポケモンが瀕死になったら死亡扱い"
+  description: "バトルでHPが0になったポケモンは死亡として扱います"
+  rule_type: "basic"
+  enabled: true
+  default_value: "true"
+  sort_order: 1
 
 two:
   challenge: two
-  name: MyString
-  description: MyText
-  rule_type: MyString
-  enabled: false
-  default_value: MyString
-  custom_value: MyString
+  name: "1エリア1匹ルール"
+  description: "同じエリアでは最初に遭遇したポケモン1匹のみ捕獲可能"
+  rule_type: "basic"
+  enabled: true
+  default_value: "true"
+  sort_order: 2

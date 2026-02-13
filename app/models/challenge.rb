@@ -134,9 +134,9 @@ class Challenge < ApplicationRecord
     result = BattleParticipant.joins(:battle_record, :pokemon)
                               .where(battle_records: { challenge: self })
                               .group('pokemons.id', 'pokemons.nickname', 'pokemons.species')
-                              .order('COUNT(*) DESC')
+                              .order(Arel.sql('COUNT(*) DESC'))
                               .limit(1)
-                              .pluck('pokemons.nickname', 'pokemons.species', 'COUNT(*)')
+                              .pluck(Arel.sql('pokemons.nickname'), Arel.sql('pokemons.species'), Arel.sql('COUNT(*)'))
                               .first
     
     return nil unless result
@@ -153,6 +153,8 @@ class Challenge < ApplicationRecord
   def create_areas_for_game
     Area.create_default_areas_for_game(game_title)
   end
+
+  public
 
   # ルール関連メソッド
   def enabled_rules

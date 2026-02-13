@@ -1,25 +1,27 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  title: MyString
-  guide_type: MyString
-  game_title: MyString
+  title: "タケシ攻略ガイド"
+  guide_type: "general"
+  game_title: "red"
   target_boss: one
-  content: MyText
-  tags: MyString
-  difficulty: 1
-  author: MyString
-  created_at: 2025-06-19 16:26:04
-  updated_at: 2025-06-19 16:26:04
+  content: "ヒトカゲを選んだ場合はレベルを上げてメタルクローを覚えさせよう。フシギダネかゼニガメなら楽に勝てる。"
+  tags: "ジムリーダー,序盤"
+  difficulty: 2
+  author: "テストユーザー"
+  is_public: true
+  views_count: 10
+  likes_count: 3
 
 two:
-  title: MyString
-  guide_type: MyString
-  game_title: MyString
+  title: "Nuzlocke初心者ガイド"
+  guide_type: "nuzlocke_tips"
+  game_title: "red"
   target_boss: two
-  content: MyText
-  tags: MyString
+  content: "Nuzlockeチャレンジの基本ルールと初心者向けのコツを紹介します。レベル上げを怠らず、タイプ相性を意識しよう。"
+  tags: "初心者,基本"
   difficulty: 1
-  author: MyString
-  created_at: 2025-06-19 16:26:04
-  updated_at: 2025-06-19 16:26:04
+  author: "テストユーザー"
+  is_public: true
+  views_count: 25
+  likes_count: 8

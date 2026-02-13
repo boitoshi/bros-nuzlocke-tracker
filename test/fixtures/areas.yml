@@ -2,12 +2,12 @@
 
 one:
   name: "ルート1"
-  area_type: 0
+  area_type: "route"
   game_title: "red"
   order_index: 1
 
 two:
   name: "トキワの森"
-  area_type: 4
+  area_type: "forest"
   game_title: "red"
   order_index: 2

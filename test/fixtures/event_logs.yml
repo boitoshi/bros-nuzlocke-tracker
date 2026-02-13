@@ -1,0 +1,18 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  challenge: one
+  event_type: "pokemon_caught"
+  title: "ピカチュウを捕獲！"
+  description: "トキワの森で最初に遭遇"
+  occurred_at: <%= 5.days.ago %>
+  importance: 3
+  pokemon: one
+
+two:
+  challenge: one
+  event_type: "gym_battle"
+  title: "ニビジムに挑戦"
+  description: "タケシに勝利！グレーバッジ獲得"
+  occurred_at: <%= 3.days.ago %>
+  importance: 4
