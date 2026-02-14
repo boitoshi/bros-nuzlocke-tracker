@@ -14,6 +14,10 @@
 // チームビルダー専用スタイル
 @import "team_builder";
 
+// トースト通知スタイル 🍞
+@import "toast";
+@import "capture_check";
+
 // パフォーマンス最適化設定 ⚡
 * {
   // ハードウェアアクセラレーション有効化

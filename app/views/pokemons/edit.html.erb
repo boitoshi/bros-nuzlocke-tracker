@@ -76,13 +76,31 @@
               <div class="form-text">このポケモンのバトルでの役割を選択してください</div>
             </div>
 
-            <div class="col-12">
+            <div class="col-12" data-controller="capture-check"
+                 data-capture-check-caught-areas-value="<%= (@caught_areas || {}).to_json %>">
               <%= form.label :area_id, "捕獲場所", class: "form-label" %>
               <%= form.select :area_id, 
-                  options_for_select([['捕獲場所を選択', '']] + @areas.map { |area| [area.display_name, area.id] }, @pokemon.area_id), 
+                  options_for_select(
+                    [['捕獲場所を選択', '']] + @areas.map { |area| 
+                      caught = @caught_areas&.dig(area.id)
+                      label = if caught
+                        "#{area.display_name} ⛔ 捕獲済み: #{caught[:name]}"
+                      else
+                        "#{area.display_name} ✅ 捕獲可能"
+                      end
+                      [label, area.id]
+                    }, @pokemon.area_id
+                  ), 
                   {}, 
-                  { class: "form-select" } %>
-              <div class="form-text">どこで出会ったかを記録しましょう</div>
+                  { class: "form-select",
+                    data: { capture_check_target: "select", action: "change->capture-check#checkArea" } } %>
+              <div class="form-text">どこで出会ったかを記録しましょう（各エリア1匹のみ捕獲可能）</div>
+              
+              <!-- ナズロックルール警告エリア -->
+              <div class="alert alert-warning mt-2 d-none" 
+                   data-capture-check-target="warning"
+                   role="alert">
+              </div>
             </div>
 
             <div class="col-md-6">

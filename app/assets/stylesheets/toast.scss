@@ -1,0 +1,175 @@
+// =============================================================================
+// 🍞 トースト通知スタイル
+// 自動で消えるおしゃれなフラッシュメッセージ
+// =============================================================================
+
+// トーストコンテナ - 画面右上に固定表示
+.toast-container-custom {
+  position: fixed;
+  top: 80px; // ナビバーの下
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 420px;
+  pointer-events: none;
+}
+
+// トースト通知 - 個別のカード
+.toast-notification {
+  display: flex;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid;
+  position: relative;
+  overflow: hidden;
+  pointer-events: all;
+  cursor: default;
+
+  // 初期状態（非表示）
+  opacity: 0;
+  transform: translateX(100%) scale(0.95);
+  transition: none;
+
+  // 表示アニメーション
+  &.toast-show {
+    animation: toastSlideIn 0.4s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;
+  }
+
+  // 非表示アニメーション
+  &.toast-hide {
+    animation: toastSlideOut 0.3s cubic-bezier(0.06, 0.71, 0.55, 1) forwards;
+  }
+}
+
+// 成功トースト（緑）
+.toast-success {
+  border-left-color: #10b981;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+}
+
+// エラートースト（赤）
+.toast-error {
+  border-left-color: #ef4444;
+  background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+}
+
+// 情報トースト（青）
+.toast-info {
+  border-left-color: #3b82f6;
+  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+}
+
+// 警告トースト（黄）
+.toast-warning {
+  border-left-color: #f59e0b;
+  background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+}
+
+// アイコン
+.toast-icon {
+  font-size: 1.2rem;
+  margin-right: 12px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+// テキスト
+.toast-body {
+  flex: 1;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #1f2937;
+  word-break: break-word;
+}
+
+// 閉じるボタン
+.toast-close {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 0 0 0 8px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: #374151;
+  }
+}
+
+// プログレスバー（残り時間表示）
+.toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: #10b981;
+  transform-origin: left;
+  animation: toastProgress linear forwards;
+  border-radius: 0 0 0 12px;
+}
+
+.toast-progress-error {
+  background: #ef4444;
+}
+
+// =============================================================================
+// アニメーション定義
+// =============================================================================
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%) scale(0.95);
+  }
+}
+
+@keyframes toastProgress {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+// =============================================================================
+// レスポンシブ対応
+// =============================================================================
+
+@media (max-width: 576px) {
+  .toast-container-custom {
+    top: auto;
+    bottom: 20px;
+    left: 12px;
+    right: 12px;
+    max-width: none;
+  }
+
+  .toast-notification {
+    font-size: 0.85rem;
+  }
+}

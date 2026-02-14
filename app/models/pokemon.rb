@@ -76,6 +76,8 @@ class Pokemon < ApplicationRecord
 
   # バリデーション - パーティメンバーは最大6匹まで
   validate :party_size_limit, if: :in_party?
+  # ナズロックルール - 各エリアで捕獲できるのは1匹のみ
+  validate :nuzlocke_one_catch_per_area, on: :create
 
   # コールバック
   before_save :handle_status_changes
@@ -389,6 +391,17 @@ class Pokemon < ApplicationRecord
   def total_evs_within_limit
     if total_evs > 510
       errors.add(:base, "努力値の合計は510を超えることはできません (現在: #{total_evs})")
+    end
+  end
+
+  # ナズロックルール: 各エリアで捕獲できるのは1匹のみ
+  def nuzlocke_one_catch_per_area
+    return unless area_id.present? && challenge_id.present?
+
+    existing = Pokemon.where(challenge_id: challenge_id, area_id: area_id).first
+    if existing
+      area_name = area&.name || "このエリア"
+      errors.add(:area_id, "#{area_name}ではすでに #{existing.display_name} を捕獲済みです（ナズロックルール: 各エリア1匹のみ）")
     end
   end
 

@@ -148,4 +148,45 @@ class PokemonTest < ActiveSupport::TestCase
     @pokemon.status = 'dead'
     assert_equal 'bg-danger', @pokemon.status_badge_class
   end
+
+  # === ナズロックルールテスト ===
+
+  test '同じエリア・チャレンジに2匹目のポケモンを作成できないこと' do
+    new_pokemon = Pokemon.new(
+      nickname: "テスト",
+      species: "ラッタ",
+      level: 5,
+      challenge: @challenge,
+      area: @area,
+      caught_at: Time.current,
+      status: :alive,
+      primary_type: "normal",
+      role: :physical_attacker,
+      hp_iv: 0, attack_iv: 0, defense_iv: 0,
+      special_attack_iv: 0, special_defense_iv: 0, speed_iv: 0,
+      hp_ev: 0, attack_ev: 0, defense_ev: 0,
+      special_attack_ev: 0, special_defense_ev: 0, speed_ev: 0
+    )
+    assert_not new_pokemon.valid?
+    assert new_pokemon.errors[:area_id].any?, "エリアにナズロックルール違反エラーがあるはず"
+  end
+
+  test '別のエリアには問題なく作成できること' do
+    new_pokemon = Pokemon.new(
+      nickname: "テスト2",
+      species: "コラッタ",
+      level: 3,
+      challenge: @challenge,
+      area: areas(:two),
+      caught_at: Time.current,
+      status: :alive,
+      primary_type: "normal",
+      role: :physical_attacker,
+      hp_iv: 0, attack_iv: 0, defense_iv: 0,
+      special_attack_iv: 0, special_defense_iv: 0, speed_iv: 0,
+      hp_ev: 0, attack_ev: 0, defense_ev: 0,
+      special_attack_ev: 0, special_defense_ev: 0, speed_ev: 0
+    )
+    assert new_pokemon.valid?, "別エリアへの捕獲は有効であるはず: #{new_pokemon.errors.full_messages.join(', ')}"
+  end
 end

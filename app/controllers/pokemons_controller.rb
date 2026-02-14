@@ -28,10 +28,19 @@ class PokemonsController < ApplicationController
       @challenge.create_areas_for_game
       @areas = Area.by_game(@challenge.game_title).by_order
     end
+
+    # 捕獲済みエリア情報（ナズロックルール判定用）
+    @caught_areas = @challenge.pokemons.includes(:area).each_with_object({}) do |pokemon, hash|
+      hash[pokemon.area_id] = { name: pokemon.display_name, status: pokemon.status }
+    end
   end
 
   def edit
     @areas = Area.by_game(@challenge.game_title).by_order
+    # 捕獲済みエリア情報（自分自身は除外）
+    @caught_areas = @challenge.pokemons.where.not(id: @pokemon.id).includes(:area).each_with_object({}) do |pokemon, hash|
+      hash[pokemon.area_id] = { name: pokemon.display_name, status: pokemon.status }
+    end
   end
 
   def create
@@ -44,11 +53,17 @@ class PokemonsController < ApplicationController
         redirect_to challenge_pokemon_path(@challenge, @pokemon), notice: t("pokemons.notices.created", pokemon: @pokemon.display_name)
       else
         @areas = Area.by_game(@challenge.game_title).by_order
+        @caught_areas = @challenge.pokemons.includes(:area).each_with_object({}) do |pokemon, hash|
+          hash[pokemon.area_id] = { name: pokemon.display_name, status: pokemon.status }
+        end
         render :new, status: :unprocessable_entity
       end
     rescue ActiveRecord::RecordInvalid => e
       Rails.logger.error "Pokemon creation failed: #{e.message}"
       @areas = Area.by_game(@challenge.game_title).by_order
+      @caught_areas = @challenge.pokemons.includes(:area).each_with_object({}) do |pokemon, hash|
+        hash[pokemon.area_id] = { name: pokemon.display_name, status: pokemon.status }
+      end
       flash.now[:alert] = "ポケモンの作成に失敗しました。入力内容を確認してください。"
       render :new, status: :unprocessable_entity
     rescue StandardError => e

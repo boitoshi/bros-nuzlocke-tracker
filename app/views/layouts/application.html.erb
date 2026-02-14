@@ -126,18 +126,30 @@
       </div>
     </nav>
 
-    <!-- 通知・アラート 📢 -->
-    <div class="container-fluid">
+    <!-- トースト通知 🍞 -->
+    <div id="toast-container" class="toast-container-custom">
       <% if notice %>
-        <div class="alert alert-success alert-dismissible fade show mx-3 mt-3" role="alert" style="border-radius: 12px; animation: fadeInScale 0.5s ease-out;">
-          <i class="me-2">✅</i><%= notice %>
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="toast-notification toast-success"
+             data-controller="toast"
+             data-toast-duration-value="5000"
+             data-toast-type-value="success"
+             data-action="mouseenter->toast#pause mouseleave->toast#resume">
+          <div class="toast-icon">✅</div>
+          <div class="toast-body"><%= notice %></div>
+          <button class="toast-close" data-action="click->toast#dismiss" aria-label="閉じる">&times;</button>
+          <div class="toast-progress"></div>
         </div>
       <% end %>
       <% if alert %>
-        <div class="alert alert-danger alert-dismissible fade show mx-3 mt-3" role="alert" style="border-radius: 12px; animation: fadeInScale 0.5s ease-out;">
-          <i class="me-2">⚠️</i><%= alert %>
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="toast-notification toast-error"
+             data-controller="toast"
+             data-toast-duration-value="7000"
+             data-toast-type-value="error"
+             data-action="mouseenter->toast#pause mouseleave->toast#resume">
+          <div class="toast-icon">⚠️</div>
+          <div class="toast-body"><%= alert %></div>
+          <button class="toast-close" data-action="click->toast#dismiss" aria-label="閉じる">&times;</button>
+          <div class="toast-progress toast-progress-error"></div>
         </div>
       <% end %>
     </div>

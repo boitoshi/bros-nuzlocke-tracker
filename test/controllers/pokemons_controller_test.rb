@@ -32,7 +32,7 @@ class PokemonsControllerTest < ActionDispatch::IntegrationTest
           nickname: "Test Pokemon",
           species: "Pikachu",
           level: 5,
-          area_id: areas(:one).id,
+          area_id: areas(:two).id,
           caught_at: Time.current
         }
       }
@@ -62,5 +62,20 @@ class PokemonsControllerTest < ActionDispatch::IntegrationTest
   test "should get party" do
     get party_challenge_pokemons_url(@challenge)
     assert_response :success
+  end
+
+  test "should not create pokemon in already caught area (nuzlocke rule)" do
+    assert_no_difference("Pokemon.count") do
+      post challenge_pokemons_url(@challenge), params: {
+        pokemon: {
+          nickname: "Duplicate Area",
+          species: "Rattata",
+          level: 3,
+          area_id: areas(:one).id,
+          caught_at: Time.current
+        }
+      }
+    end
+    assert_response :unprocessable_entity
   end
 end
