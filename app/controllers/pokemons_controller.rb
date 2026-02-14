@@ -5,15 +5,16 @@ class PokemonsController < ApplicationController
 
   def index
     @pokemons = @challenge.pokemons.includes(:area).by_caught_order
-    @party_pokemon = @challenge.party_pokemon
-    @alive_pokemon = @challenge.alive_pokemon.not_in_party
-    @dead_pokemon = @challenge.dead_pokemon
-    @boxed_pokemon = @challenge.boxed_pokemon
+    @party_pokemon = @challenge.party_pokemon.includes(:area)
+    @alive_pokemon = @challenge.alive_pokemon.not_in_party.includes(:area)
+    @dead_pokemon = @challenge.dead_pokemon.includes(:area)
+    @boxed_pokemon = @challenge.boxed_pokemon.includes(:area)
+    @badges = @challenge.milestones.where(milestone_type: :gym_badge).by_order
   end
 
   def party
-    @party_pokemon = @challenge.party_pokemon.includes(:area)
-    @available_pokemon = @challenge.alive_pokemon.not_in_party.includes(:area)
+    # パーティ管理ページは統合ページにリダイレクト
+    redirect_to challenge_pokemons_path(@challenge)
   end
 
   def show

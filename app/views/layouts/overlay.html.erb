@@ -6,139 +6,139 @@
     <meta http-equiv="refresh" content="30">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <style>
-      /* OBS オーバーレイ専用スタイル */
+      * { box-sizing: border-box; margin: 0; padding: 0; }
       body {
         background: transparent !important;
-        margin: 0;
-        padding: 0;
         font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
         overflow: hidden;
+        color: #fff;
       }
       body.chroma-green { background: #00ff00 !important; }
       body.chroma-blue { background: #0000ff !important; }
       body.chroma-magenta { background: #ff00ff !important; }
       body.solid-dark { background: #1a1a2e !important; }
 
-      .overlay-container {
-        padding: 10px;
-        max-width: 400px;
+      .overlay {
+        padding: 8px;
+        max-width: 340px;
       }
 
-      .overlay-title {
-        font-size: 13px;
-        font-weight: bold;
-        color: #fff;
-        text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
-        margin-bottom: 6px;
-        padding: 3px 8px;
-        background: rgba(0,0,0,0.6);
-        border-radius: 4px;
-        display: inline-block;
-      }
-
-      .overlay-badges {
+      /* ヘッダー: チャレンジ名 + バッジ */
+      .ov-header {
         display: flex;
         align-items: center;
-        gap: 3px;
+        justify-content: space-between;
+        padding: 4px 10px;
+        background: rgba(0,0,0,0.7);
+        border-radius: 6px;
         margin-bottom: 6px;
-        padding: 4px 8px;
-        background: rgba(0,0,0,0.5);
-        border-radius: 4px;
-      }
-      .overlay-badge {
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 11px;
-      }
-      .overlay-badge.earned {
-        background: rgba(255,215,0,0.8);
-        border: 2px solid #ffd700;
-      }
-      .overlay-badge.unearned {
-        background: rgba(100,100,100,0.4);
-        border: 1px solid rgba(100,100,100,0.3);
-        opacity: 0.35;
-      }
-      .overlay-badge-count {
-        color: #ffd700;
-        font-size: 11px;
+        font-size: 12px;
         font-weight: bold;
-        margin-left: 4px;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
       }
-
-      .overlay-party {
-        display: flex;
-        flex-direction: column;
-        gap: 3px;
-        margin-bottom: 6px;
-      }
-      .overlay-pokemon {
-        background: rgba(0,0,0,0.6);
-        border-left: 3px solid #4dabf7;
-        border-radius: 3px;
-        padding: 4px 8px;
-        color: #fff;
-        font-size: 12px;
+      .ov-badges {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 2px;
+      }
+      .ov-badge {
+        width: 16px; height: 16px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+      }
+      .ov-badge.on { background: rgba(255,215,0,0.9); border: 1px solid #ffd700; }
+      .ov-badge.off { background: rgba(80,80,80,0.4); border: 1px solid rgba(80,80,80,0.3); opacity: 0.3; }
+
+      /* パーティリスト */
+      .ov-section-label {
+        font-size: 10px;
+        font-weight: bold;
+        color: rgba(255,255,255,0.6);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 3px;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
       }
-      .overlay-pokemon.empty {
-        opacity: 0.25;
-        border-left-color: #666;
-        border-style: dashed;
+      .ov-party {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin-bottom: 6px;
       }
-      .overlay-pokemon .poke-name {
-        font-weight: bold;
-        font-size: 13px;
-        min-width: 70px;
-      }
-      .overlay-pokemon .poke-species {
-        font-size: 11px;
-        opacity: 0.7;
-        flex: 1;
-      }
-      .overlay-pokemon .poke-level {
+      .ov-pokemon {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(0,0,0,0.6);
+        border-left: 3px solid #4dabf7;
+        border-radius: 4px;
+        padding: 3px 8px;
         font-size: 12px;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+      }
+      .ov-pokemon img {
+        width: 32px;
+        height: 32px;
+        image-rendering: pixelated;
+      }
+      .ov-pokemon .name {
+        font-weight: bold;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .ov-pokemon .species {
+        font-size: 10px;
+        opacity: 0.6;
+      }
+      .ov-pokemon .lv {
         color: #ffd700;
         font-weight: bold;
+        font-size: 11px;
+      }
+      .ov-pokemon.empty {
+        opacity: 0.15;
+        border-left-style: dashed;
+        border-left-color: #666;
+        padding: 8px;
+        justify-content: center;
+        font-size: 10px;
       }
 
-      .overlay-graveyard {
+      /* 墓場 */
+      .ov-graveyard {
         background: rgba(0,0,0,0.5);
         border-left: 3px solid #ff6b6b;
-        border-radius: 3px;
+        border-radius: 4px;
         padding: 4px 8px;
-        color: #ff8787;
         font-size: 11px;
+        color: #ff8787;
         display: flex;
         flex-wrap: wrap;
-        gap: 4px;
         align-items: center;
+        gap: 2px;
       }
-      .grave-count {
-        font-weight: bold;
-        margin-right: 4px;
+      .ov-graveyard img {
+        width: 20px;
+        height: 20px;
+        filter: grayscale(100%);
+        opacity: 0.5;
+        image-rendering: pixelated;
       }
-      .overlay-graveyard .grave-name {
-        opacity: 0.7;
+      .ov-graveyard .dead-name {
         text-decoration: line-through;
+        opacity: 0.6;
+        font-size: 10px;
       }
-
-      /* フッター非表示 */
-      footer, .navbar, .toast-container-custom, .page-content { display: none !important; }
     </style>
   </head>
 
-  <body class="<%= params[:bg] || '' %>">
+  <body class="<%= params[:bg] %>">
     <%= yield %>
   </body>
 </html>

@@ -61,7 +61,7 @@ class PokemonsControllerTest < ActionDispatch::IntegrationTest
 
   test "should get party" do
     get party_challenge_pokemons_url(@challenge)
-    assert_response :success
+    assert_redirected_to challenge_pokemons_url(@challenge)
   end
 
   test "should not create pokemon in already caught area (nuzlocke rule)" do

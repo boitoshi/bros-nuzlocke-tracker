@@ -1,47 +1,51 @@
-<div class="overlay-container">
-  <%# チャレンジ名 %>
-  <div class="overlay-title">🎮 <%= @challenge.name %></div>
-
-  <%# バッジ進捗 🏆 %>
-  <% if @badges.any? %>
-    <div class="overlay-badges">
-      <% @badges.each do |badge| %>
-        <div class="overlay-badge <%= badge.completed? ? 'earned' : 'unearned' %>"
-             title="<%= badge.name %>">
-          <%= badge.completed? ? '🏅' : '⚪' %>
-        </div>
-      <% end %>
-      <span class="overlay-badge-count">
-        <%= @badges.count(&:completed?) %>/<%= @badges.count %>
-      </span>
-    </div>
-  <% end %>
-
-  <%# 現在のパーティ 🛡️ %>
-  <div class="overlay-party">
-    <% @party_pokemon.each do |pokemon| %>
-      <div class="overlay-pokemon">
-        <span class="poke-name"><%= pokemon.nickname %></span>
-        <span class="poke-species"><%= pokemon.species %></span>
-        <span class="poke-level">Lv.<%= pokemon.level %></span>
-      </div>
-    <% end %>
-    <% (6 - @party_pokemon.count).times do %>
-      <div class="overlay-pokemon empty">
-        <span class="poke-name">---</span>
+<div class="overlay">
+  <%# ヘッダー: チャレンジ名 + バッジ %>
+  <div class="ov-header">
+    <span>🎮 <%= @challenge.name %></span>
+    <% if @badges.any? %>
+      <div class="ov-badges">
+        <% @badges.each do |b| %>
+          <span class="ov-badge <%= b.completed? ? 'on' : 'off' %>" title="<%= b.name %>">
+            <%= b.completed? ? '🏅' : '' %>
+          </span>
+        <% end %>
       </div>
     <% end %>
   </div>
 
-  <%# 墓場 💀 %>
+  <%# パーティ %>
+  <div class="ov-section-label">🛡️ Party</div>
+  <div class="ov-party">
+    <% @party_pokemon.each do |pokemon| %>
+      <div class="ov-pokemon">
+        <% if pokemon.sprite_url %>
+          <img src="<%= pokemon.sprite_url %>" alt="<%= pokemon.species %>"
+               onerror="this.style.display='none'">
+        <% end %>
+        <span class="name"><%= pokemon.nickname %></span>
+        <span class="lv">Lv.<%= pokemon.level %></span>
+      </div>
+    <% end %>
+    <% (6 - @party_pokemon.count).times do %>
+      <div class="ov-pokemon empty">---</div>
+    <% end %>
+  </div>
+
+  <%# 墓場 %>
   <% if @dead_pokemon.any? %>
-    <div class="overlay-graveyard">
-      💀 <span class="grave-count"><%= @dead_pokemon.count %></span>
-      <% @dead_pokemon.limit(10).each do |pokemon| %>
-        <span class="grave-name"><%= pokemon.nickname %></span>
+    <div class="ov-graveyard">
+      <span>💀 <%= @dead_pokemon.count %></span>
+      <% @dead_pokemon.limit(12).each do |pokemon| %>
+        <% if pokemon.sprite_url %>
+          <img src="<%= pokemon.sprite_url %>" alt="<%= pokemon.species %>"
+               title="<%= pokemon.nickname %> (Lv.<%= pokemon.level %>)"
+               onerror="this.style.display='none'">
+        <% else %>
+          <span class="dead-name"><%= pokemon.nickname %></span>
+        <% end %>
       <% end %>
-      <% if @dead_pokemon.count > 10 %>
-        <span>+<%= @dead_pokemon.count - 10 %></span>
+      <% if @dead_pokemon.count > 12 %>
+        <span>+<%= @dead_pokemon.count - 12 %></span>
       <% end %>
     </div>
   <% end %>

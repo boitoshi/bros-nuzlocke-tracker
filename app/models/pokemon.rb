@@ -119,6 +119,18 @@ class Pokemon < ApplicationRecord
     [primary_type, secondary_type].compact
   end
 
+  # ポケモンのスプライト画像URL 🖼️
+  # PokemonSpeciesテーブルからnational_idを取得してPokeAPI sprite URLを返す
+  def sprite_url
+    return @sprite_url if defined?(@sprite_url)
+    @sprite_url = PokemonSpecies.find_by(name_ja: species)&.sprite_url
+  end
+
+  def national_dex_number
+    return @national_dex_number if defined?(@national_dex_number)
+    @national_dex_number = PokemonSpecies.find_by(name_ja: species)&.national_id
+  end
+
   def dual_type?
     secondary_type.present?
   end
