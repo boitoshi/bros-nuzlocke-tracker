@@ -1,6 +1,7 @@
 class ChallengesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_challenge, only: [ :show, :edit, :update, :destroy ]
+  before_action :protect_guest_demo_data, only: [ :destroy ]
 
   def index
     @challenges = current_user.challenges.recent.includes(:user)
@@ -10,6 +11,9 @@ class ChallengesController < ApplicationController
   end
 
   def show
+    # エリア捕獲状況マップ用データ
+    @areas = Area.by_game(@challenge.game_title).by_order
+    @caught_by_area = @challenge.pokemons.includes(:area).group_by(&:area_id)
   end
 
   def new
@@ -52,5 +56,12 @@ class ChallengesController < ApplicationController
 
   def challenge_params
     params.expect(challenge: [ :name, :game_title, :status, :completed_at ])
+  end
+
+  # ゲストユーザーのデモチャレンジ削除を防止
+  def protect_guest_demo_data
+    if guest_user? && @challenge.name == "デモンストレーション ナズロック"
+      redirect_to challenges_path, alert: 'ゲスト体験ではデモデータの削除はできません 🔒'
+    end
   end
 end

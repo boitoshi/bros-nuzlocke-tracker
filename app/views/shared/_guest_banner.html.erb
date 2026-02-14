@@ -1,0 +1,16 @@
+<% if user_signed_in? && guest_user? %>
+  <div class="alert alert-info alert-dismissible fade show mx-3 mt-2 mb-0 d-flex align-items-center" role="alert" id="guest-banner">
+    <div class="flex-grow-1">
+      <strong>🎮 ゲスト体験中</strong>
+      <span class="ms-2">デモデータで機能をお試しいただけます。</span>
+      <span class="ms-2">アカウントを作成するとデータを保存できます！</span>
+    </div>
+    <div class="ms-3 d-flex gap-2">
+      <%= link_to new_user_registration_path, class: "btn btn-primary btn-sm" do %>
+        📝 アカウント作成
+      <% end %>
+      <%= button_to "退出", guest_logout_path, method: :delete, class: "btn btn-outline-secondary btn-sm" %>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>

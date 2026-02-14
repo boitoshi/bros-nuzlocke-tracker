@@ -29,6 +29,13 @@ class ApplicationController < ActionController::Base
   end
   helper_method :regular_user?
 
+  # ゲストユーザーのデモデータ削除を防止する
+  def protect_demo_data!
+    if guest_user?
+      redirect_back fallback_location: root_path, alert: 'ゲスト体験ではデモデータの削除はできません 🔒'
+    end
+  end
+
   private
 
   def set_security_headers

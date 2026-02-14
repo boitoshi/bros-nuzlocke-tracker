@@ -104,4 +104,11 @@
       </div>
     </div>
   </div>
+
+  <%# 🗺️ エリア捕獲状況マップ %>
+  <div class="row mt-4">
+    <div class="col-12">
+      <%= render 'challenges/area_capture_map', areas: @areas, caught_by_area: @caught_by_area %>
+    </div>
+  </div>
 </div>
