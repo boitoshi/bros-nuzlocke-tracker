@@ -19,13 +19,8 @@
 @import "capture_check";
 
 // パフォーマンス最適化設定 ⚡
-* {
-  // ハードウェアアクセラレーション有効化
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
+// ※ 全要素へのtransform/will-changeは削除（GPUメモリ浪費・レイアウト崩れの原因）
+// 必要な要素にだけ個別に指定する方針に変更
 
 // スムーズスクロール（60FPS対応）
 html {
@@ -95,14 +90,12 @@ a, button {
 
 // モダンナビゲーションスタイル ✨（パフォーマンス最適化版）
 .modern-navbar {
-  transition: box-shadow 0.2s ease-out; // 軽量化
+  transition: box-shadow 0.2s ease-out;
   box-shadow: var(--shadow-soft);
-  will-change: box-shadow;
   
   .navbar-brand {
     color: var(--nav-text) !important;
-    transition: color 0.15s ease-out; // 軽量化
-    will-change: color;
+    transition: color 0.15s ease-out;
     
     &:hover {
       color: var(--nav-text-hover) !important;
@@ -110,8 +103,7 @@ a, button {
     
     .brand-icon {
       font-size: 1.5rem;
-      transition: transform 0.15s ease-out; // 軽量化
-      will-change: transform;
+      transition: transform 0.15s ease-out;
     }
     
     .brand-text {
@@ -181,14 +173,12 @@ a, button {
   gap: 0.5rem;
   padding: 0.75rem 1rem !important;
   border-radius: 8px;
-  transition: color 0.15s ease-out, background-color 0.15s ease-out; // 軽量化
+  transition: color 0.15s ease-out, background-color 0.15s ease-out;
   position: relative;
-  will-change: color, background-color;
   
   .nav-icon {
     font-size: var(--nav-icon-size);
-    transition: transform 0.15s ease-out; // 軽量化
-    will-change: transform;
+    transition: transform 0.15s ease-out;
   }
   
   .nav-text {
@@ -239,12 +229,12 @@ a, button {
     padding: 0.75rem 1.5rem;
     display: flex;
     align-items: center;
-    transition: all 0.3s ease;
+    transition: color 0.15s ease, background-color 0.15s ease;
     
     &:hover {
       color: var(--nav-text-hover);
       background: rgba(102, 126, 234, 0.1);
-      transform: translateX(5px);
+      // ※ transform削除 - メニュー項目の横移動は操作しづらい
     }
   }
 }
@@ -280,8 +270,8 @@ a, button {
       }
       
       &:hover {
-        transform: translateX(5px);
-        box-shadow: var(--shadow-soft);
+        background: rgba(102, 126, 234, 0.15);
+        // ※ transform削除 - ナビリンクの横移動は操作性を下げる
       }
       
       &.active::before {
@@ -358,15 +348,10 @@ a, button {
   border-radius: 16px;
   padding: 1.5rem;
   text-align: center;
-  transition: all 0.3s ease;
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: var(--shadow-soft);
   min-width: 140px;
-  
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-hover);
-  }
+  // ※ ホバーエフェクト削除 - 統計表示は情報のみでクリックできない
   
   .stats-number {
     font-size: 2.5rem;
@@ -528,14 +513,9 @@ a, button {
 .card {
   border: none;
   border-radius: 16px;
-  transition: all 0.3s ease;
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
-  
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-hover);
-  }
+  // ※ ホバーエフェクト削除 - カードは情報表示用なので動かさない
 }
 
 // レスポンシブ対応
@@ -570,39 +550,19 @@ a, button {
   }
 }
 
-// アニメーション強化
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+// ※ fadeInUpアニメーション削除 - 全カード・ボタンの初期表示アニメーションは
+//   ページ遷移のたびに発火してかえって遅く感じる原因になっていた
+
+// インタラクティブ要素のみtransitionを適用 ⚡
+// ※ 全要素 * への transition: all は削除（非リンク要素のホバー誤解 & パフォーマンス低下の原因）
+a, button, .btn, .form-control, .form-select, input, textarea {
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.modern-stats-card,
-.modern-btn,
-.card {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-.modern-stats-card:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.modern-btn:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-.modern-btn:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
-// ベースアニメーション設定 ⚡
-* {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+// Turboクリックフィードバック（CSP準拠のCSSクラスベース）
+.turbo-clicking {
+  opacity: 0.8;
+  transform: scale(0.98);
 }
 
 // ヒーローセクション 🎮
@@ -641,11 +601,7 @@ a, button {
   box-shadow: var(--shadow-soft);
   overflow: hidden;
   background: var(--bs-card-bg, white);
-  
-  &:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: var(--shadow-hover);
-  }
+  // ※ ホバーエフェクト削除 - 情報カードはクリックできないので動かさない
   
   .card-header {
     background: transparent;
@@ -655,6 +611,20 @@ a, button {
   
   .card-body {
     position: relative;
+  }
+}
+
+// クリック可能なカードのみホバーエフェクトを付与
+a > .card,
+a.card,
+.card-link .card,
+.card.clickable {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
   }
 }
 
@@ -816,10 +786,9 @@ a, button {
   }
 }
 
-// ページ遷移アニメーション（軽量化版）
+// ページ遷移アニメーション（超軽量版）
 .page-content {
-  animation: fadeInFast 0.2s ease-out; // 高速化
-  will-change: transform, opacity;
+  animation: fadeInFast 0.12s ease-out;
 }
 
 // レスポンシブ調整 📱

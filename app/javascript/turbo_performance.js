@@ -1,80 +1,39 @@
 // Turbo パフォーマンス最適化設定 🚀
-// 最新のベストプラクティスを適用
+// ページ遷移の高速化に特化
 
 import { Turbo } from "@hotwired/turbo-rails"
 
-// 高速化設定
-Turbo.setProgressBarDelay(50) // プログレスバー表示を早く
-Turbo.setFormMode("off") // フォーム送信でページ全体リロードを避ける
+// プログレスバーを素早く表示（体感速度向上）
+Turbo.setProgressBarDelay(100)
 
-// プリロード機能（ホバー時）
+// Turbo Drive のプリフェッチを有効化
+// ホバー時にリンク先を事前読み込みして体感速度UP
 document.addEventListener('turbo:load', () => {
-  // リンクにホバーした時にプリロード
+  // 内部リンクに data-turbo-prefetch を自動追加
   document.querySelectorAll('a[href^="/"]').forEach(link => {
-    let timeout
+    // 既に設定済み、またはTurbo無効のリンクはスキップ
+    if (link.dataset.turboPrefetch || link.dataset.turbo === 'false') return
+    // フォーム送信ボタン的リンクはスキップ
+    if (link.dataset.turboMethod) return
     
-    link.addEventListener('mouseenter', () => {
-      timeout = setTimeout(() => {
-        if (!link.dataset.turboPreload) {
-          link.dataset.turboPreload = 'true'
-          // バックグラウンドでページを事前読み込み
-          fetch(link.href, {
-            method: 'GET',
-            headers: {
-              'Accept': 'text/html'
-            }
-          }).catch(() => {
-            // エラーは無視（プリロードなので）
-          })
-        }
-      }, 100) // 100ms後にプリロード開始
-    })
-    
-    link.addEventListener('mouseleave', () => {
-      clearTimeout(timeout)
-    })
+    link.dataset.turboPrefetch = ''
   })
 })
 
 // ページキャッシュ最適化
 document.addEventListener('turbo:before-cache', () => {
-  // スクロール位置をリセット
-  window.scrollTo(0, 0)
-  
   // アクティブな要素からフォーカスを外す
   if (document.activeElement && document.activeElement.blur) {
     document.activeElement.blur()
   }
   
-  // アニメーションを停止
-  document.querySelectorAll('[style*="animation"]').forEach(el => {
-    el.style.animation = 'none'
-  })
+  // トースト通知を削除（キャッシュに含めない）
+  document.querySelectorAll('.toast-notification').forEach(el => el.remove())
 })
 
 // ページ読み込み後の最適化
 document.addEventListener('turbo:load', () => {
-  // 画像遅延読み込み
-  if ('IntersectionObserver' in window) {
-    const imageObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const img = entry.target
-          if (img.dataset.src) {
-            img.src = img.dataset.src
-            img.removeAttribute('data-src')
-            imageObserver.unobserve(img)
-          }
-        }
-      })
-    })
-    
-    document.querySelectorAll('img[data-src]').forEach(img => {
-      imageObserver.observe(img)
-    })
-  }
-  
-  // フォーカス管理
+  // オートフォーカス
   const autofocusElement = document.querySelector('[autofocus]')
   if (autofocusElement) {
     autofocusElement.focus()
@@ -83,5 +42,5 @@ document.addEventListener('turbo:load', () => {
 
 // エラーハンドリング
 document.addEventListener('turbo:fetch-request-error', (event) => {
-  console.warn('Turbo request failed:', event.detail.url)
+  console.warn('Turbo request failed:', event.detail?.url)
 })
