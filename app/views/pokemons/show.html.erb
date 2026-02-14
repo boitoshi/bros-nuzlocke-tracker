@@ -34,7 +34,22 @@
               <h5 class="border-bottom pb-2 mb-3">📊 基本情報</h5>
               <div class="row">
                 <div class="col-sm-6 mb-2">
-                  <strong>レベル:</strong> <%= @pokemon.level %>
+                  <strong>レベル:</strong>
+                  <div class="d-inline-flex align-items-center gap-1">
+                    <%= button_to update_level_challenge_pokemon_path(@challenge, @pokemon, level: @pokemon.level - 1),
+                        method: :patch, class: "btn btn-outline-secondary btn-sm px-1 py-0",
+                        style: "font-size: 0.75rem;",
+                        disabled: @pokemon.level <= 1 do %>
+                      −
+                    <% end %>
+                    <span class="fw-bold fs-5 text-primary"><%= @pokemon.level %></span>
+                    <%= button_to update_level_challenge_pokemon_path(@challenge, @pokemon, level: @pokemon.level + 1),
+                        method: :patch, class: "btn btn-outline-primary btn-sm px-1 py-0",
+                        style: "font-size: 0.75rem;",
+                        disabled: @pokemon.level >= 100 do %>
+                      ＋
+                    <% end %>
+                  </div>
                 </div>
                 <div class="col-sm-6 mb-2">
                   <strong>性格:</strong> <%= @pokemon.nature.present? ? @pokemon.nature : '不明' %>
@@ -91,6 +106,22 @@
         </div>
         <div class="card-body">
           <% unless @pokemon.dead? %>
+            <!-- 進化 ✨ -->
+            <div class="mb-3">
+              <h6 class="text-muted mb-2">✨ 進化</h6>
+              <%= form_with url: evolve_challenge_pokemon_path(@challenge, @pokemon), method: :patch, class: "input-group input-group-sm" do %>
+                <%= text_field_tag :new_species, nil, 
+                    class: "form-control form-control-sm", 
+                    placeholder: "進化先の種族名",
+                    required: true %>
+                <button type="submit" class="btn btn-outline-info btn-sm"
+                        data-turbo-confirm="<%= @pokemon.nickname %>を進化させますか？✨">
+                  進化！
+                </button>
+              <% end %>
+              <small class="text-muted">現在: <%= @pokemon.species %></small>
+            </div>
+
             <!-- パーティ管理 -->
             <div class="mb-3">
               <h6 class="text-muted mb-2">👥 パーティ管理</h6>

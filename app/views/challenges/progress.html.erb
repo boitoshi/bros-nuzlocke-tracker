@@ -1,0 +1,167 @@
+<div class="container my-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1>🏆 ストーリー進捗</h1>
+      <small class="text-muted"><%= @challenge.name %> - <%= @challenge.game_title_display %></small>
+    </div>
+    <div>
+      <%= link_to "チャレンジ", @challenge, class: "btn btn-outline-primary btn-sm me-2" %>
+      <%= link_to "パーティ管理", party_challenge_pokemons_path(@challenge), class: "btn btn-outline-primary btn-sm me-2" %>
+      <% overlay_url = overlay_challenge_url(@challenge) %>
+      <button class="btn btn-outline-info btn-sm" 
+              onclick="navigator.clipboard.writeText('<%= overlay_url %>').then(() => alert('OBSオーバーレイURLをコピーしました！'))"
+              title="OBS配信用オーバーレイURL">
+        📺 OBS URL
+      </button>
+    </div>
+  </div>
+
+  <%# 全体進捗バー %>
+  <% total = @milestones.count %>
+  <% completed = @milestones.count(&:completed?) %>
+  <% progress_pct = total > 0 ? (completed.to_f / total * 100).round(1) : 0 %>
+  <div class="card shadow mb-4">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">📊 全体進捗</h5>
+        <span class="badge bg-primary fs-6"><%= completed %>/<%= total %> 達成</span>
+      </div>
+      <div class="progress" style="height: 24px;">
+        <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+             style="width: <%= progress_pct %>%">
+          <%= progress_pct %>%
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# ジムバッジセクション 🥋 %>
+  <% if @badges.any? %>
+    <div class="card shadow mb-4">
+      <div class="card-header bg-warning text-dark">
+        <h3 class="mb-0">🥋 ジムバッジ (<%= @badges.count(&:completed?) %>/<%= @badges.count %>)</h3>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <% @badges.each do |badge| %>
+            <div class="col-lg-3 col-md-4 col-6">
+              <div class="card h-100 text-center <%= badge.completed? ? 'border-warning' : 'border-secondary' %>"
+                   style="<%= badge.completed? ? 'background: linear-gradient(135deg, #fff9e6, #fff3cc);' : 'opacity: 0.6;' %>">
+                <div class="card-body py-3">
+                  <div style="font-size: 2.5rem;">
+                    <%= badge.completed? ? '🏅' : '⬜' %>
+                  </div>
+                  <h6 class="card-title mt-2 mb-1" style="font-size: 0.85rem;"><%= badge.name %></h6>
+                  <small class="text-muted d-block"><%= badge.game_area %></small>
+                  <% if badge.completed? %>
+                    <small class="text-success d-block mt-1">
+                      ✅ <%= badge.completed_at.strftime('%m/%d') %>
+                    </small>
+                  <% end %>
+                  <%= button_to badge.completed? ? "取消" : "達成！",
+                      toggle_complete_challenge_milestone_path(@challenge, badge),
+                      method: :patch,
+                      class: "btn btn-sm mt-2 #{badge.completed? ? 'btn-outline-secondary' : 'btn-warning'}",
+                      data: badge.completed? ? {} : { turbo_confirm: "#{badge.name}を達成しましたか？🏆" } %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <%# 四天王・チャンピオン 👑 %>
+  <% elite_and_champ = @elite_four + @champion %>
+  <% if elite_and_champ.any? %>
+    <div class="card shadow mb-4">
+      <div class="card-header bg-danger text-white">
+        <h3 class="mb-0">👑 ポケモンリーグ (<%= elite_and_champ.count(&:completed?) %>/<%= elite_and_champ.count %>)</h3>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <% elite_and_champ.each do |milestone| %>
+            <div class="col-md-4 col-6">
+              <div class="card h-100 text-center <%= milestone.completed? ? 'border-danger' : 'border-secondary' %>"
+                   style="<%= milestone.completed? ? 'background: linear-gradient(135deg, #fff0f0, #ffe0e0);' : 'opacity: 0.6;' %>">
+                <div class="card-body py-3">
+                  <div style="font-size: 2rem;">
+                    <%= milestone.completed? ? milestone.milestone_type_icon : '⬜' %>
+                  </div>
+                  <h6 class="card-title mt-2 mb-1"><%= milestone.name %></h6>
+                  <small class="text-muted"><%= milestone.description %></small>
+                  <% if milestone.completed? %>
+                    <small class="text-success d-block mt-1">✅ <%= milestone.completed_at.strftime('%m/%d') %></small>
+                  <% end %>
+                  <%= button_to milestone.completed? ? "取消" : "達成！",
+                      toggle_complete_challenge_milestone_path(@challenge, milestone),
+                      method: :patch,
+                      class: "btn btn-sm mt-2 #{milestone.completed? ? 'btn-outline-secondary' : 'btn-danger'}",
+                      data: milestone.completed? ? {} : { turbo_confirm: "#{milestone.name}を達成しましたか？👑" } %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <%# ストーリーイベント 📖 %>
+  <% if @story_events.any? %>
+    <div class="card shadow mb-4">
+      <div class="card-header bg-info text-white">
+        <h3 class="mb-0">📖 ストーリーイベント</h3>
+      </div>
+      <div class="card-body">
+        <div class="list-group">
+          <% @story_events.each do |event| %>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <span class="me-2"><%= event.completed? ? '✅' : '⬜' %></span>
+                <strong><%= event.name %></strong>
+                <% if event.description.present? %>
+                  <small class="text-muted d-block ms-4"><%= event.description %></small>
+                <% end %>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <% if event.completed? %>
+                  <small class="text-muted"><%= event.completed_at.strftime('%m/%d') %></small>
+                <% end %>
+                <%= button_to event.completed? ? "取消" : "達成",
+                    toggle_complete_challenge_milestone_path(@challenge, event),
+                    method: :patch,
+                    class: "btn btn-sm #{event.completed? ? 'btn-outline-secondary' : 'btn-info'}" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <%# 現在のパーティ状況 🛡️ %>
+  <% if @party_pokemon.any? %>
+    <div class="card shadow">
+      <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">🛡️ 現在のパーティ (<%= @party_pokemon.count %>/6)</h3>
+      </div>
+      <div class="card-body">
+        <div class="row g-2">
+          <% @party_pokemon.each do |pokemon| %>
+            <div class="col-md-4 col-6">
+              <div class="card border-primary h-100">
+                <div class="card-body py-2 px-3 text-center">
+                  <h6 class="mb-0"><%= pokemon.nickname %></h6>
+                  <small class="text-muted"><%= pokemon.species %></small>
+                  <div class="fw-bold text-primary">Lv.<%= pokemon.level %></div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

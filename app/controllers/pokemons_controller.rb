@@ -1,7 +1,7 @@
 class PokemonsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_challenge
-  before_action :set_pokemon, only: [ :show, :edit, :update, :destroy, :toggle_party, :mark_as_dead, :mark_as_boxed ]
+  before_action :set_pokemon, only: [ :show, :edit, :update, :destroy, :toggle_party, :mark_as_dead, :mark_as_boxed, :update_level, :evolve ]
 
   def index
     @pokemons = @challenge.pokemons.includes(:area).by_caught_order
@@ -123,6 +123,45 @@ class PokemonsController < ApplicationController
     @pokemon.update(status: :boxed, in_party: false)
     redirect_back_or_to challenge_pokemon_path(@challenge, @pokemon),
                         notice: "#{@pokemon.display_name}をボックスに預けました。"
+  end
+
+  def update_level
+    old_level = @pokemon.level
+    new_level = params[:level].to_i
+
+    if new_level.between?(1, 100) && @pokemon.update(level: new_level)
+      if new_level > old_level
+        EventLog.log_level_up(@challenge, @pokemon, old_level, new_level)
+      end
+      redirect_back_or_to party_challenge_pokemons_path(@challenge),
+                          notice: "#{@pokemon.nickname} Lv.#{old_level} → Lv.#{new_level} 📈"
+    else
+      redirect_back_or_to party_challenge_pokemons_path(@challenge),
+                          alert: "レベルは1〜100の範囲で設定してください。"
+    end
+  end
+
+  def evolve
+    old_species = @pokemon.species
+    new_species = params[:new_species]&.strip
+
+    if new_species.present? && new_species != old_species && @pokemon.update(species: new_species)
+      EventLog.create!(
+        challenge: @challenge,
+        pokemon: @pokemon,
+        event_type: :pokemon_evolved,
+        title: "#{@pokemon.nickname}が進化！",
+        description: "#{old_species} → #{new_species}",
+        occurred_at: Time.current,
+        importance: 3,
+        event_data: { from: old_species, to: new_species, nickname: @pokemon.nickname, level: @pokemon.level }
+      )
+      redirect_back_or_to challenge_pokemon_path(@challenge, @pokemon),
+                          notice: "#{@pokemon.nickname}が#{old_species}から#{new_species}に進化した！✨"
+    else
+      redirect_back_or_to challenge_pokemon_path(@challenge, @pokemon),
+                          alert: "進化に失敗しました。新しい種族名を入力してください。"
+    end
   end
 
   private

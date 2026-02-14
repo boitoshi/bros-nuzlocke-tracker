@@ -1,4 +1,3 @@
-<%= turbo_frame_tag dom_id(pokemon, :available_card) do %>
 <div class="card h-100">
   <div class="card-header d-flex justify-content-between align-items-center py-1">
     <span class="badge <%= pokemon.status_badge_class %> small">
@@ -13,9 +12,22 @@
       <small class="text-muted">(<%= pokemon.species %>)</small>
     </h6>
     
-    <div class="row small">
-      <div class="col-6"><strong>Lv:</strong> <%= pokemon.level %></div>
-      <div class="col-6"><strong>性格:</strong> <%= pokemon.nature.present? ? pokemon.nature : '?' %></div>
+    <%# レベル ± ボタン 📈 %>
+    <div class="d-flex align-items-center gap-1 mb-1">
+      <%= button_to update_level_challenge_pokemon_path(@challenge, pokemon, level: pokemon.level - 1),
+          method: :patch, class: "btn btn-outline-secondary btn-sm px-1 py-0",
+          style: "font-size: 0.7rem; line-height: 1;",
+          disabled: pokemon.level <= 1, title: "レベルダウン" do %>
+        −
+      <% end %>
+      <strong style="min-width: 42px; text-align: center;">Lv.<%= pokemon.level %></strong>
+      <%= button_to update_level_challenge_pokemon_path(@challenge, pokemon, level: pokemon.level + 1),
+          method: :patch, class: "btn btn-outline-primary btn-sm px-1 py-0",
+          style: "font-size: 0.7rem; line-height: 1;",
+          disabled: pokemon.level >= 100, title: "レベルアップ" do %>
+        ＋
+      <% end %>
+      <small class="text-muted ms-1"><%= pokemon.nature.present? ? pokemon.nature : '' %></small>
     </div>
     
     <% if pokemon.area %>
@@ -31,7 +43,6 @@
         <%= button_to "参加", toggle_party_challenge_pokemon_path(@challenge, pokemon), 
             method: :patch,
             class: "btn btn-success btn-sm",
-            form: { data: { turbo_frame: "_top" } },
             title: "パーティに参加" %>
       <% else %>
         <button class="btn btn-secondary btn-sm" disabled title="パーティが満員">満員</button>
@@ -39,9 +50,8 @@
       <%= button_to "📦", mark_as_boxed_challenge_pokemon_path(@challenge, pokemon), 
           method: :patch,
           class: "btn btn-outline-secondary btn-sm",
-          form: { data: { turbo_confirm: "#{pokemon.nickname}をボックスに預けますか？", turbo_frame: "_top" } },
+          data: { turbo_confirm: "#{pokemon.nickname}をボックスに預けますか？" },
           title: "ボックスに預ける" %>
     </div>
   </div>
 </div>
-<% end %>

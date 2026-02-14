@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Nuzlocke Overlay</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta http-equiv="refresh" content="30">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <style>
+      /* OBS オーバーレイ専用スタイル */
+      body {
+        background: transparent !important;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
+        overflow: hidden;
+      }
+      body.chroma-green { background: #00ff00 !important; }
+      body.chroma-blue { background: #0000ff !important; }
+      body.chroma-magenta { background: #ff00ff !important; }
+      body.solid-dark { background: #1a1a2e !important; }
+
+      .overlay-container {
+        padding: 12px;
+        max-width: 420px;
+      }
+
+      .overlay-title {
+        font-size: 14px;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        margin-bottom: 8px;
+        padding: 4px 10px;
+        background: rgba(0,0,0,0.5);
+        border-radius: 6px;
+        display: inline-block;
+      }
+
+      .overlay-party {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 10px;
+      }
+
+      .overlay-pokemon {
+        background: rgba(0,0,0,0.65);
+        border: 2px solid rgba(255,255,255,0.3);
+        border-radius: 8px;
+        padding: 6px 10px;
+        color: #fff;
+        font-size: 13px;
+        min-width: 120px;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+      }
+      .overlay-pokemon .poke-name {
+        font-weight: bold;
+        font-size: 14px;
+      }
+      .overlay-pokemon .poke-species {
+        font-size: 11px;
+        opacity: 0.8;
+      }
+      .overlay-pokemon .poke-level {
+        font-size: 12px;
+        color: #ffd700;
+        font-weight: bold;
+      }
+
+      .overlay-graveyard {
+        background: rgba(0,0,0,0.5);
+        border-radius: 8px;
+        padding: 6px 10px;
+        color: #ff6b6b;
+        font-size: 12px;
+      }
+      .overlay-graveyard .grave-name {
+        opacity: 0.8;
+        text-decoration: line-through;
+      }
+
+      .overlay-badges {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 8px;
+      }
+      .overlay-badge {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+      }
+      .overlay-badge.earned {
+        background: rgba(255,215,0,0.8);
+        border: 2px solid #ffd700;
+      }
+      .overlay-badge.unearned {
+        background: rgba(100,100,100,0.5);
+        border: 2px solid rgba(100,100,100,0.3);
+        opacity: 0.4;
+      }
+
+      /* フッター非表示 */
+      footer, .navbar, .toast-container-custom, .page-content { display: none !important; }
+    </style>
+  </head>
+
+  <body class="<%= params[:bg] || '' %>">
+    <%= yield %>
+  </body>
+</html>

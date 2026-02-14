@@ -15,11 +15,18 @@ Rails.application.routes.draw do
   end
 
   resources :challenges do
+    member do
+      get :progress
+      get :overlay
+    end
+
     resources :pokemons do
       member do
         patch :toggle_party
         patch :mark_as_dead
         patch :mark_as_boxed
+        patch :update_level
+        patch :evolve
       end
       collection do
         get :party
@@ -46,6 +53,13 @@ Rails.application.routes.draw do
     get 'team_builder/analyze', to: 'team_builder#analyze'
     get 'team_builder/suggest', to: 'team_builder#suggest'
     post 'team_builder/analyze', to: 'team_builder#analyze'
+
+    # マイルストーン完了トグル 🏆
+    resources :milestones, only: [] do
+      member do
+        patch :toggle_complete
+      end
+    end
   end
 
   # 統計ダッシュボード

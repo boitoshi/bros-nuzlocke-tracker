@@ -1,6 +1,6 @@
 class ChallengesController < ApplicationController
-  before_action :authenticate_user!
-  before_action :set_challenge, only: [ :show, :edit, :update, :destroy ]
+  before_action :authenticate_user!, except: [:overlay]
+  before_action :set_challenge, only: [ :show, :edit, :update, :destroy, :progress ]
   before_action :protect_guest_demo_data, only: [ :destroy ]
 
   def index
@@ -46,6 +46,23 @@ class ChallengesController < ApplicationController
   def destroy
     @challenge.destroy
     redirect_to challenges_path, notice: t("challenges.notices.deleted")
+  end
+
+  def progress
+    @milestones = @challenge.milestones.by_order
+    @badges = @milestones.select(&:gym_badge?)
+    @elite_four = @milestones.select(&:elite_four?)
+    @champion = @milestones.select(&:champion?)
+    @story_events = @milestones.select(&:story_event?)
+    @party_pokemon = @challenge.party_pokemon.includes(:area)
+  end
+
+  def overlay
+    @challenge = Challenge.find(params[:id])
+    @party_pokemon = @challenge.party_pokemon.includes(:area)
+    @dead_pokemon = @challenge.dead_pokemon.includes(:area)
+    @badges = @challenge.milestones.gym_badge.by_order
+    render layout: 'overlay'
   end
 
   private
