@@ -1,0 +1,296 @@
+<%# 
+  ポケモンリスト共通パーシャル 🐾
+  管理画面(index)とOBSオーバーレイで共有。
+  
+  locals:
+    challenge    - Challenge
+    party_pokemon - パーティのポケモン
+    dead_pokemon  - 死亡したポケモン  
+    boxed_pokemon - ボックスのポケモン（省略可）
+    alive_pokemon - 控えのポケモン（省略可）
+    badges        - バッジマイルストーン（省略可）
+    compact       - true: OBS用コンパクト表示 / false: 通常管理画面
+%>
+<%
+  compact = local_assigns.fetch(:compact, false)
+  alive_pokemon = local_assigns.fetch(:alive_pokemon, [])
+  boxed_pokemon = local_assigns.fetch(:boxed_pokemon, [])
+  badges = local_assigns.fetch(:badges, [])
+%>
+
+<% unless compact %>
+  <%# ===== ステータスバー（管理画面のみ） ===== %>
+  <div class="row g-2 mb-4">
+    <div class="col">
+      <div class="d-flex align-items-center gap-3 p-3 rounded-3" style="background: var(--bs-body-bg); border: 1px solid var(--bs-border-color);">
+        <div class="text-center">
+          <div class="fs-4 fw-bold"><%= party_pokemon.size + alive_pokemon.size + dead_pokemon.size + boxed_pokemon.size %></div>
+          <small class="text-muted">総捕獲</small>
+        </div>
+        <div class="vr"></div>
+        <div class="text-center">
+          <div class="fs-4 fw-bold text-success"><%= party_pokemon.size + alive_pokemon.size %></div>
+          <small class="text-muted">💚 生存</small>
+        </div>
+        <div class="vr"></div>
+        <div class="text-center">
+          <div class="fs-4 fw-bold text-danger"><%= dead_pokemon.size %></div>
+          <small class="text-muted">💀 死亡</small>
+        </div>
+        <% if boxed_pokemon.any? %>
+          <div class="vr"></div>
+          <div class="text-center">
+            <div class="fs-4 fw-bold text-secondary"><%= boxed_pokemon.size %></div>
+            <small class="text-muted">📦 BOX</small>
+          </div>
+        <% end %>
+        <% if badges.any? %>
+          <div class="vr"></div>
+          <div class="text-center">
+            <div class="fs-4 fw-bold text-warning"><%= badges.count(&:completed?) %>/<%= badges.size %></div>
+            <small class="text-muted">🏅 バッジ</small>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% else %>
+  <%# ===== バッジ表示（OBS用コンパクト） ===== %>
+  <% if badges.any? %>
+    <div class="ov-badges-bar">
+      🏅 <%= badges.count(&:completed?) %>/<%= badges.size %>
+      <% badges.each do |b| %>
+        <span class="ov-badge-dot <%= b.completed? ? 'on' : 'off' %>" title="<%= b.name %>"></span>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
+
+<%# ===== 🛡️ パーティ ===== %>
+<div class="<%= compact ? 'ov-section' : 'mb-4' %>">
+  <% unless compact %>
+    <h4 class="mb-3">🛡️ パーティ (<%= party_pokemon.size %>/6)</h4>
+  <% end %>
+  <div class="<%= compact ? 'ov-list' : 'row g-2' %>">
+    <% party_pokemon.each do |pokemon| %>
+      <% if compact %>
+        <%# OBS: コンパクト1行表示 %>
+        <div class="ov-row ov-party-row">
+          <%= pokemon_sprite_tag(pokemon, size: 28, css_class: "ov-sprite") %>
+          <span class="ov-name"><%= pokemon.nickname %></span>
+          <span class="ov-lv">Lv.<%= pokemon.level %></span>
+        </div>
+      <% else %>
+        <%# 管理画面: カード表示 %>
+        <div class="col-lg-4 col-md-6">
+          <div class="card border-primary h-100 pokemon-card">
+            <div class="card-body p-2">
+              <div class="d-flex align-items-center gap-2">
+                <div class="flex-shrink-0">
+                  <%= pokemon_sprite_tag(pokemon, size: 56) %>
+                </div>
+                <div class="flex-grow-1 min-w-0">
+                  <div>
+                    <strong class="d-block text-truncate"><%= pokemon.nickname %></strong>
+                    <small class="text-muted"><%= pokemon.species %></small>
+                  </div>
+                  <div class="d-flex align-items-center gap-1 mt-1"
+                       data-controller="level"
+                       data-level-url-value="<%= update_level_challenge_pokemon_path(challenge, pokemon) %>"
+                       data-level-level-value="<%= pokemon.level %>">
+                    <button class="btn btn-outline-secondary btn-sm px-1 py-0"
+                            style="font-size: 0.7rem; line-height: 1;"
+                            data-level-target="minusBtn"
+                            data-action="click->level#decrement"
+                            <%= 'disabled' if pokemon.level <= 1 %>>−</button>
+                    <strong class="text-primary" style="min-width: 42px; text-align: center;"
+                            data-level-target="display">Lv.<%= pokemon.level %></strong>
+                    <button class="btn btn-outline-primary btn-sm px-1 py-0"
+                            style="font-size: 0.7rem; line-height: 1;"
+                            data-level-target="plusBtn"
+                            data-action="click->level#increment"
+                            <%= 'disabled' if pokemon.level >= 100 %>>＋</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer bg-transparent py-1 px-2">
+              <div class="d-flex gap-1">
+                <%= link_to "詳細", challenge_pokemon_path(challenge, pokemon), 
+                    class: "btn btn-outline-primary btn-sm flex-fill py-0" %>
+                <%= button_to "外す", toggle_party_challenge_pokemon_path(challenge, pokemon), 
+                    method: :patch,
+                    class: "btn btn-outline-warning btn-sm py-0" %>
+                <%= button_to "💀", mark_as_dead_challenge_pokemon_path(challenge, pokemon), 
+                    method: :patch,
+                    class: "btn btn-outline-danger btn-sm py-0",
+                    data: { turbo_confirm: "#{pokemon.nickname}の死亡を記録しますか？😢" } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+
+    <% unless compact %>
+      <%# 空きスロット（管理画面のみ） %>
+      <% (6 - party_pokemon.size).times do %>
+        <div class="col-lg-4 col-md-6">
+          <div class="card h-100" style="border: 2px dashed #dee2e6; min-height: 90px;">
+            <div class="card-body d-flex align-items-center justify-content-center text-muted p-2">
+              <small>空きスロット</small>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
+<% unless compact %>
+  <%# ===== 💚 控え（管理画面のみ） ===== %>
+  <% if alive_pokemon.any? %>
+    <div class="mb-4">
+      <h4 class="mb-3">💚 控え (<%= alive_pokemon.size %>匹)</h4>
+      <div class="row g-2">
+        <% alive_pokemon.each do |pokemon| %>
+          <div class="col-lg-4 col-md-6">
+            <div class="card h-100 pokemon-card">
+              <div class="card-body p-2">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="flex-shrink-0">
+                    <%= pokemon_sprite_tag(pokemon, size: 48) %>
+                  </div>
+                  <div class="flex-grow-1 min-w-0">
+                    <div>
+                      <strong class="d-block text-truncate"><%= pokemon.nickname %></strong>
+                      <small class="text-muted"><%= pokemon.species %></small>
+                    </div>
+                    <div class="d-flex align-items-center gap-1 mt-1"
+                         data-controller="level"
+                         data-level-url-value="<%= update_level_challenge_pokemon_path(challenge, pokemon) %>"
+                         data-level-level-value="<%= pokemon.level %>">
+                      <button class="btn btn-outline-secondary btn-sm px-1 py-0"
+                              style="font-size: 0.7rem; line-height: 1;"
+                              data-level-target="minusBtn"
+                              data-action="click->level#decrement"
+                              <%= 'disabled' if pokemon.level <= 1 %>>−</button>
+                      <strong style="min-width: 42px; text-align: center;"
+                              data-level-target="display">Lv.<%= pokemon.level %></strong>
+                      <button class="btn btn-outline-primary btn-sm px-1 py-0"
+                              style="font-size: 0.7rem; line-height: 1;"
+                              data-level-target="plusBtn"
+                              data-action="click->level#increment"
+                              <%= 'disabled' if pokemon.level >= 100 %>>＋</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer bg-transparent py-1 px-2">
+                <div class="d-flex gap-1">
+                  <%= link_to "詳細", challenge_pokemon_path(challenge, pokemon), 
+                      class: "btn btn-outline-primary btn-sm flex-fill py-0" %>
+                  <% if challenge.can_add_to_party? %>
+                    <%= button_to "パーティIN", toggle_party_challenge_pokemon_path(challenge, pokemon), 
+                        method: :patch,
+                        class: "btn btn-success btn-sm py-0" %>
+                  <% else %>
+                    <button class="btn btn-secondary btn-sm py-0" disabled>満員</button>
+                  <% end %>
+                  <%= button_to "💀", mark_as_dead_challenge_pokemon_path(challenge, pokemon), 
+                      method: :patch,
+                      class: "btn btn-outline-danger btn-sm py-0",
+                      data: { turbo_confirm: "#{pokemon.nickname}の死亡を記録しますか？😢" } %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# ===== 📦 ボックス（管理画面のみ） ===== %>
+  <% if boxed_pokemon.any? %>
+    <div class="mb-4">
+      <h4 class="mb-3">📦 ボックス (<%= boxed_pokemon.size %>匹)</h4>
+      <div class="row g-2">
+        <% boxed_pokemon.each do |pokemon| %>
+          <div class="col-lg-4 col-md-6">
+            <div class="card h-100 pokemon-card" style="opacity: 0.7;">
+              <div class="card-body p-2">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="flex-shrink-0">
+                    <%= pokemon_sprite_tag(pokemon, size: 40) %>
+                  </div>
+                  <div class="flex-grow-1 min-w-0">
+                    <strong class="d-block text-truncate"><%= pokemon.nickname %></strong>
+                    <small class="text-muted"><%= pokemon.species %> Lv.<%= pokemon.level %></small>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer bg-transparent py-1 px-2">
+                <div class="d-flex gap-1">
+                  <%= link_to "詳細", challenge_pokemon_path(challenge, pokemon), 
+                      class: "btn btn-outline-primary btn-sm flex-fill py-0" %>
+                  <%= button_to "復帰", toggle_party_challenge_pokemon_path(challenge, pokemon), 
+                      method: :patch,
+                      class: "btn btn-outline-success btn-sm py-0" %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+
+<%# ===== 💀 墓場 ===== %>
+<% if dead_pokemon.any? %>
+  <div class="<%= compact ? 'ov-section' : 'mb-4' %>">
+    <% if compact %>
+      <%# OBS: 死亡ポケモン横並び %>
+      <div class="ov-graveyard">
+        💀 <%= dead_pokemon.size %>
+        <% dead_pokemon.limit(12).each do |pokemon| %>
+          <span class="ov-dead" title="<%= pokemon.nickname %> Lv.<%= pokemon.level %>">
+            <%= pokemon_sprite_tag(pokemon, size: 20, css_class: "ov-dead-sprite") %>
+          </span>
+        <% end %>
+        <% if dead_pokemon.size > 12 %>
+          <span class="ov-dead-more">+<%= dead_pokemon.size - 12 %></span>
+        <% end %>
+      </div>
+    <% else %>
+      <%# 管理画面: 墓場カード %>
+      <h4 class="mb-3">💀 安らかに眠るポケモン (<%= dead_pokemon.size %>匹)</h4>
+      <div class="row g-2">
+        <% dead_pokemon.each do |pokemon| %>
+          <div class="col-lg-4 col-md-6">
+            <div class="card h-100 border-danger pokemon-card" style="opacity: 0.5;">
+              <div class="card-body p-2">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="flex-shrink-0" style="filter: grayscale(100%);">
+                    <%= pokemon_sprite_tag(pokemon, size: 40) %>
+                  </div>
+                  <div class="flex-grow-1 min-w-0">
+                    <strong class="d-block text-truncate text-decoration-line-through"><%= pokemon.nickname %></strong>
+                    <small class="text-muted"><%= pokemon.species %> Lv.<%= pokemon.level %></small>
+                    <% if pokemon.area %>
+                      <small class="text-danger d-block">🕊️ <%= pokemon.area.display_name %></small>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer bg-transparent py-1 px-2">
+                <%= link_to "詳細", challenge_pokemon_path(challenge, pokemon), 
+                    class: "btn btn-outline-secondary btn-sm w-100 py-0" %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

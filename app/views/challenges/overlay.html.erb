@@ -1,52 +1,11 @@
-<div class="overlay">
-  <%# ヘッダー: チャレンジ名 + バッジ %>
-  <div class="ov-header">
-    <span>🎮 <%= @challenge.name %></span>
-    <% if @badges.any? %>
-      <div class="ov-badges">
-        <% @badges.each do |b| %>
-          <span class="ov-badge <%= b.completed? ? 'on' : 'off' %>" title="<%= b.name %>">
-            <%= b.completed? ? '🏅' : '' %>
-          </span>
-        <% end %>
-      </div>
-    <% end %>
-  </div>
+<%# OBSオーバーレイ: ポケモン管理画面のコンパクト版 📺 %>
+<div class="ov-container">
+  <div class="ov-title">🎮 <%= @challenge.name %></div>
 
-  <%# パーティ %>
-  <div class="ov-section-label">🛡️ Party</div>
-  <div class="ov-party">
-    <% @party_pokemon.each do |pokemon| %>
-      <div class="ov-pokemon">
-        <% if pokemon.sprite_url %>
-          <img src="<%= pokemon.sprite_url %>" alt="<%= pokemon.species %>"
-               onerror="this.style.display='none'">
-        <% end %>
-        <span class="name"><%= pokemon.nickname %></span>
-        <span class="lv">Lv.<%= pokemon.level %></span>
-      </div>
-    <% end %>
-    <% (6 - @party_pokemon.count).times do %>
-      <div class="ov-pokemon empty">---</div>
-    <% end %>
-  </div>
-
-  <%# 墓場 %>
-  <% if @dead_pokemon.any? %>
-    <div class="ov-graveyard">
-      <span>💀 <%= @dead_pokemon.count %></span>
-      <% @dead_pokemon.limit(12).each do |pokemon| %>
-        <% if pokemon.sprite_url %>
-          <img src="<%= pokemon.sprite_url %>" alt="<%= pokemon.species %>"
-               title="<%= pokemon.nickname %> (Lv.<%= pokemon.level %>)"
-               onerror="this.style.display='none'">
-        <% else %>
-          <span class="dead-name"><%= pokemon.nickname %></span>
-        <% end %>
-      <% end %>
-      <% if @dead_pokemon.count > 12 %>
-        <span>+<%= @dead_pokemon.count - 12 %></span>
-      <% end %>
-    </div>
-  <% end %>
+  <%= render 'pokemons/pokemon_list',
+      challenge: @challenge,
+      party_pokemon: @party_pokemon,
+      dead_pokemon: @dead_pokemon,
+      badges: @badges,
+      compact: true %>
 </div>

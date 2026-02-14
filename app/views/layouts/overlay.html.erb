@@ -2,142 +2,95 @@
 <html>
   <head>
     <title>Nuzlocke Overlay</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="utf-8">
     <meta http-equiv="refresh" content="30">
     <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
     <style>
+      <%# 
+        OBSオーバーレイ用の最小CSS
+        _pokemon_list.html.erb のcompact=true表示をスタイリング
+      %>
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body {
-        background: transparent !important;
-        font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
-        overflow: hidden;
+        background: transparent;
+        font-family: 'Segoe UI', 'Hiragino Sans', sans-serif;
         color: #fff;
+        overflow: hidden;
       }
       body.chroma-green { background: #00ff00 !important; }
-      body.chroma-blue { background: #0000ff !important; }
-      body.chroma-magenta { background: #ff00ff !important; }
       body.solid-dark { background: #1a1a2e !important; }
 
-      .overlay {
-        padding: 8px;
-        max-width: 340px;
-      }
-
-      /* ヘッダー: チャレンジ名 + バッジ */
-      .ov-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 4px 10px;
+      .ov-container { padding: 8px; max-width: 320px; }
+      .ov-title {
+        padding: 3px 8px;
         background: rgba(0,0,0,0.7);
-        border-radius: 6px;
-        margin-bottom: 6px;
-        font-size: 12px;
+        border-radius: 4px;
+        font-size: 11px;
         font-weight: bold;
+        margin-bottom: 5px;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
       }
-      .ov-badges {
-        display: flex;
-        align-items: center;
-        gap: 2px;
-      }
-      .ov-badge {
-        width: 16px; height: 16px;
-        border-radius: 50%;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 9px;
-      }
-      .ov-badge.on { background: rgba(255,215,0,0.9); border: 1px solid #ffd700; }
-      .ov-badge.off { background: rgba(80,80,80,0.4); border: 1px solid rgba(80,80,80,0.3); opacity: 0.3; }
 
-      /* パーティリスト */
-      .ov-section-label {
+      /* バッジバー */
+      .ov-badges-bar {
+        padding: 3px 8px;
+        background: rgba(0,0,0,0.5);
+        border-radius: 4px;
         font-size: 10px;
         font-weight: bold;
-        color: rgba(255,255,255,0.6);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 3px;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-      }
-      .ov-party {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-        margin-bottom: 6px;
-      }
-      .ov-pokemon {
+        color: #ffd700;
+        margin-bottom: 5px;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 3px;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+      }
+      .ov-badge-dot {
+        width: 10px; height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .ov-badge-dot.on { background: #ffd700; }
+      .ov-badge-dot.off { background: rgba(100,100,100,0.4); opacity: 0.3; }
+
+      /* パーティリスト */
+      .ov-section { margin-bottom: 5px; }
+      .ov-list { display: flex; flex-direction: column; gap: 2px; }
+
+      .ov-row {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 2px 8px;
         background: rgba(0,0,0,0.6);
-        border-left: 3px solid #4dabf7;
-        border-radius: 4px;
-        padding: 3px 8px;
+        border-radius: 3px;
         font-size: 12px;
         text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
       }
-      .ov-pokemon img {
-        width: 32px;
-        height: 32px;
-        image-rendering: pixelated;
-      }
-      .ov-pokemon .name {
-        font-weight: bold;
-        flex: 1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .ov-pokemon .species {
-        font-size: 10px;
-        opacity: 0.6;
-      }
-      .ov-pokemon .lv {
-        color: #ffd700;
-        font-weight: bold;
-        font-size: 11px;
-      }
-      .ov-pokemon.empty {
-        opacity: 0.15;
-        border-left-style: dashed;
-        border-left-color: #666;
-        padding: 8px;
-        justify-content: center;
-        font-size: 10px;
-      }
+      .ov-party-row { border-left: 3px solid #4dabf7; }
+      .ov-sprite { width: 28px; height: 28px; image-rendering: pixelated; }
+      .sprite-fallback { display: none !important; }
+      .ov-name { flex: 1; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .ov-lv { color: #ffd700; font-weight: bold; font-size: 11px; }
 
       /* 墓場 */
       .ov-graveyard {
         background: rgba(0,0,0,0.5);
         border-left: 3px solid #ff6b6b;
-        border-radius: 4px;
-        padding: 4px 8px;
-        font-size: 11px;
+        border-radius: 3px;
+        padding: 3px 8px;
+        font-size: 10px;
         color: #ff8787;
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: 2px;
+        gap: 3px;
+        text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
       }
-      .ov-graveyard img {
-        width: 20px;
-        height: 20px;
-        filter: grayscale(100%);
-        opacity: 0.5;
-        image-rendering: pixelated;
-      }
-      .ov-graveyard .dead-name {
-        text-decoration: line-through;
-        opacity: 0.6;
-        font-size: 10px;
-      }
+      .ov-dead-sprite { width: 20px; height: 20px; filter: grayscale(100%); opacity: 0.5; image-rendering: pixelated; }
+      .ov-dead-more { opacity: 0.6; }
     </style>
   </head>
-
   <body class="<%= params[:bg] %>">
     <%= yield %>
   </body>
