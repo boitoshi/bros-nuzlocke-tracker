@@ -1,21 +1,33 @@
-<div class="container my-4">
-  <%# ===== ヘッダー ===== %>
-  <div class="d-flex justify-content-between align-items-center mb-3">
+<%# 統合プレイダッシュボード 🎮
+  ゲームプレイ中はこの1ページだけ見ればOK！
+  バッジ・パーティ・進捗・すべてをここで管理する %>
+
+<div class="container my-3">
+  <%# ===== ヘッダー: チャレンジ情報 ===== %>
+  <div class="d-flex justify-content-between align-items-center mb-2">
     <div>
-      <h1 class="h3 mb-0">🐾 <%= @challenge.name %></h1>
-      <small class="text-muted"><%= @challenge.game_title_display %></small>
+      <h1 class="h4 mb-0"><%= @challenge.game_title_display %></h1>
+      <small class="text-muted"><%= @challenge.name %>
+        <span class="badge <%= @challenge.status_badge_class %> ms-1" style="font-size: 0.65rem;">
+          <%= @challenge.status == 'in_progress' ? '進行中' : @challenge.status == 'completed' ? '完了' : '失敗' %>
+        </span>
+      </small>
     </div>
     <div class="d-flex gap-2">
-      <%= link_to new_challenge_pokemon_path(@challenge), class: "btn btn-success" do %>
+      <%= link_to new_challenge_pokemon_path(@challenge), class: "btn btn-success btn-sm" do %>
         ✨ 捕獲
       <% end %>
-      <%= link_to progress_challenge_path(@challenge), class: "btn btn-outline-warning" do %>
-        🏆 進捗
-      <% end %>
+      <% overlay_url = overlay_challenge_url(@challenge) %>
+      <button class="btn btn-outline-info btn-sm"
+              onclick="navigator.clipboard.writeText('<%= overlay_url %>').then(() => { this.textContent = '✓'; setTimeout(() => this.textContent = '📺 OBS', 1500); })"
+              title="OBS配信用URLをコピー">
+        📺 OBS
+      </button>
     </div>
   </div>
 
   <% if @pokemons.empty? %>
+    <%# ===== 空状態 ===== %>
     <div class="text-center py-5">
       <div style="font-size: 4rem;">🐾</div>
       <h3 class="text-muted mt-3 mb-3">まだポケモンを捕獲していません</h3>
@@ -23,6 +35,66 @@
       <%= link_to "最初の仲間を捕獲", new_challenge_pokemon_path(@challenge), class: "btn btn-success btn-lg" %>
     </div>
   <% else %>
+    <%# ===== 🏅 バッジ・マイルストーン（非同期切り替え） ===== %>
+    <% if @badges.any? || @elite_four.any? || @champion.any? %>
+      <div class="milestone-bar mb-3 p-2 rounded-3" style="background: var(--bs-body-bg); border: 1px solid var(--bs-border-color);">
+        <%# ジムバッジ %>
+        <% if @badges.any? %>
+          <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+            <small class="text-muted fw-bold me-1" style="min-width: 24px;">🏅</small>
+            <% @badges.each do |badge| %>
+              <div class="badge-item <%= badge.completed? ? 'badge-completed' : 'badge-incomplete' %>"
+                   data-controller="badge"
+                   data-badge-url-value="<%= toggle_complete_challenge_milestone_path(@challenge, badge) %>"
+                   data-badge-completed-value="<%= badge.completed? %>"
+                   data-badge-name-value="<%= badge.name %>"
+                   style="cursor: pointer;"
+                   title="<%= badge.name %><%= badge.completed? ? " ✅ #{badge.completed_at.strftime('%m/%d')}" : '' %>">
+                <button class="btn btn-sm p-0 border-0 lh-1"
+                        data-action="click->badge#toggle"
+                        style="font-size: 1.3rem; line-height: 1; background: none;">
+                  <span data-badge-target="icon"><%= badge.completed? ? '🏅' : '⬜' %></span>
+                </button>
+              </div>
+            <% end %>
+            <small class="text-muted ms-auto" id="badge-counter-gym_badge">
+              <%= @badges.count(&:completed?) %>/<%= @badges.size %>
+            </small>
+          </div>
+        <% end %>
+
+        <%# 四天王+チャンピオン %>
+        <% league = @elite_four + @champion %>
+        <% if league.any? %>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <small class="text-muted fw-bold me-1" style="min-width: 24px;">👑</small>
+            <% league.each do |ms| %>
+              <div class="badge-item <%= ms.completed? ? 'badge-completed' : 'badge-incomplete' %>"
+                   data-controller="badge"
+                   data-badge-url-value="<%= toggle_complete_challenge_milestone_path(@challenge, ms) %>"
+                   data-badge-completed-value="<%= ms.completed? %>"
+                   data-badge-name-value="<%= ms.name %>"
+                   style="cursor: pointer;"
+                   title="<%= ms.name %><%= ms.completed? ? " ✅ #{ms.completed_at.strftime('%m/%d')}" : '' %>">
+                <button class="btn btn-sm p-0 border-0 lh-1"
+                        data-action="click->badge#toggle"
+                        style="font-size: 1.1rem; line-height: 1; background: none;">
+                  <span data-badge-target="icon"><%= ms.completed? ? (ms.champion? ? '👑' : '⭐') : '⬜' %></span>
+                </button>
+                <small class="badge-label" style="font-size: 0.65rem; color: var(--bs-secondary);">
+                  <%= ms.name.truncate(6) %>
+                </small>
+              </div>
+            <% end %>
+            <small class="text-muted ms-auto" id="badge-counter-<%= league.first.milestone_type %>">
+              <%= league.count(&:completed?) %>/<%= league.size %>
+            </small>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%# ===== ポケモンリスト（パーティ・控え・BOX・墓場） ===== %>
     <%= render 'pokemons/pokemon_list',
         challenge: @challenge,
         party_pokemon: @party_pokemon,

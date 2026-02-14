@@ -9,7 +9,12 @@ class PokemonsController < ApplicationController
     @alive_pokemon = @challenge.alive_pokemon.not_in_party.includes(:area)
     @dead_pokemon = @challenge.dead_pokemon.includes(:area)
     @boxed_pokemon = @challenge.boxed_pokemon.includes(:area)
-    @badges = @challenge.milestones.where(milestone_type: :gym_badge).by_order
+
+    # マイルストーン（バッジ・四天王・チャンピオン）
+    @milestones = @challenge.milestones.by_order
+    @badges = @milestones.select(&:gym_badge?)
+    @elite_four = @milestones.select(&:elite_four?)
+    @champion = @milestones.select(&:champion?)
   end
 
   def party
@@ -105,12 +110,12 @@ class PokemonsController < ApplicationController
   def toggle_party
     if @pokemon.in_party?
       @pokemon.update(in_party: false)
-      redirect_back_or_to party_challenge_pokemons_path(@challenge), notice: "#{@pokemon.display_name}をパーティから外しました。"
+      redirect_back_or_to challenge_pokemons_path(@challenge), notice: "#{@pokemon.display_name}をパーティから外しました。"
     elsif @challenge.can_add_to_party? && @pokemon.can_be_in_party?
       @pokemon.update(in_party: true)
-      redirect_back_or_to party_challenge_pokemons_path(@challenge), notice: "#{@pokemon.display_name}をパーティに加えました！"
+      redirect_back_or_to challenge_pokemons_path(@challenge), notice: "#{@pokemon.display_name}をパーティに加えました！"
     else
-      redirect_back_or_to party_challenge_pokemons_path(@challenge), alert: "パーティに追加できませんでした。"
+      redirect_back_or_to challenge_pokemons_path(@challenge), alert: "パーティに追加できませんでした。"
     end
   end
 
@@ -137,13 +142,13 @@ class PokemonsController < ApplicationController
 
       respond_to do |format|
         format.json { render json: { level: new_level, old_level: old_level }, status: :ok }
-        format.html { redirect_back_or_to party_challenge_pokemons_path(@challenge),
+        format.html { redirect_back_or_to challenge_pokemons_path(@challenge),
                           notice: "#{@pokemon.nickname} Lv.#{old_level} → Lv.#{new_level} 📈" }
       end
     else
       respond_to do |format|
         format.json { render json: { error: "レベルは1〜100の範囲で設定してください。" }, status: :unprocessable_entity }
-        format.html { redirect_back_or_to party_challenge_pokemons_path(@challenge),
+        format.html { redirect_back_or_to challenge_pokemons_path(@challenge),
                           alert: "レベルは1〜100の範囲で設定してください。" }
       end
     end

@@ -28,7 +28,7 @@ class ChallengesControllerTest < ActionDispatch::IntegrationTest
     assert_difference("Challenge.count") do
       post challenges_url, params: { challenge: { name: "Test Challenge", game_title: "red" } }
     end
-    assert_redirected_to challenge_url(Challenge.last)
+    assert_redirected_to challenge_pokemons_url(Challenge.last)
   end
 
   test "should get edit" do

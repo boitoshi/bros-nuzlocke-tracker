@@ -6,13 +6,32 @@ class MilestonesController < ApplicationController
   def toggle_complete
     if @milestone.completed?
       @milestone.update!(completed_at: nil, completion_data: nil)
-      redirect_back_or_to progress_challenge_path(@challenge),
-                          notice: "#{@milestone.name}を未完了に戻しました。"
     else
       @milestone.complete!(party_level: @challenge.party_pokemon.average(:level)&.round)
       EventLog.log_milestone_completed(@challenge, @milestone)
-      redirect_back_or_to progress_challenge_path(@challenge),
-                          notice: "#{@milestone.milestone_type_icon} #{@milestone.name}を達成！🎉"
+    end
+
+    respond_to do |format|
+      format.json do
+        # 同カテゴリのカウントを返す
+        category_milestones = @challenge.milestones.where(milestone_type: @milestone.milestone_type)
+        render json: {
+          completed: @milestone.completed?,
+          completed_date: @milestone.completed? ? @milestone.completed_at.strftime('%m/%d') : nil,
+          category: @milestone.milestone_type,
+          category_completed: category_milestones.completed.count,
+          category_total: category_milestones.count
+        }
+      end
+      format.html do
+        if @milestone.completed?
+          redirect_back_or_to progress_challenge_path(@challenge),
+                              notice: "#{@milestone.milestone_type_icon} #{@milestone.name}を達成！🎉"
+        else
+          redirect_back_or_to progress_challenge_path(@challenge),
+                              notice: "#{@milestone.name}を未完了に戻しました。"
+        end
+      end
     end
   end
 

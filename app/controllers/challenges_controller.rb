@@ -29,7 +29,7 @@ class ChallengesController < ApplicationController
     @challenge.status = :in_progress
 
     if @challenge.save
-      redirect_to @challenge, notice: t("challenges.notices.created")
+      redirect_to challenge_pokemons_path(@challenge), notice: t("challenges.notices.created")
     else
       render :new, status: :unprocessable_entity
     end
