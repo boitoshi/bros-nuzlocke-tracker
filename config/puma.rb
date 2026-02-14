@@ -30,6 +30,14 @@ threads threads_count, threads_count
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
 port ENV.fetch("PORT", 3000)
 
+# Cloud Run / 本番環境向けワーカー設定
+# WEB_CONCURRENCY でワーカー数を制御（Cloud Run 512MB → 2ワーカー推奨）
+# 開発環境ではワーカーなし（シングルプロセス）で動作
+if ENV["RAILS_ENV"] == "production"
+  workers ENV.fetch("WEB_CONCURRENCY", 2)
+  preload_app!
+end
+
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
 

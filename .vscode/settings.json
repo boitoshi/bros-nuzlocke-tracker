@@ -28,5 +28,15 @@
     "shopify.ruby-lsp": 3
   },
   "python-envs.defaultEnvManager": "ms-python.python:system",
-  "python-envs.pythonProjects": []
+  "python-envs.pythonProjects": [],
+  "chat.tools.terminal.autoApprove": {
+    "/^docker --version 2>&1 \\|\\| echo \"Docker not installed\"$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "docker build": true,
+    "open": true,
+    "bin/rails": true,
+    "bundle": true
+  }
 }

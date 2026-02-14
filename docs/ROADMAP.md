@@ -1,6 +1,6 @@
 # 🗺️ Bros Nuzlocke Tracker ロードマップ
 
-> 最終更新: 2026年2月13日
+> 最終更新: 2026年2月14日
 > プロジェクトの実装計画と今後の方向性をまとめたドキュメント
 
 ---
@@ -11,8 +11,8 @@
 |---------|------|------|
 | Phase 0 | 基盤構築・コア機能 | ✅ 完了 |
 | Phase 1 | マスターデータ・デプロイ準備 | ✅ 完了 |
-| Phase 2 | Cloud Run本番デプロイ | 🔜 次にやる |
-| Phase 3 | 機能の穴埋め・UX改善 | 📋 計画中 |
+| Phase 2 | Cloud Run本番デプロイ | ✅ 完了 |
+| Phase 3 | 機能の穴埋め・UX改善 | 🔜 次にやる |
 | Phase 4 | フロントエンド刷新（React/Vue） | 📌 中期 |
 | Phase 5 | ソーシャル・コミュニティ | 💭 長期構想 |
 
@@ -68,36 +68,38 @@
 
 ---
 
-## 🔜 Phase 2: Cloud Run 本番デプロイ
+## ✅ Phase 2: Cloud Run 本番デプロイ（完了）
 
-> 優先度: **HIGH** | 想定期間: 1〜2日
+> 完了日: 2026年2月14日
 
-### やること
-- [ ] **GCPプロジェクト作成**
-  - Google Cloudコンソールでプロジェクト作成
-  - 必要なAPIを有効化（Cloud Run, Cloud Build, Artifact Registry）
-  - サービスアカウント設定
-- [ ] **環境変数設定**
-  - `DATABASE_URL`（Supabase接続文字列）
-  - `SECRET_KEY_BASE`（本番用シークレット生成）
-  - `RAILS_ENV=production`
-  - `RAILS_SERVE_STATIC_FILES=true`
-- [ ] **初回デプロイ**
-  - `gcloud builds submit` でビルド＆デプロイ
-  - 動作確認・ログチェック
-  - カスタムドメイン設定（任意）
-- [ ] **DB マイグレーション & シードデータ投入**
-  - 本番環境で `rails db:migrate` 確認
-  - ポケモン図鑑386匹 + タイプ相性324件の投入確認
-- [ ] **Render.com との比較検証**
-  - レスポンス速度比較
-  - コスト比較（無料枠内か確認）
-  - 問題なければ Render から完全移行
+### 完了した作業
+- [x] **GCPプロジェクト作成** (`pokebros-project`)
+  - Cloud Run, Cloud Build, Artifact Registry, Secret Manager API有効化
+  - サービスアカウント設定・IAMロール付与
+- [x] **環境変数 & シークレット設定**
+  - Secret Manager: `DATABASE_URL`, `SECRET_KEY_BASE`, `RAILS_MASTER_KEY`
+  - 環境変数: `RAILS_ENV=production`, `RAILS_SERVE_STATIC_FILES=true`, `RAILS_LOG_TO_STDOUT=true`
+- [x] **初回デプロイ成功**
+  - `gcloud run deploy --source .` でビルド＆デプロイ
+  - URL: https://bros-nuzlocke-tracker-509206780612.asia-northeast1.run.app
+- [x] **DB マイグレーション & シードデータ投入**
+  - Supabase Transaction Pooler（ポート6543）で安定接続
+  - `prepared_statements: false` 設定（pgbouncer対応）
+  - docker-entrypoint.sh: DB操作バックグラウンド化（ヘルスチェック対策）
+- [x] **credentials.yml.enc 再生成**
+  - master.key不一致によるInvalidMessage解決
 
-### 注意点
-- Cloud Run無料枠: 月200万リクエスト / 360,000 vCPU秒
-- asia-northeast1（東京）リージョン推奨
-- コールドスタート対策: `--min-instances=0`（コスト優先）or `1`（速度優先）
+### デプロイ構成
+- リージョン: asia-northeast1（東京）
+- メモリ: 512Mi / CPU: 1
+- インスタンス: min=0, max=3（コスト優先）
+- スタートアップ: CPU Boost有効
+- データベース: Supabase PostgreSQL（Transaction Pooler + SSL）
+
+### 学んだこと
+- Supabase Direct Connection(5432)はIPv6前提 → Cloud RunからはTransaction Pooler(6543)を使う
+- シード処理が長いとヘルスチェックでタイムアウト → DB操作をバックグラウンド化
+- pgbouncerではPrepared Statementsが使えない → `prepared_statements: false`
 
 ---
 
@@ -221,8 +223,8 @@
 
 | 時期 | 目標 |
 |------|------|
-| **2026年2月** | ✅ マスターデータ完成、Cloud Run設定完了 |
-| **2026年3月** | Cloud Run本番デプロイ、Phase 3 着手 |
+| **2026年2月** | ✅ マスターデータ完成、Cloud Runデプロイ完了 |
+| **2026年2〜3月** | Phase 3 機能の穴埋め・UX改善 |
 | **2026年4〜5月** | Phase 3 完了、React/Vue 技術選定 |
 | **2026年6〜7月** | Phase 4 フロントエンド移行開始 |
 | **2026年下半期** | Phase 4 完了、Phase 5 検討開始 |

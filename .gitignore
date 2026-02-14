@@ -45,3 +45,4 @@
 
 # Ignore SSH connection guide with private keys
 SSH_CONNECTION_GUIDE.md
+.playwright-mcp/

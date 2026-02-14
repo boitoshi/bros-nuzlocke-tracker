@@ -19,14 +19,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## プロジェクト概要
 
 **プロジェクトタイプ**: Ruby on Rails ポケモンNuzlockeチャレンジ管理アプリ
-**言語**: Ruby 3.4.7, Rails 8.0.2
-**データベース**: PostgreSQL (Supabase) - 開発・本番統一 / テスト環境はSQLite
+**言語**: Ruby 3.4.8, Rails 8.0.2
+**データベース**: PostgreSQL (Supabase Transaction Pooler) - 開発・本番統一 / テスト環境はSQLite
 **認証**: Devise
-**デプロイ**: Render.com + Supabase（Cloud Run移行予定）
+**デプロイ**: Google Cloud Run (asia-northeast1) + Supabase
+**本番URL**: https://bros-nuzlocke-tracker-509206780612.asia-northeast1.run.app
 **フロントエンド**: Bootstrap 5 + Stimulus + Turbo 8
 **テスト状況**: 193 runs, 338 assertions, 0 failures, 0 errors ✅
 
 ## 🚀 最新の技術改善（2026年2月更新）
+
+### ☁️ Cloud Run 本番デプロイ完了（2026年2月14日）
+- **GCPプロジェクト**: `pokebros-project` (asia-northeast1)
+- **Cloud Runサービス**: `bros-nuzlocke-tracker` (512Mi / 1CPU / min=0, max=3)
+- **Secret Manager**: DATABASE_URL, SECRET_KEY_BASE, RAILS_MASTER_KEY
+- **Supabase接続**: Transaction Pooler (ポート6543) + SSL + prepared_statements: false
+- **デプロイ方法**: `gcloud run deploy --source .`
 
 ### 🧹 コードベース整理（2026年2月）
 - **不要ファイル削除**: scripts/フォルダ、cookies.txt、fix_database.sh等を整理
@@ -54,8 +62,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### 🔧 インフラ・デプロイ改善
 - **PostgreSQL prepared statement対策**: 重複エラー完全解決
-- **Supabase接続最適化**: 接続プール・タイムアウト設定
-- **Render自動デプロイ**: ビルド時DB分離・エラーハンドリング強化
+- **Supabase接続最適化**: Transaction Pooler（ポート6543）+ SSL + prepared_statements無効化
+- **Cloud Runデプロイ**: `gcloud run deploy --source .` でビルド＆デプロイ
 
 ## 📚 ドキュメント一覧
 
