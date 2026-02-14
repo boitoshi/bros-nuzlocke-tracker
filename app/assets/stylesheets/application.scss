@@ -11,6 +11,9 @@
 
 @use "bootstrap" as *;
 
+// ゲーム別テーマシステム 🎮
+@import "game_themes";
+
 // チームビルダー専用スタイル
 @import "team_builder";
 
@@ -36,7 +39,6 @@ a, button {
 
 // ポケモンタイプカラー定義 🌈
 :root {
-  // ポケモンタイプカラー
   --type-normal: #A8A878;
   --type-fire: #F08030;
   --type-water: #6890F0;
@@ -55,503 +57,276 @@ a, button {
   --type-dark: #705848;
   --type-steel: #B8B8D0;
   --type-fairy: #EE99AC;
-  
-  // テーマカラー（落ち着いたモダンなデザイン）
-  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --pokemon-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  --danger-gradient: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
-  
-  // モダンナビゲーション用カラー
-  --nav-bg: rgba(255, 255, 255, 0.95);
-  --nav-text: #2d3748;
-  --nav-text-hover: #667eea;
-  --nav-icon-size: 1.2rem;
-  
-  // 影とエフェクト
-  --shadow-soft: 0 4px 20px rgba(0,0,0,0.1);
-  --shadow-hover: 0 8px 30px rgba(0,0,0,0.15);
-  --shadow-intense: 0 12px 40px rgba(0,0,0,0.2);
 }
 
-// ダークモード対応 🌙
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bs-body-bg: #121212;
-    --bs-body-color: #e0e0e0;
-    --bs-card-bg: #1e1e1e;
-    --nav-bg: rgba(26, 32, 44, 0.95);
-    --nav-text: #e2e8f0;
-    --nav-text-hover: #90cdf4;
-    --shadow-soft: 0 4px 20px rgba(255,255,255,0.05);
-    --shadow-hover: 0 8px 30px rgba(255,255,255,0.1);
-  }
+// ========================================
+// グローバルコンパクト化 📐
+// ========================================
+body {
+  font-size: var(--text-base);
+  color: var(--theme-text);
+  background-color: var(--theme-bg);
 }
 
-// モダンナビゲーションスタイル ✨（パフォーマンス最適化版）
+h1 { font-size: var(--text-3xl); }
+h2 { font-size: var(--text-2xl); }
+h3 { font-size: var(--text-xl); }
+h4, h5 { font-size: var(--text-lg); }
+h6 { font-size: var(--text-base); }
+
+.container { max-width: 1100px; }
+
+// ========================================
+// ナビゲーション（テーマ対応・コンパクト）🧭
+// ========================================
 .modern-navbar {
-  transition: box-shadow 0.2s ease-out;
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--theme-shadow-sm);
+  background: var(--theme-nav-bg) !important;
+  border-bottom: 2px solid var(--theme-primary);
+  padding: 0.25rem 0;
   
   .navbar-brand {
-    color: var(--nav-text) !important;
-    transition: color 0.15s ease-out;
+    color: var(--theme-primary) !important;
+    font-size: var(--text-lg);
     
-    &:hover {
-      color: var(--nav-text-hover) !important;
-    }
+    &:hover { opacity: 0.8; }
     
-    .brand-icon {
-      font-size: 1.5rem;
-      transition: transform 0.15s ease-out;
-    }
-    
-    .brand-text {
-      font-weight: 700;
-      letter-spacing: -0.025em;
-    }
-    
-    &:hover .brand-icon {
-      transform: scale(1.05); // 軽量化（回転削除でGPU負荷軽減）
-    }
+    .brand-icon { font-size: 1.25rem; }
+    .brand-text { font-weight: 700; letter-spacing: -0.025em; }
   }
   
-  // カスタムハンバーガーアイコン
   .hamburger-icon {
-    width: 30px;
-    height: 20px;
+    width: 24px;
+    height: 16px;
     position: relative;
     cursor: pointer;
     
     span {
       display: block;
       position: absolute;
-      height: 3px;
+      height: 2px;
       width: 100%;
-      background: var(--nav-text);
-      border-radius: 3px;
-      opacity: 1;
-      left: 0;
-      transform: rotate(0deg);
-      transition: .25s ease-in-out;
+      background: var(--theme-nav-text);
+      border-radius: 2px;
+      transition: .2s ease-in-out;
       
-      &:nth-child(1) { top: 0px; }
-      &:nth-child(2) { top: 8px; }
-      &:nth-child(3) { top: 16px; }
-    }
-    
-    &:hover span {
-      background: var(--nav-text-hover);
+      &:nth-child(1) { top: 0; }
+      &:nth-child(2) { top: 7px; }
+      &:nth-child(3) { top: 14px; }
     }
   }
   
-  // モバイルメニューが開いた時のアニメーション
   .navbar-toggler[aria-expanded="true"] .hamburger-icon {
-    span:nth-child(1) {
-      top: 8px;
-      transform: rotate(135deg);
-    }
-    
-    span:nth-child(2) {
-      opacity: 0;
-      left: -60px;
-    }
-    
-    span:nth-child(3) {
-      top: 8px;
-      transform: rotate(-135deg);
-    }
+    span:nth-child(1) { top: 7px; transform: rotate(135deg); }
+    span:nth-child(2) { opacity: 0; }
+    span:nth-child(3) { top: 7px; transform: rotate(-135deg); }
   }
 }
 
-// モダンナビゲーションリンク（軽量化版）
 .modern-nav-link {
-  color: var(--nav-text) !important;
+  color: var(--theme-nav-text) !important;
   font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem !important;
-  border-radius: 8px;
-  transition: color 0.15s ease-out, background-color 0.15s ease-out;
-  position: relative;
+  gap: 0.35rem;
+  padding: 0.4rem 0.65rem !important;
+  border-radius: 6px;
+  transition: color 0.15s ease, background-color 0.15s ease;
+  font-size: var(--text-sm);
   
-  .nav-icon {
-    font-size: var(--nav-icon-size);
-    transition: transform 0.15s ease-out;
-  }
-  
-  .nav-text {
-    font-size: 0.875rem;
-  }
+  .nav-icon { font-size: 1rem; }
+  .nav-text { font-size: var(--text-sm); }
   
   &:hover {
-    color: var(--nav-text-hover) !important;
-    background: rgba(102, 126, 234, 0.1);
-    // transform削除でパフォーマンス向上
-    
-    .nav-icon {
-      transform: scale(1.05); // 軽量化
-    }
+    color: var(--theme-primary) !important;
+    background: rgba(0,0,0,0.04);
   }
   
   &.active {
-    color: var(--nav-text-hover) !important;
-    background: rgba(102, 126, 234, 0.15);
+    color: var(--theme-primary) !important;
+    background: rgba(0,0,0,0.06);
     font-weight: 600;
     
-    &::before {
+    &::after {
       content: '';
       position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 3px;
-      height: 20px;
-      background: var(--nav-text-hover);
-      border-radius: 0 2px 2px 0;
+      bottom: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 2px;
+      background: var(--theme-primary);
+      border-radius: 1px;
     }
   }
 }
 
-// モダンドロップダウンメニュー
 .modern-dropdown {
-  border: none;
-  box-shadow: var(--shadow-hover);
-  border-radius: 12px;
-  padding: 0.5rem 0;
-  background: var(--nav-bg);
-  backdrop-filter: blur(20px);
-  margin-top: 0.5rem;
+  border: 1px solid var(--theme-border);
+  box-shadow: var(--theme-shadow-md);
+  border-radius: var(--theme-radius);
+  padding: 0.25rem 0;
+  background: var(--theme-surface);
   
   .modern-dropdown-item {
-    color: var(--nav-text);
-    padding: 0.75rem 1.5rem;
+    color: var(--theme-text);
+    padding: 0.5rem 1rem;
     display: flex;
     align-items: center;
-    transition: color 0.15s ease, background-color 0.15s ease;
+    font-size: var(--text-sm);
+    transition: background-color 0.1s ease;
     
     &:hover {
-      color: var(--nav-text-hover);
-      background: rgba(102, 126, 234, 0.1);
-      // ※ transform削除 - メニュー項目の横移動は操作しづらい
+      background: var(--theme-surface-hover);
+      color: var(--theme-primary);
     }
   }
 }
 
-// モバイル対応
 @media (max-width: 991.98px) {
   .modern-navbar {
     .navbar-collapse {
-      background: var(--nav-bg);
-      backdrop-filter: blur(20px);
-      border-radius: 12px;
-      margin-top: 1rem;
-      padding: 1rem;
-      box-shadow: var(--shadow-hover);
-      max-height: calc(100vh - 100px);
-      overflow-y: auto;
+      background: var(--theme-surface);
+      border-radius: var(--theme-radius);
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      box-shadow: var(--theme-shadow-md);
+      border: 1px solid var(--theme-border);
     }
     
     .modern-nav-link {
-      padding: 1rem !important;
-      margin: 0.25rem 0;
-      border-radius: 12px;
+      padding: 0.6rem 0.75rem !important;
+      .nav-icon { font-size: 1.1rem; min-width: 1.5rem; text-align: center; }
+      .nav-text { font-size: var(--text-sm); }
       
-      .nav-icon {
-        font-size: 1.5rem;
-        min-width: 2rem;
-        text-align: center;
-      }
-      
-      .nav-text {
-        font-size: 1rem;
-        font-weight: 500;
-      }
-      
-      &:hover {
-        background: rgba(102, 126, 234, 0.15);
-        // ※ transform削除 - ナビリンクの横移動は操作性を下げる
-      }
-      
-      &.active::before {
-        display: none;
-      }
-      
-      &.active {
-        box-shadow: inset 3px 0 0 var(--nav-text-hover);
-        background: rgba(102, 126, 234, 0.2);
-      }
+      &:hover { background: var(--theme-surface-hover); }
+      &.active::after { display: none; }
+      &.active { border-left: 3px solid var(--theme-primary); }
     }
     
-    // モバイルでのユーザードロップダウン
     .dropdown-menu {
       position: static !important;
       transform: none !important;
-      background: rgba(102, 126, 234, 0.1);
+      background: var(--theme-surface-hover);
       box-shadow: none;
       border: none;
-      margin: 0.5rem 0;
-      border-radius: 8px;
+      margin: 0.25rem 0;
+      border-radius: 6px;
     }
-  }
-}
-
-// スクロール時のナビゲーション効果
-.modern-navbar.scrolled {
-  background: var(--nav-bg) !important;
-  box-shadow: var(--shadow-hover);
-}
-
-// アニメーション
-@keyframes navSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
 .navbar-collapse.show,
 .navbar-collapse.collapsing {
-  animation: navSlideIn 0.3s ease-out;
+  animation: navSlideIn 0.2s ease-out;
 }
 
-// モダンホームページスタイル ✨
+@keyframes navSlideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// ========================================
+// ヒーローセクション（テーマ対応・コンパクト）🎮
+// ========================================
 .hero-section {
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23667eea' fill-opacity='0.03' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
-  }
-  
-  .container {
-    position: relative;
-    z-index: 1;
-  }
+  background: var(--theme-bg);
+  border-bottom: 1px solid var(--theme-border);
+  padding: var(--spacing-xl) 0 !important;
 }
 
-// モダン統計カード
+// ========================================
+// 統計カード（コンパクト）📊
+// ========================================
 .modern-stats-card {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  padding: 1.5rem;
+  background: var(--theme-surface);
+  border-radius: var(--theme-radius);
+  padding: var(--spacing-md);
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: var(--shadow-soft);
-  min-width: 140px;
-  // ※ ホバーエフェクト削除 - 統計表示は情報のみでクリックできない
+  border: 1px solid var(--theme-border);
+  box-shadow: var(--theme-shadow-sm);
+  min-width: 100px;
   
   .stats-number {
-    font-size: 2.5rem;
+    font-size: var(--text-2xl);
     font-weight: 700;
-    color: #667eea;
-    margin-bottom: 0.5rem;
+    color: var(--theme-primary);
     line-height: 1;
+    margin-bottom: 0.2rem;
   }
   
-  .stats-icon {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  .stats-label {
-    font-size: 0.875rem;
-    color: #6c757d;
-    font-weight: 500;
-  }
+  .stats-icon { font-size: 1.1rem; margin-bottom: 0.2rem; }
+  .stats-label { font-size: var(--text-xs); color: var(--theme-text-muted); font-weight: 500; }
 }
 
-// モダンボタン
+// ========================================
+// ボタン（フラット・テーマ対応）🔘
+// ========================================
 .modern-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1.5rem;
-  border-radius: 12px;
+  gap: 0.35rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
   font-weight: 600;
+  font-size: var(--text-sm);
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: opacity 0.15s ease, box-shadow 0.15s ease;
   border: 2px solid transparent;
-  position: relative;
-  overflow: hidden;
   
-  .btn-icon {
-    font-size: 1.1rem;
-  }
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-  }
+  .btn-icon { font-size: 0.9rem; }
   
   &:hover {
     text-decoration: none;
-    transform: translateY(-2px);
-    
-    &::before {
-      left: 100%;
-    }
+    opacity: 0.9;
+    box-shadow: var(--theme-shadow-sm);
   }
   
-  // Primary variant
   &.modern-btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--theme-primary);
     color: white;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    
-    &:hover {
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-      color: white;
-    }
+    &:hover { color: white; }
   }
   
-  // Secondary variant
   &.modern-btn-secondary {
-    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    background: var(--theme-secondary);
     color: white;
-    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
-    
-    &:hover {
-      box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
-      color: white;
-    }
+    &:hover { color: white; }
   }
   
-  // Success variant
   &.modern-btn-success {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    background: var(--theme-success);
     color: white;
-    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
-    
-    &:hover {
-      box-shadow: 0 6px 20px rgba(17, 153, 142, 0.4);
-      color: white;
-    }
+    &:hover { color: white; }
   }
   
-  // Light variant
   &.modern-btn-light {
-    background: rgba(255, 255, 255, 0.95);
-    color: #667eea;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    
-    &:hover {
-      background: white;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-      color: #667eea;
-    }
+    background: var(--theme-surface);
+    color: var(--theme-primary);
+    border-color: var(--theme-border);
+    &:hover { background: var(--theme-surface-hover); }
   }
   
-  // Outline variants
   &.modern-btn-outline {
     background: transparent;
-    color: #667eea;
-    border-color: #667eea;
-    
-    &:hover {
-      background: #667eea;
-      color: white;
-    }
+    color: var(--theme-primary);
+    border-color: var(--theme-primary);
+    &:hover { background: var(--theme-primary); color: white; }
   }
   
   &.modern-btn-outline-light {
     background: transparent;
     color: white;
-    border-color: rgba(255, 255, 255, 0.7);
-    
-    &:hover {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      border-color: white;
-    }
+    border-color: rgba(255,255,255,0.7);
+    &:hover { background: rgba(255,255,255,0.15); }
   }
 }
 
-// モダンCTAセクション
+// CTAセクション
 .modern-cta-section {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 20px;
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-    animation: rotate 20s linear infinite;
-  }
-  
-  > * {
-    position: relative;
-    z-index: 1;
-  }
+  background: var(--theme-primary);
+  border-radius: var(--theme-radius);
 }
-
-// 機能カード改善
-.card {
-  border: none;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  // ※ ホバーエフェクト削除 - カードは情報表示用なので動かさない
-}
-
-// レスポンシブ対応
-@media (max-width: 768px) {
-  .modern-stats-card {
-    min-width: 120px;
-    padding: 1rem;
-    
-    .stats-number {
-      font-size: 2rem;
-    }
-  }
-  
-  .modern-btn {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.875rem;
-    
-    .btn-icon {
-      font-size: 1rem;
-    }
-  }
-  
-  .hero-actions {
-    flex-direction: column;
-    align-items: center;
-    
-    .modern-btn {
-      width: 100%;
-      max-width: 250px;
-      justify-content: center;
-    }
-  }
-}
-
-// ※ fadeInUpアニメーション削除 - 全カード・ボタンの初期表示アニメーションは
-//   ページ遷移のたびに発火してかえって遅く感じる原因になっていた
 
 // インタラクティブ要素のみtransitionを適用 ⚡
 // ※ 全要素 * への transition: all は削除（非リンク要素のホバー誤解 & パフォーマンス低下の原因）
@@ -565,266 +340,154 @@ a, button, .btn, .form-control, .form-select, input, textarea {
   transform: scale(0.98);
 }
 
-// ヒーローセクション 🎮
-.hero-section {
-  background: var(--pokemon-gradient);
+// ダッシュボード用ヒーロー（テーマ対応・コンパクト）🎮
+.hero-section.dashboard-hero {
+  background: var(--theme-primary);
   color: white;
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    animation: float 6s ease-in-out infinite;
-  }
-  
-  .display-4 {
-    font-weight: 700;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    animation: slideInDown 1s ease-out;
-  }
-  
-  .lead {
-    animation: slideInUp 1s ease-out 0.3s both;
-  }
+  padding: var(--spacing-lg) 0 !important;
+
+  .display-4 { font-size: var(--text-2xl); font-weight: 700; }
+  .lead { font-size: var(--text-sm); opacity: 0.9; }
 }
 
-// カードスタイル強化 💎
+// ========================================
+// カードスタイル（フラット・コンパクト）💎
+// ========================================
 .card {
-  border: none;
-  border-radius: 16px;
-  box-shadow: var(--shadow-soft);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--theme-radius);
+  box-shadow: var(--theme-shadow-sm);
   overflow: hidden;
-  background: var(--bs-card-bg, white);
-  // ※ ホバーエフェクト削除 - 情報カードはクリックできないので動かさない
-  
+  background: var(--theme-surface);
+
   .card-header {
     background: transparent;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid var(--theme-border);
     font-weight: 600;
+    padding: 0.6rem 0.8rem;
+    font-size: var(--text-sm);
   }
-  
-  .card-body {
-    position: relative;
-  }
+
+  .card-body { padding: 0.8rem; }
 }
 
-// クリック可能なカードのみホバーエフェクトを付与
-a > .card,
-a.card,
-.card-link .card,
-.card.clickable {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+// クリック可能なカードのみホバー
+a > .card, a.card, .card-link .card, .card.clickable {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
   cursor: pointer;
-  
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--theme-shadow-md);
   }
 }
 
-// ポケモンカード特別スタイル 🐾
+// ========================================
+// ポケモンカード 🐾
+// ========================================
 .pokemon-card {
   position: relative;
-  
-  &.status-alive {
-    border-left: 4px solid #28a745;
-    
-    &:hover {
-      box-shadow: 0 8px 30px rgba(40, 167, 69, 0.3);
-    }
-  }
-  
-  &.status-dead {
-    border-left: 4px solid #dc3545;
-    opacity: 0.7;
-    
-    &:hover {
-      box-shadow: 0 8px 30px rgba(220, 53, 69, 0.3);
-    }
-  }
-  
-  &.status-boxed {
-    border-left: 4px solid #6c757d;
-    
-    &:hover {
-      box-shadow: 0 8px 30px rgba(108, 117, 125, 0.3);
-    }
-  }
-  
+
+  &.status-alive  { border-left: 3px solid #28a745; }
+  &.status-dead   { border-left: 3px solid #dc3545; opacity: 0.7; }
+  &.status-boxed  { border-left: 3px solid #6c757d; }
+
   .pokemon-type {
     display: inline-block;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: var(--text-xs);
     font-weight: 600;
     color: white;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-    margin: 2px;
-    
-    &.type-normal { background: var(--type-normal); }
-    &.type-fire { background: var(--type-fire); }
-    &.type-water { background: var(--type-water); }
+    margin: 1px;
+
+    &.type-normal   { background: var(--type-normal); }
+    &.type-fire     { background: var(--type-fire); }
+    &.type-water    { background: var(--type-water); }
     &.type-electric { background: var(--type-electric); }
-    &.type-grass { background: var(--type-grass); }
-    &.type-ice { background: var(--type-ice); }
+    &.type-grass    { background: var(--type-grass); }
+    &.type-ice      { background: var(--type-ice); }
     &.type-fighting { background: var(--type-fighting); }
-    &.type-poison { background: var(--type-poison); }
-    &.type-ground { background: var(--type-ground); }
-    &.type-flying { background: var(--type-flying); }
-    &.type-psychic { background: var(--type-psychic); }
-    &.type-bug { background: var(--type-bug); }
-    &.type-rock { background: var(--type-rock); }
-    &.type-ghost { background: var(--type-ghost); }
-    &.type-dragon { background: var(--type-dragon); }
-    &.type-dark { background: var(--type-dark); }
-    &.type-steel { background: var(--type-steel); }
-    &.type-fairy { background: var(--type-fairy); }
+    &.type-poison   { background: var(--type-poison); }
+    &.type-ground   { background: var(--type-ground); }
+    &.type-flying   { background: var(--type-flying); }
+    &.type-psychic  { background: var(--type-psychic); }
+    &.type-bug      { background: var(--type-bug); }
+    &.type-rock     { background: var(--type-rock); }
+    &.type-ghost    { background: var(--type-ghost); }
+    &.type-dragon   { background: var(--type-dragon); }
+    &.type-dark     { background: var(--type-dark); }
+    &.type-steel    { background: var(--type-steel); }
+    &.type-fairy    { background: var(--type-fairy); }
   }
 }
 
-// ボタンアニメーション強化 🚀
+// ========================================
+// ボタン（フラット・テーマ対応）🚀
+// ========================================
 .btn {
-  border-radius: 12px;
+  border-radius: 8px;
   font-weight: 600;
-  letter-spacing: 0.5px;
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: left 0.6s;
-  }
-  
-  &:hover::before {
-    left: 100%;
-  }
-  
+  font-size: var(--text-sm);
+
   &.btn-primary {
-    background: var(--primary-gradient);
-    border: none;
+    background: var(--theme-primary);
+    border-color: var(--theme-primary);
+    &:hover { opacity: 0.9; }
   }
-  
+
   &.btn-success {
-    background: var(--success-gradient);
-    border: none;
+    background: var(--theme-success);
+    border-color: var(--theme-success);
+    &:hover { opacity: 0.9; }
   }
-  
+
   &.btn-danger {
-    background: var(--danger-gradient);
-    border: none;
+    background: #dc3545;
+    border-color: #dc3545;
+    &:hover { opacity: 0.9; }
   }
 }
 
-// 統計カード 📊
+// 統計カード（ダッシュボード用）📊
 .stats-card {
-  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.2);
-  
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--theme-radius);
+
   .stats-number {
-    font-size: 2.5rem;
+    font-size: var(--text-2xl);
     font-weight: 800;
     line-height: 1;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    color: var(--theme-primary);
   }
-  
-  .stats-icon {
-    font-size: 1.5rem;
-    opacity: 0.8;
-  }
+
+  .stats-icon { font-size: 1.1rem; }
 }
 
-// アニメーション定義 ✨
-@keyframes slideInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-// 軽量化されたアニメーション（GPUアクセラレーション重視）
+// ========================================
+// アニメーション（軽量）✨
+// ========================================
 @keyframes fadeInFast {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 10px, 0); // 軽量化
-  }
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
+  from { opacity: 0; transform: translate3d(0, 6px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
-// ページ遷移アニメーション（超軽量版）
 .page-content {
-  animation: fadeInFast 0.12s ease-out;
+  animation: fadeInFast 0.1s ease-out;
 }
 
-// レスポンシブ調整 📱
+// ========================================
+// レスポンシブ 📱
+// ========================================
 @media (max-width: 768px) {
-  .hero-section {
-    padding: 2rem 1rem !important;
-    
-    .display-4 {
-      font-size: 2rem;
-    }
-  }
-  
-  .stats-card .stats-number {
-    font-size: 2rem;
-  }
-  
-  .pokemon-card {
-    margin-bottom: 1rem;
-  }
+  .hero-section { padding: 1.2rem 0.8rem !important; }
+  .modern-stats-card { min-width: 80px; padding: 0.5rem; }
+  .modern-btn { padding: 0.4rem 0.8rem; font-size: var(--text-xs); }
+  .pokemon-card { margin-bottom: 0.5rem; }
 }
 
-// スクロールバーカスタマイズ
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #764ba2, #667eea);
-}
+// スクロールバー
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f5f5f5; }
+::-webkit-scrollbar-thumb { background: var(--theme-primary); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--theme-primary-dark); }

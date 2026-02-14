@@ -24,10 +24,9 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body data-theme="<%= current_game_theme %>">
     <!-- ナビゲーションバー 🧭 -->
     <nav class="navbar navbar-expand-lg navbar-light sticky-top modern-navbar" 
-         style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(0,0,0,0.1);"
          data-controller="navbar">
       <div class="container">
         <%= link_to root_path, class: "navbar-brand fw-bold d-flex align-items-center" do %>
@@ -165,11 +164,11 @@
     </div>
 
     <!-- フッター 🌟 -->
-    <footer class="mt-5 py-4" style="background: var(--pokemon-gradient); color: white;">
+    <footer class="mt-5 py-3" style="background: var(--theme-primary); color: white;">
       <div class="container text-center">
         <p class="mb-0">
           <small>
-            🎮 Bros Nuzlocke Tracker - ポケモンナズロックの冒険を記録しよう！ ✨<br>
+            🎮 Bros Nuzlocke Tracker ✨<br>
             Made with 💖 for Pokemon trainers everywhere
           </small>
         </p>

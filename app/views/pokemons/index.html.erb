@@ -21,33 +21,33 @@
   </div>
 
   <!-- 統計サマリー 📊 -->
-  <div class="row g-4 mb-5">
+  <div class="row g-3 mb-4">
     <div class="col-lg-3 col-md-6">
-      <div class="stats-card card text-center p-4 h-100" style="background: var(--pokemon-gradient); color: white;">
+      <div class="modern-stats-card h-100">
         <div class="stats-number"><%= @pokemons.count %></div>
         <div class="stats-icon">🎯</div>
-        <h6 class="fw-bold mt-2">総捕獲数</h6>
+        <div class="stats-label">総捕獲数</div>
       </div>
     </div>
     <div class="col-lg-3 col-md-6">
-      <div class="stats-card card text-center p-4 h-100" style="background: var(--success-gradient); color: white;">
-        <div class="stats-number"><%= @alive_pokemon.count %></div>
+      <div class="modern-stats-card h-100">
+        <div class="stats-number" style="color: #28a745;"><%= @alive_pokemon.count %></div>
         <div class="stats-icon">💚</div>
-        <h6 class="fw-bold mt-2">生存中</h6>
+        <div class="stats-label">生存中</div>
       </div>
     </div>
     <div class="col-lg-3 col-md-6">
-      <div class="stats-card card text-center p-4 h-100" style="background: var(--danger-gradient); color: white;">
-        <div class="stats-number"><%= @dead_pokemon.count %></div>
+      <div class="modern-stats-card h-100">
+        <div class="stats-number" style="color: #dc3545;"><%= @dead_pokemon.count %></div>
         <div class="stats-icon">💀</div>
-        <h6 class="fw-bold mt-2">死亡</h6>
+        <div class="stats-label">死亡</div>
       </div>
     </div>
     <div class="col-lg-3 col-md-6">
-      <div class="stats-card card text-center p-4 h-100" style="background: linear-gradient(135deg, #6c757d, #495057); color: white;">
-        <div class="stats-number"><%= @boxed_pokemon.count %></div>
+      <div class="modern-stats-card h-100">
+        <div class="stats-number" style="color: #6c757d;"><%= @boxed_pokemon.count %></div>
         <div class="stats-icon">📦</div>
-        <h6 class="fw-bold mt-2">ボックス</h6>
+        <div class="stats-label">ボックス</div>
       </div>
     </div>
   </div>

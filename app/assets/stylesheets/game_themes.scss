@@ -1,0 +1,169 @@
+// ================================================
+// ゲーム別テーマシステム 🎮
+// body[data-theme="emerald"] 等でカラースキーム切替
+// ================================================
+
+// デフォルトテーマ（テーマ未設定時 = ホーム画面等）
+:root {
+  // メインカラー（ポケモンボール赤をデフォルトに）
+  --theme-primary: #DC0A2D;
+  --theme-primary-light: #FF4D6A;
+  --theme-primary-dark: #A30021;
+  --theme-secondary: #3B4CCA;
+  --theme-accent: #FFDE00;
+  --theme-accent-text: #333;
+  
+  // ベースカラー
+  --theme-bg: #F9FAFB;
+  --theme-surface: #FFFFFF;
+  --theme-surface-hover: #F3F4F6;
+  --theme-border: #E5E7EB;
+  --theme-text: #1F2937;
+  --theme-text-muted: #6B7280;
+  
+  // ナビゲーション
+  --theme-nav-bg: #FFFFFF;
+  --theme-nav-text: #374151;
+  --theme-nav-active: var(--theme-primary);
+  
+  // セマンティックカラー
+  --theme-success: #16A34A;
+  --theme-danger: #DC2626;
+  --theme-warning: #D97706;
+  --theme-info: #2563EB;
+  
+  // カード・影
+  --theme-shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --theme-shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+  --theme-radius: 10px;
+
+  // コンパクトサイズ
+  --text-xs: 0.7rem;
+  --text-sm: 0.8rem;
+  --text-base: 0.875rem;
+  --text-lg: 1rem;
+  --text-xl: 1.125rem;
+  --text-2xl: 1.375rem;
+  --text-3xl: 1.75rem;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 0.75rem;
+  --spacing-lg: 1rem;
+  --spacing-xl: 1.5rem;
+}
+
+// ========================================
+// 各ゲーム別テーマ定義
+// ========================================
+
+// 赤 🔴
+[data-theme="red"] {
+  --theme-primary: #DC0A2D;
+  --theme-primary-light: #FF4D6A;
+  --theme-primary-dark: #A30021;
+  --theme-secondary: #3B4CCA;
+  --theme-accent: #FFDE00;
+}
+
+// 緑 🟢
+[data-theme="green"] {
+  --theme-primary: #4DAD5B;
+  --theme-primary-light: #6FCF7C;
+  --theme-primary-dark: #2E8B3E;
+  --theme-secondary: #8B6914;
+  --theme-accent: #FFDE00;
+}
+
+// 青 🔵
+[data-theme="blue"] {
+  --theme-primary: #3B82F6;
+  --theme-primary-light: #60A5FA;
+  --theme-primary-dark: #1D4ED8;
+  --theme-secondary: #DC0A2D;
+  --theme-accent: #FFDE00;
+}
+
+// ピカチュウ 🟡
+[data-theme="yellow"] {
+  --theme-primary: #E6B800;
+  --theme-primary-light: #FFD633;
+  --theme-primary-dark: #B8960A;
+  --theme-secondary: #8B6914;
+  --theme-accent: #DC0A2D;
+  --theme-accent-text: #333;
+}
+
+// 金 🥇
+[data-theme="gold"] {
+  --theme-primary: #DAA520;
+  --theme-primary-light: #F0C040;
+  --theme-primary-dark: #B8860B;
+  --theme-secondary: #4A3728;
+  --theme-accent: #FFF5D4;
+  --theme-accent-text: #333;
+}
+
+// 銀 ⚪
+[data-theme="silver"] {
+  --theme-primary: #7B8A8E;
+  --theme-primary-light: #A8B8BC;
+  --theme-primary-dark: #5A6668;
+  --theme-secondary: #4A5568;
+  --theme-accent: #E2E8F0;
+  --theme-accent-text: #333;
+}
+
+// クリスタル 💎
+[data-theme="crystal"] {
+  --theme-primary: #3BA8D4;
+  --theme-primary-light: #67C8F0;
+  --theme-primary-dark: #1E88B0;
+  --theme-secondary: #7C5CB5;
+  --theme-accent: #D0F0FF;
+  --theme-accent-text: #333;
+}
+
+// ルビー ❤️
+[data-theme="ruby"] {
+  --theme-primary: #A00000;
+  --theme-primary-light: #CC2020;
+  --theme-primary-dark: #7A0000;
+  --theme-secondary: #2A2A2A;
+  --theme-accent: #FFD700;
+}
+
+// サファイア 💙
+[data-theme="sapphire"] {
+  --theme-primary: #0040A0;
+  --theme-primary-light: #2060C0;
+  --theme-primary-dark: #002870;
+  --theme-secondary: #2A2A2A;
+  --theme-accent: #FFD700;
+}
+
+// エメラルド 💚
+[data-theme="emerald"] {
+  --theme-primary: #009B76;
+  --theme-primary-light: #20BB96;
+  --theme-primary-dark: #007858;
+  --theme-secondary: #2A4A3A;
+  --theme-accent: #FFD700;
+}
+
+// ========================================
+// ダークモード対応
+// ========================================
+@media (prefers-color-scheme: dark) {
+  :root {
+    --theme-bg: #111827;
+    --theme-surface: #1F2937;
+    --theme-surface-hover: #374151;
+    --theme-border: #374151;
+    --theme-text: #F3F4F6;
+    --theme-text-muted: #9CA3AF;
+    --theme-nav-bg: #1F2937;
+    --theme-nav-text: #E5E7EB;
+    --theme-shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+    --theme-shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+  }
+}

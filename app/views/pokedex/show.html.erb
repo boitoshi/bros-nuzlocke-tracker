@@ -135,7 +135,7 @@
         <div class="row">
           <% @abilities.each_with_index do |ability, index| %>
             <div class="col-lg-4 col-md-6 mb-3">
-              <div class="ability-card card h-100 p-3" style="border-radius: 12px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));">
+              <div class="ability-card card h-100 p-3" style="border-radius: 10px; background: var(--theme-bg);">
                 <h5 class="fw-bold mb-2">
                   <%= ability['name'] %>
                   <% if ability['is_hidden'] %>
@@ -205,13 +205,11 @@
 <!-- カスタムスタイル -->
 <style>
   .pokemon-detail-card {
-    box-shadow: var(--shadow-intense);
-    transform: perspective(1000px) rotateY(0deg);
-    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--theme-shadow-md);
   }
   
   .pokemon-detail-card:hover {
-    transform: perspective(1000px) rotateY(5deg) translateZ(20px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
   }
   
   .pokemon-image-large img {
@@ -252,8 +250,8 @@
   }
   
   .ability-card:hover, .move-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--theme-shadow-md);
   }
   
   @keyframes slideInRight {

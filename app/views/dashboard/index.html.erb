@@ -15,33 +15,33 @@
   <div class="row mb-4">
     <div class="col-md-3 mb-3">
       <div class="card text-center bg-primary text-white">
-        <div class="card-body">
-          <h5 class="card-title">総チャレンジ数</h5>
-          <h2 class="display-4"><%= @challenge_stats[:total_challenges] %></h2>
+        <div class="card-body py-3">
+          <h6 class="card-title mb-1">総チャレンジ数</h6>
+          <h2 class="mb-0" style="font-size: var(--text-2xl);"><%= @challenge_stats[:total_challenges] %></h2>
         </div>
       </div>
     </div>
     <div class="col-md-3 mb-3">
       <div class="card text-center bg-success text-white">
-        <div class="card-body">
-          <h5 class="card-title">成功率</h5>
-          <h2 class="display-4"><%= @challenge_stats[:success_rate] %>%</h2>
+        <div class="card-body py-3">
+          <h6 class="card-title mb-1">成功率</h6>
+          <h2 class="mb-0" style="font-size: var(--text-2xl);"><%= @challenge_stats[:success_rate] %>%</h2>
         </div>
       </div>
     </div>
     <div class="col-md-3 mb-3">
       <div class="card text-center bg-info text-white">
-        <div class="card-body">
-          <h5 class="card-title">総ポケモン数</h5>
-          <h2 class="display-4"><%= @pokemon_stats[:total_pokemon] %></h2>
+        <div class="card-body py-3">
+          <h6 class="card-title mb-1">総ポケモン数</h6>
+          <h2 class="mb-0" style="font-size: var(--text-2xl);"><%= @pokemon_stats[:total_pokemon] %></h2>
         </div>
       </div>
     </div>
     <div class="col-md-3 mb-3">
       <div class="card text-center bg-warning text-white">
-        <div class="card-body">
-          <h5 class="card-title">生存率</h5>
-          <h2 class="display-4"><%= @pokemon_stats[:survival_rate] %>%</h2>
+        <div class="card-body py-3">
+          <h6 class="card-title mb-1">生存率</h6>
+          <h2 class="mb-0" style="font-size: var(--text-2xl);"><%= @pokemon_stats[:survival_rate] %>%</h2>
         </div>
       </div>
     </div>

@@ -1,24 +1,20 @@
 <!-- ポケモン図鑑一覧ページ 📖✨ -->
-<div class="container my-5">
+<div class="container my-4">
   <!-- ヘッダーセクション 🌟 -->
-  <div class="hero-section text-center py-5 mb-5" style="border-radius: 20px;">
-    <h1 class="display-4 fw-bold">📖 ポケモン図鑑</h1>
-    <p class="lead">すべてのポケモンを発見しよう！</p>
-    
-    <!-- クイックアクション -->
-    <div class="mt-4">
-      <%= link_to random_pokedex_index_path, class: "btn btn-light btn-lg me-3", method: :get do %>
-        🎲 ランダムポケモン
+  <div class="hero-section text-center py-3 mb-4" style="border-radius: var(--theme-radius);">
+    <h2 class="fw-bold">📖 ポケモン図鑑</h2>
+    <p class="text-muted mb-2" style="font-size: var(--text-sm);">すべてのポケモンを発見しよう！</p>
+    <div>
+      <%= link_to random_pokedex_index_path, class: "modern-btn modern-btn-primary me-2", method: :get do %>
+        🎲 ランダム
       <% end %>
-      <span class="badge bg-light text-dark fs-6">
-        総登録数: <%= @total_species %>匹
-      </span>
+      <span class="badge bg-light text-dark">総登録数: <%= @total_species %>匹</span>
     </div>
   </div>
 
   <!-- 検索・フィルターセクション 🔍 -->
-  <div class="card mb-5 p-4" style="border-radius: 16px; background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05)); backdrop-filter: blur(10px);">
-    <%= form_with url: pokedex_index_path, method: :get, local: true, class: "row g-3 align-items-end" do |f| %>
+  <div class="card mb-4 p-3">
+    <%= form_with url: pokedex_index_path, method: :get, local: true, class: "row g-2 align-items-end" do |f| %>
       <div class="col-lg-4 col-md-6">
         <%= f.text_field :search, placeholder: "ポケモン名で検索...", 
                          value: params[:search], 
@@ -126,8 +122,8 @@
   }
   
   .pokemon-card:hover {
-    transform: translateY(-12px) scale(1.03);
-    box-shadow: var(--shadow-intense);
+    transform: translateY(-4px);
+    box-shadow: var(--theme-shadow-md);
   }
   
   .pokemon-image-container img {
