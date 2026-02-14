@@ -1,52 +1,47 @@
+<%= turbo_frame_tag dom_id(pokemon, :available_card) do %>
 <div class="card h-100">
-  <div class="card-header d-flex justify-content-between align-items-center">
-    <span class="badge <%= pokemon.status_badge_class %>">
+  <div class="card-header d-flex justify-content-between align-items-center py-1">
+    <span class="badge <%= pokemon.status_badge_class %> small">
       <%= pokemon.status_icon %> <%= pokemon.status_display %>
     </span>
-    <small class="text-muted">
-      捕獲: <%= pokemon.caught_at.strftime('%m/%d') %>
-    </small>
+    <small class="text-muted"><%= pokemon.caught_at.strftime('%m/%d') %></small>
   </div>
   
-  <div class="card-body">
-    <h6 class="card-title">
+  <div class="card-body py-2 px-3">
+    <h6 class="card-title mb-1">
       <%= pokemon.nickname %>
       <small class="text-muted">(<%= pokemon.species %>)</small>
     </h6>
     
-    <div class="row mb-2">
-      <div class="col-6">
-        <small><strong>Lv:</strong> <%= pokemon.level %></small>
-      </div>
-      <div class="col-6">
-        <small><strong>性格:</strong> <%= pokemon.nature.present? ? pokemon.nature : '?' %></small>
-      </div>
+    <div class="row small">
+      <div class="col-6"><strong>Lv:</strong> <%= pokemon.level %></div>
+      <div class="col-6"><strong>性格:</strong> <%= pokemon.nature.present? ? pokemon.nature : '?' %></div>
     </div>
     
     <% if pokemon.area %>
-      <p class="mb-2 small">
-        <strong>出身:</strong> <%= pokemon.area.display_name %>
-      </p>
+      <small class="text-muted"><strong>出身:</strong> <%= pokemon.area.display_name %></small>
     <% end %>
   </div>
   
-  <div class="card-footer bg-transparent">
+  <div class="card-footer bg-transparent py-1">
     <div class="d-flex gap-1">
       <%= link_to "詳細", challenge_pokemon_path(@challenge, pokemon), 
           class: "btn btn-outline-primary btn-sm flex-fill" %>
       <% if @challenge.can_add_to_party? %>
         <%= button_to "参加", toggle_party_challenge_pokemon_path(@challenge, pokemon), 
-            data: { "turbo-method": :patch },
+            method: :patch,
             class: "btn btn-success btn-sm",
+            form: { data: { turbo_frame: "_top" } },
             title: "パーティに参加" %>
       <% else %>
-        <button class="btn btn-secondary btn-sm" disabled title="パーティが満員です">満員</button>
+        <button class="btn btn-secondary btn-sm" disabled title="パーティが満員">満員</button>
       <% end %>
       <%= button_to "📦", mark_as_boxed_challenge_pokemon_path(@challenge, pokemon), 
-          data: { "turbo-method": :patch },
+          method: :patch,
           class: "btn btn-outline-secondary btn-sm",
-          "turbo-confirm": "本当に実行しますか？",
+          form: { data: { turbo_confirm: "#{pokemon.nickname}をボックスに預けますか？", turbo_frame: "_top" } },
           title: "ボックスに預ける" %>
     </div>
   </div>
 </div>
+<% end %>

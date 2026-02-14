@@ -1,18 +1,18 @@
-<div class="container my-5">
+<div class="container my-4">
   <div class="row justify-content-center">
     <div class="col-md-8">
-      <div class="card shadow">
-        <div class="card-header bg-success text-white">
-          <h2 class="mb-0">🐾 新しいポケモンを捕獲</h2>
+      <div class="card">
+        <div class="card-header" style="background: var(--theme-primary); color: white;">
+          <h5 class="mb-0">🐾 新しいポケモンを捕獲</h5>
           <small><%= @challenge.name %> - <%= @challenge.game_title_display %></small>
         </div>
         <div class="card-body">
-          <%= form_with model: [@challenge, @pokemon], local: true, class: "row g-3" do |form| %>
+          <%= form_with model: [@challenge, @pokemon], local: true, class: "row g-2" do |form| %>
             <% if @pokemon.errors.any? %>
               <div class="col-12">
-                <div class="alert alert-danger">
-                  <h5>エラーが発生しました:</h5>
-                  <ul class="mb-0">
+                <div class="alert alert-danger py-2">
+                  <strong>エラー:</strong>
+                  <ul class="mb-0 small">
                     <% @pokemon.errors.full_messages.each do |message| %>
                       <li><%= message %></li>
                     <% end %>
@@ -21,225 +21,160 @@
               </div>
             <% end %>
 
+            <%# === 基本情報（常に表示） === %>
             <div class="col-md-6">
-              <%= form.label :species, "ポケモンの種類", class: "form-label" %>
-              <%= form.text_field :species, class: "form-control", placeholder: "例: ピカチュウ、フシギダネ" %>
-              <div class="form-text">捕獲したポケモンの種類を入力してください</div>
-            </div>
-
-            <div class="col-md-6">
-              <%= form.label :nickname, "愛称（ニックネーム）", class: "form-label" %>
-              <%= form.text_field :nickname, class: "form-control", placeholder: "例: でんきちゃん、みどりん" %>
-              <div class="form-text">大切な仲間に愛称をつけましょう 💕</div>
-            </div>
-
-            <div class="col-md-4">
-              <%= form.label :level, "レベル", class: "form-label" %>
-              <%= form.number_field :level, class: "form-control", min: 1, max: 100, placeholder: "5" %>
-            </div>
-
-            <div class="col-md-4">
-              <%= form.label :nature, "性格", class: "form-label" %>
-              <%= form.select :nature, 
-                  options_for_select([['性格を選択', '']] + Pokemon::NATURES.map { |n| [n, n] }), 
-                  {}, 
-                  { class: "form-select" } %>
-            </div>
-
-            <div class="col-md-4">
-              <%= form.label :ability, "特性", class: "form-label" %>
-              <%= form.text_field :ability, class: "form-control", placeholder: "例: せいでんき" %>
+              <%= form.label :species, "ポケモンの種類 *", class: "form-label small fw-bold" %>
+              <%= form.text_field :species, class: "form-control form-control-sm", placeholder: "例: ピカチュウ" %>
             </div>
 
             <div class="col-md-6">
-              <%= form.label :primary_type, "タイプ1", class: "form-label" %>
+              <%= form.label :nickname, "ニックネーム *", class: "form-label small fw-bold" %>
+              <%= form.text_field :nickname, class: "form-control form-control-sm", placeholder: "例: でんきちゃん" %>
+            </div>
+
+            <div class="col-md-3">
+              <%= form.label :level, "レベル *", class: "form-label small fw-bold" %>
+              <%= form.number_field :level, class: "form-control form-control-sm", min: 1, max: 100, placeholder: "5" %>
+            </div>
+
+            <div class="col-md-3">
+              <%= form.label :primary_type, "タイプ1 *", class: "form-label small fw-bold" %>
               <%= form.select :primary_type, 
-                  options_for_select([['タイプを選択', '']] + TypeEffectiveness::POKEMON_TYPES.map { |t| [t.capitalize, t] }), 
-                  {}, 
-                  { class: "form-select" } %>
+                  options_for_select([['選択', '']] + TypeEffectiveness::POKEMON_TYPES.map { |t| [t.capitalize, t] }), 
+                  {}, { class: "form-select form-select-sm" } %>
             </div>
 
-            <div class="col-md-6">
-              <%= form.label :secondary_type, "タイプ2（任意）", class: "form-label" %>
+            <div class="col-md-3">
+              <%= form.label :secondary_type, "タイプ2", class: "form-label small" %>
               <%= form.select :secondary_type, 
-                  options_for_select([['タイプなし', '']] + TypeEffectiveness::POKEMON_TYPES.map { |t| [t.capitalize, t] }), 
-                  {}, 
-                  { class: "form-select" } %>
+                  options_for_select([['なし', '']] + TypeEffectiveness::POKEMON_TYPES.map { |t| [t.capitalize, t] }), 
+                  {}, { class: "form-select form-select-sm" } %>
             </div>
 
-            <div class="col-12">
-              <%= form.label :role, "役割", class: "form-label" %>
-              <%= form.select :role, 
-                  options_for_select(Pokemon.roles.map { |key, _| [Pokemon.human_enum_name(:role, key), key] }), 
-                  {}, 
-                  { class: "form-select" } %>
-              <div class="form-text">このポケモンのバトルでの役割を選択してください</div>
+            <div class="col-md-3">
+              <%= form.label :gender, "性別", class: "form-label small" %>
+              <%= form.select :gender, 
+                  options_for_select([['選択', '']] + Pokemon::GENDERS.map { |g| [g, g] }), 
+                  {}, { class: "form-select form-select-sm" } %>
             </div>
 
             <div class="col-12" data-controller="capture-check"
                  data-capture-check-caught-areas-value="<%= (@caught_areas || {}).to_json %>">
-              <%= form.label :area_id, "捕獲場所", class: "form-label" %>
+              <%= form.label :area_id, "捕獲場所 *", class: "form-label small fw-bold" %>
               <%= form.select :area_id, 
                   options_for_select(
                     [['捕獲場所を選択', '']] + @areas.map { |area| 
                       caught = @caught_areas&.dig(area.id)
                       label = if caught
-                        "#{area.display_name} ⛔ 捕獲済み: #{caught[:name]}"
+                        "#{area.display_name} ⛔ #{caught[:name]}"
                       else
-                        "#{area.display_name} ✅ 捕獲可能"
+                        "#{area.display_name} ✅"
                       end
                       [label, area.id]
                     }
                   ), 
                   {}, 
-                  { class: "form-select", 
+                  { class: "form-select form-select-sm", 
                     data: { capture_check_target: "select", action: "change->capture-check#checkArea" } } %>
-              <div class="form-text">どこで出会ったかを記録しましょう（各エリア1匹のみ捕獲可能）</div>
-              
-              <!-- ナズロックルール警告エリア -->
-              <div class="alert alert-warning mt-2 d-none" 
-                   data-capture-check-target="warning"
-                   role="alert">
-              </div>
+              <div class="alert alert-warning mt-1 py-1 d-none small" 
+                   data-capture-check-target="warning" role="alert"></div>
             </div>
 
-            <div class="col-md-6">
-              <%= form.label :gender, "性別", class: "form-label" %>
-              <%= form.select :gender, 
-                  options_for_select([['性別を選択', '']] + Pokemon::GENDERS.map { |g| [g, g] }), 
-                  {}, 
-                  { class: "form-select" } %>
+            <div class="col-md-4">
+              <%= form.label :role, "役割 *", class: "form-label small fw-bold" %>
+              <%= form.select :role, 
+                  options_for_select(Pokemon.roles.map { |key, _| [Pokemon.human_enum_name(:role, key), key] }), 
+                  {}, { class: "form-select form-select-sm" } %>
             </div>
 
-            <div class="col-md-6">
-              <!-- 空欄（レイアウト調整用） -->
+            <div class="col-md-4">
+              <%= form.label :nature, "性格", class: "form-label small" %>
+              <%= form.select :nature, 
+                  options_for_select([['選択', '']] + Pokemon::NATURES.map { |n| [n, n] }), 
+                  {}, { class: "form-select form-select-sm" } %>
             </div>
 
-            <div class="col-12">
-              <%= form.label :experience, "思い出・エピソード", class: "form-label" %>
-              <%= form.text_area :experience, class: "form-control", rows: 3, 
-                  placeholder: "捕獲時のエピソードや思い出を記録しましょう。例: 最初のポケモン！とても元気で可愛い♪" %>
-              <div class="form-text">この子との出会いを大切に記録してください ✨</div>
-            </div>
-
-            <div class="col-12">
-              <%= form.label :notes, "詳細メモ", class: "form-label" %>
-              <%= form.text_area :notes, class: "form-control", rows: 2, 
-                  placeholder: "詳細な情報やメモがあれば記録しましょう" %>
-              <div class="form-text">戦略メモや特徴など、自由に記録できます 📝</div>
-            </div>
-
-            <!-- Individual Values (IVs) Section -->
-            <div class="col-12">
-              <div class="card bg-info bg-opacity-10 border-info">
-                <div class="card-body">
-                  <h6 class="card-title text-info mb-3">
-                    <i class="me-2">🎯</i>個体値 (IVs) - 0～31
-                    <small class="text-muted">（上級者向け・任意）</small>
-                  </h6>
-                  <div class="row g-2">
-                    <div class="col-md-2">
-                      <%= form.label :hp_iv, "HP", class: "form-label small" %>
-                      <%= form.number_field :hp_iv, class: "form-control form-control-sm", min: 0, max: 31, value: 0 %>
-                    </div>
-                    <div class="col-md-2">
-                      <%= form.label :attack_iv, "攻撃", class: "form-label small" %>
-                      <%= form.number_field :attack_iv, class: "form-control form-control-sm", min: 0, max: 31, value: 0 %>
-                    </div>
-                    <div class="col-md-2">
-                      <%= form.label :defense_iv, "防御", class: "form-label small" %>
-                      <%= form.number_field :defense_iv, class: "form-control form-control-sm", min: 0, max: 31, value: 0 %>
-                    </div>
-                    <div class="col-md-2">
-                      <%= form.label :special_attack_iv, "特攻", class: "form-label small" %>
-                      <%= form.number_field :special_attack_iv, class: "form-control form-control-sm", min: 0, max: 31, value: 0 %>
-                    </div>
-                    <div class="col-md-2">
-                      <%= form.label :special_defense_iv, "特防", class: "form-label small" %>
-                      <%= form.number_field :special_defense_iv, class: "form-control form-control-sm", min: 0, max: 31, value: 0 %>
-                    </div>
-                    <div class="col-md-2">
-                      <%= form.label :speed_iv, "素早", class: "form-label small" %>
-                      <%= form.number_field :speed_iv, class: "form-control form-control-sm", min: 0, max: 31, value: 0 %>
-                    </div>
-                  </div>
-                  <div class="form-text mt-2">
-                    💡 個体値は各ステータスの個体差です。分からない場合は0のままでOK！
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Effort Values (EVs) Section -->
-            <div class="col-12">
-              <div class="card bg-warning bg-opacity-10 border-warning">
-                <div class="card-body">
-                  <h6 class="card-title text-warning-emphasis mb-3">
-                    <i class="me-2">💪</i>努力値 (EVs) - 0～252 (合計最大510)
-                    <small class="text-muted">（上級者向け・任意）</small>
-                  </h6>
-                  <div class="row g-2">
-                    <div class="col-md-2">
-                      <%= form.label :hp_ev, "HP", class: "form-label small" %>
-                      <%= form.number_field :hp_ev, class: "form-control form-control-sm", min: 0, max: 252, value: 0 %>
-                    </div>
-                    <div class="col-md-2">
-                      <%= form.label :attack_ev, "攻撃", class: "form-label small" %>
-                      <%= form.number_field :attack_ev, class: "form-control form-control-sm", min: 0, max: 252, value: 0 %>
-                    </div>
-                    <div class="col-md-2">
-                      <%= form.label :defense_ev, "防御", class: "form-label small" %>
-                      <%= form.number_field :defense_ev, class: "form-control form-control-sm", min: 0, max: 252, value: 0 %>
-                    </div>
-                    <div class="col-md-2">
-                      <%= form.label :special_attack_ev, "特攻", class: "form-label small" %>
-                      <%= form.number_field :special_attack_ev, class: "form-control form-control-sm", min: 0, max: 252, value: 0 %>
-                    </div>
-                    <div class="col-md-2">
-                      <%= form.label :special_defense_ev, "特防", class: "form-label small" %>
-                      <%= form.number_field :special_defense_ev, class: "form-control form-control-sm", min: 0, max: 252, value: 0 %>
-                    </div>
-                    <div class="col-md-2">
-                      <%= form.label :speed_ev, "素早", class: "form-label small" %>
-                      <%= form.number_field :speed_ev, class: "form-control form-control-sm", min: 0, max: 252, value: 0 %>
-                    </div>
-                  </div>
-                  <div class="form-text mt-2">
-                    💡 努力値はトレーニングで鍛えた部分です。分からない場合は0のままでOK！
-                  </div>
-                </div>
-              </div>
+            <div class="col-md-4">
+              <%= form.label :ability, "特性", class: "form-label small" %>
+              <%= form.text_field :ability, class: "form-control form-control-sm", placeholder: "例: せいでんき" %>
             </div>
 
             <div class="col-12">
               <div class="form-check">
                 <%= form.check_box :in_party, class: "form-check-input" %>
-                <%= form.label :in_party, "すぐにパーティに加える", class: "form-check-label" %>
-                <% if @challenge.party_slots_available == 0 %>
-                  <small class="text-muted">（パーティが満員のため選択できません）</small>
-                <% else %>
-                  <small class="text-muted">（パーティ空き枠: <%= @challenge.party_slots_available %>匹）</small>
-                <% end %>
+                <%= form.label :in_party, "パーティに加える", class: "form-check-label small" %>
+                <small class="text-muted">
+                  <% if @challenge.party_slots_available == 0 %>
+                    （満員）
+                  <% else %>
+                    （空き: <%= @challenge.party_slots_available %>）
+                  <% end %>
+                </small>
               </div>
             </div>
 
-            <div class="col-12">
-              <div class="card bg-light">
-                <div class="card-body">
-                  <h6 class="card-title">📜 ナズロックルール確認</h6>
-                  <ul class="mb-0 small">
-                    <li>各エリア・ルートで<strong>最初に出会ったポケモンのみ</strong>捕獲可能</li>
-                    <li>捕獲したポケモンには<strong>必ず愛称</strong>をつける</li>
-                    <li>HPが0になったら<strong>「死亡」とみなし</strong>、リリースまたはボックス封印</li>
-                  </ul>
+            <%# === メモ（折りたたみ） === %>
+            <div class="col-12" data-controller="collapsible">
+              <button type="button" class="btn btn-sm btn-outline-secondary w-100 text-start" 
+                      data-action="click->collapsible#toggle">
+                <span data-collapsible-target="icon">▶</span>
+                📝 メモ・思い出（任意）
+              </button>
+              <div data-collapsible-target="content" class="mt-2">
+                <div class="row g-2">
+                  <div class="col-12">
+                    <%= form.text_area :experience, class: "form-control form-control-sm", rows: 2, 
+                        placeholder: "捕獲時の思い出（任意）" %>
+                  </div>
+                  <div class="col-12">
+                    <%= form.text_area :notes, class: "form-control form-control-sm", rows: 2, 
+                        placeholder: "戦略メモ（任意）" %>
+                  </div>
                 </div>
               </div>
             </div>
 
+            <%# === IV/EV（折りたたみ） === %>
+            <div class="col-12" data-controller="collapsible">
+              <button type="button" class="btn btn-sm btn-outline-secondary w-100 text-start" 
+                      data-action="click->collapsible#toggle">
+                <span data-collapsible-target="icon">▶</span>
+                🎯 個体値・努力値（上級者向け・任意）
+              </button>
+              <div data-collapsible-target="content" class="mt-2">
+                <div class="card bg-light p-2 mb-2">
+                  <small class="fw-bold text-info mb-1">個体値 (IVs) 0～31</small>
+                  <div class="row g-1">
+                    <% %w[hp attack defense special_attack special_defense speed].each_with_index do |stat, i| %>
+                      <div class="col-4 col-md-2">
+                        <%= form.label :"#{stat}_iv", %w[HP 攻撃 防御 特攻 特防 素早][i], class: "form-label small mb-0" %>
+                        <%= form.number_field :"#{stat}_iv", class: "form-control form-control-sm", min: 0, max: 31, value: 0 %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+                <div class="card bg-light p-2">
+                  <small class="fw-bold text-warning mb-1">努力値 (EVs) 0～252</small>
+                  <div class="row g-1">
+                    <% %w[hp attack defense special_attack special_defense speed].each_with_index do |stat, i| %>
+                      <div class="col-4 col-md-2">
+                        <%= form.label :"#{stat}_ev", %w[HP 攻撃 防御 特攻 特防 素早][i], class: "form-label small mb-0" %>
+                        <%= form.number_field :"#{stat}_ev", class: "form-control form-control-sm", min: 0, max: 252, value: 0 %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <%# === 送信ボタン === %>
             <div class="col-12">
-              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <%= link_to "キャンセル", challenge_pokemons_path(@challenge), class: "btn btn-secondary me-md-2" %>
-                <%= form.submit "捕獲完了！", class: "btn btn-success btn-lg" %>
+              <div class="d-flex gap-2 justify-content-end flex-wrap">
+                <%= link_to "キャンセル", challenge_pokemons_path(@challenge), class: "btn btn-secondary btn-sm" %>
+                <%= form.submit "✨ 捕獲！", class: "btn btn-success" %>
+                <button type="submit" name="continue_capture" value="1" class="btn btn-outline-success btn-sm" title="捕獲して次のポケモンへ">
+                  🔄 続けて捕獲
+                </button>
               </div>
             </div>
           <% end %>

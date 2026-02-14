@@ -50,7 +50,11 @@ class PokemonsController < ApplicationController
 
     begin
       if @pokemon.save
-        redirect_to challenge_pokemon_path(@challenge, @pokemon), notice: t("pokemons.notices.created", pokemon: @pokemon.display_name)
+        if params[:continue_capture].present?
+          redirect_to new_challenge_pokemon_path(@challenge), notice: "#{@pokemon.display_name}を捕獲！ 続けて次のポケモンを捕獲しよう✨"
+        else
+          redirect_to challenge_pokemon_path(@challenge, @pokemon), notice: t("pokemons.notices.created", pokemon: @pokemon.display_name)
+        end
       else
         @areas = Area.by_game(@challenge.game_title).by_order
         @caught_areas = @challenge.pokemons.includes(:area).each_with_object({}) do |pokemon, hash|

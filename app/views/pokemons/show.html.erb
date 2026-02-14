@@ -7,8 +7,9 @@
       </small>
     </div>
     <div>
-      <%= link_to "ポケモン一覧", challenge_pokemons_path(@challenge), class: "btn btn-outline-primary me-2" %>
-      <%= link_to "編集", edit_challenge_pokemon_path(@challenge, @pokemon), class: "btn btn-warning" %>
+      <%= link_to "ポケモン一覧", challenge_pokemons_path(@challenge), class: "btn btn-outline-primary btn-sm me-2" %>
+      <%= link_to "✨ 続けて捕獲", new_challenge_pokemon_path(@challenge), class: "btn btn-success btn-sm me-2" %>
+      <%= link_to "編集", edit_challenge_pokemon_path(@challenge, @pokemon), class: "btn btn-warning btn-sm" %>
     </div>
   </div>
 
