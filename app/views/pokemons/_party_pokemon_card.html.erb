@@ -12,21 +12,25 @@
       <small class="text-muted">(<%= pokemon.species %>)</small>
     </h6>
     
-    <%# レベル ± ボタン 📈 %>
-    <div class="d-flex align-items-center gap-1 mb-1">
-      <%= button_to update_level_challenge_pokemon_path(@challenge, pokemon, level: pokemon.level - 1),
-          method: :patch, class: "btn btn-outline-secondary btn-sm px-1 py-0", 
-          style: "font-size: 0.7rem; line-height: 1;",
-          disabled: pokemon.level <= 1, title: "レベルダウン" do %>
-        −
-      <% end %>
-      <strong class="text-primary" style="min-width: 42px; text-align: center;">Lv.<%= pokemon.level %></strong>
-      <%= button_to update_level_challenge_pokemon_path(@challenge, pokemon, level: pokemon.level + 1),
-          method: :patch, class: "btn btn-outline-primary btn-sm px-1 py-0",
-          style: "font-size: 0.7rem; line-height: 1;",
-          disabled: pokemon.level >= 100, title: "レベルアップ" do %>
-        ＋
-      <% end %>
+    <%# レベル ± ボタン（非同期） 📈 %>
+    <div class="d-flex align-items-center gap-1 mb-1"
+         data-controller="level"
+         data-level-url-value="<%= update_level_challenge_pokemon_path(@challenge, pokemon) %>"
+         data-level-level-value="<%= pokemon.level %>">
+      <button class="btn btn-outline-secondary btn-sm px-1 py-0"
+              style="font-size: 0.7rem; line-height: 1;"
+              data-level-target="minusBtn"
+              data-action="click->level#decrement"
+              <%= 'disabled' if pokemon.level <= 1 %>
+              title="レベルダウン">−</button>
+      <strong class="text-primary" style="min-width: 42px; text-align: center;"
+              data-level-target="display">Lv.<%= pokemon.level %></strong>
+      <button class="btn btn-outline-primary btn-sm px-1 py-0"
+              style="font-size: 0.7rem; line-height: 1;"
+              data-level-target="plusBtn"
+              data-action="click->level#increment"
+              <%= 'disabled' if pokemon.level >= 100 %>
+              title="レベルアップ">＋</button>
       <small class="text-muted ms-1"><%= pokemon.nature.present? ? pokemon.nature : '' %></small>
     </div>
     

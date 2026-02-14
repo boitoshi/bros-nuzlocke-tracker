@@ -127,12 +127,12 @@
               <h6 class="text-muted mb-2">👥 パーティ管理</h6>
               <% if @pokemon.in_party? %>
                 <%= button_to "パーティから外す", toggle_party_challenge_pokemon_path(@challenge, @pokemon), 
-                    data: { "turbo-method": :patch },
+                    method: :patch,
                     class: "btn btn-outline-warning w-100 mb-2",
-                    "turbo-confirm": "本当に実行しますか？" %>
+                    data: { turbo_confirm: "パーティから外しますか？" } %>
               <% elsif @pokemon.alive? && @challenge.can_add_to_party? %>
                 <%= button_to "パーティに参加", toggle_party_challenge_pokemon_path(@challenge, @pokemon), 
-                    data: { "turbo-method": :patch },
+                    method: :patch,
                     class: "btn btn-success w-100 mb-2" %>
               <% elsif @pokemon.alive? %>
                 <button class="btn btn-secondary w-100 mb-2" disabled>パーティが満員</button>
@@ -144,20 +144,20 @@
               <h6 class="text-muted mb-2">🔄 状態変更</h6>
               <% if @pokemon.alive? %>
                 <%= button_to "ボックスに預ける", mark_as_boxed_challenge_pokemon_path(@challenge, @pokemon), 
-                    data: { "turbo-method": :patch },
+                    method: :patch,
                     class: "btn btn-outline-secondary w-100 mb-2",
-                    "turbo-confirm": "本当に実行しますか？" %>
+                    data: { turbo_confirm: "#{@pokemon.nickname}をボックスに預けますか？" } %>
               <% elsif @pokemon.boxed? %>
                 <%= button_to "アクティブに戻す", toggle_party_challenge_pokemon_path(@challenge, @pokemon), 
-                    data: { "turbo-method": :patch },
+                    method: :patch,
                     class: "btn btn-outline-success w-100 mb-2" %>
               <% end %>
               
               <% if @pokemon.alive? || @pokemon.boxed? %>
                 <%= button_to "💀 死亡マーク", mark_as_dead_challenge_pokemon_path(@challenge, @pokemon), 
-                    data: { "turbo-method": :patch },
+                    method: :patch,
                     class: "btn btn-outline-danger w-100",
-                    "turbo-confirm": "本当に実行しますか？" %>
+                    data: { turbo_confirm: "#{@pokemon.nickname}の死亡を記録しますか？😢" } %>
               <% end %>
             </div>
           <% else %>

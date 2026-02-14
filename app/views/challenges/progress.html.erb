@@ -11,8 +11,10 @@
       <button class="btn btn-outline-info btn-sm" 
               onclick="navigator.clipboard.writeText('<%= overlay_url %>').then(() => alert('OBSオーバーレイURLをコピーしました！'))"
               title="OBS配信用オーバーレイURL">
-        📺 OBS URL
+        📺 OBS URLコピー
       </button>
+      <%= link_to "👁️ プレビュー", overlay_challenge_path(@challenge, bg: 'solid-dark'), 
+          target: "_blank", class: "btn btn-outline-secondary btn-sm" %>
     </div>
   </div>
 
@@ -164,4 +166,53 @@
       </div>
     </div>
   <% end %>
+
+  <%# OBS配信オーバーレイの使い方 📺 %>
+  <div class="card shadow mt-4">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+      <h3 class="mb-0">📺 OBS配信オーバーレイ</h3>
+      <span class="badge bg-info">配信者向け</span>
+    </div>
+    <div class="card-body">
+      <p class="mb-3">ゲーム配信中にパーティ情報・犠牲ポケモン・バッジ進捗を自動表示できるよ！</p>
+      
+      <h6>📋 設定手順</h6>
+      <ol class="mb-3">
+        <li>OBSの「ソース」→「＋」→「<strong>ブラウザ</strong>」を追加</li>
+        <li>下のURLをコピーして「URL」欄に貼り付け</li>
+        <li>幅: <code>420</code>、高さ: <code>300</code> くらいがおすすめ</li>
+        <li>ゲーム画面の隅に配置すればOK！</li>
+      </ol>
+
+      <div class="input-group mb-3">
+        <span class="input-group-text">URL</span>
+        <input type="text" class="form-control" value="<%= overlay_challenge_url(@challenge) %>" 
+               id="overlay-url" readonly onclick="this.select()">
+        <button class="btn btn-info" 
+                onclick="document.getElementById('overlay-url').select(); navigator.clipboard.writeText(document.getElementById('overlay-url').value).then(() => { this.textContent = 'コピー済み！'; setTimeout(() => this.textContent = 'コピー', 2000); })">
+          コピー
+        </button>
+      </div>
+
+      <h6>🎨 背景オプション</h6>
+      <div class="row g-2 mb-3">
+        <div class="col-auto">
+          <%= link_to overlay_challenge_path(@challenge), target: "_blank", class: "btn btn-sm btn-outline-secondary" do %>
+            透過（デフォルト）
+          <% end %>
+        </div>
+        <div class="col-auto">
+          <%= link_to overlay_challenge_path(@challenge, bg: 'chroma-green'), target: "_blank", class: "btn btn-sm btn-success" do %>
+            🟢 グリーンバック
+          <% end %>
+        </div>
+        <div class="col-auto">
+          <%= link_to overlay_challenge_path(@challenge, bg: 'solid-dark'), target: "_blank", class: "btn btn-sm btn-dark" do %>
+            🌙 ダーク背景
+          <% end %>
+        </div>
+      </div>
+      <small class="text-muted">💡 30秒ごとに自動更新されるから、ゲーム中にレベルやパーティを変えても配信画面に反映されるよ！</small>
+    </div>
+  </div>
 </div>

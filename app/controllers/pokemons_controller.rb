@@ -133,11 +133,18 @@ class PokemonsController < ApplicationController
       if new_level > old_level
         EventLog.log_level_up(@challenge, @pokemon, old_level, new_level)
       end
-      redirect_back_or_to party_challenge_pokemons_path(@challenge),
-                          notice: "#{@pokemon.nickname} Lv.#{old_level} → Lv.#{new_level} 📈"
+
+      respond_to do |format|
+        format.json { render json: { level: new_level, old_level: old_level }, status: :ok }
+        format.html { redirect_back_or_to party_challenge_pokemons_path(@challenge),
+                          notice: "#{@pokemon.nickname} Lv.#{old_level} → Lv.#{new_level} 📈" }
+      end
     else
-      redirect_back_or_to party_challenge_pokemons_path(@challenge),
-                          alert: "レベルは1〜100の範囲で設定してください。"
+      respond_to do |format|
+        format.json { render json: { error: "レベルは1〜100の範囲で設定してください。" }, status: :unprocessable_entity }
+        format.html { redirect_back_or_to party_challenge_pokemons_path(@challenge),
+                          alert: "レベルは1〜100の範囲で設定してください。" }
+      end
     end
   end
 
