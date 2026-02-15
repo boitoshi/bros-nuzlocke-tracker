@@ -25,28 +25,44 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **デプロイ**: Google Cloud Run (asia-northeast1) + Supabase
 **本番URL**: https://bros-nuzlocke-tracker-509206780612.asia-northeast1.run.app
 **フロントエンド**: Bootstrap 5 + Stimulus + Turbo 8
-**テスト状況**: 193 runs, 338 assertions, 0 failures, 0 errors ✅
+**テスト状況**: 196 runs, 344 assertions, 0 failures, 0 errors ✅
 
 ## 🚀 最新の技術改善（2026年2月更新）
+
+### 🎮 統合プレイダッシュボード（2026年2月15日）revision 00015
+ゲームプレイ中は**1ページで全部完結**する統合ダッシュボードを実装。
+- **バッジ・四天王・チャンピオン**: ポケモン管理ページの上部に統合表示
+- **バッジ非同期切り替え**: Badge Stimulusコントローラーでページリロード不要
+- **チャレンジ一覧→直接プレイ画面**: 進行中チャレンジは「🎮 プレイ」ボタンで1クリック
+- **ページ統合**: ポケモン管理＋進捗管理＋パーティ管理を1ページに集約
+
+### 🐾 ポケモンスプライト画像（2026年2月15日）revision 00013-14
+- **PokeAPI連携**: `PokemonSpecies#sprite_url` で公式スプライト表示
+- **管理画面・OBS・詳細ページ**: 全ページにスプライト画像を表示
+- **DRY共通パーシャル**: `_pokemon_list.html.erb` で管理画面とOBSオーバーレイを共有
+  - `compact: false` → 通常管理画面（カード表示・レベル操作・アクションボタン）
+  - `compact: true` → OBS用コンパクト表示（スプライト+名前+レベル行）
 
 ### ☁️ Cloud Run 本番デプロイ完了（2026年2月14日）
 - **GCPプロジェクト**: `pokebros-project` (asia-northeast1)
 - **Cloud Runサービス**: `bros-nuzlocke-tracker` (512Mi / 1CPU / min=0, max=3)
+- **最新リビジョン**: revision 00015
 - **Secret Manager**: DATABASE_URL, SECRET_KEY_BASE, RAILS_MASTER_KEY
 - **Supabase接続**: Transaction Pooler (ポート6543) + SSL + prepared_statements: false
-- **デプロイ方法**: `gcloud run deploy --source .`
+- **デプロイコマンド**: `gcloud run deploy bros-nuzlocke-tracker --source . --region asia-northeast1 --allow-unauthenticated --set-env-vars "RAILS_ENV=production,RAILS_SERVE_STATIC_FILES=true,RAILS_LOG_TO_STDOUT=true" --update-secrets "DATABASE_URL=DATABASE_URL:latest,SECRET_KEY_BASE=SECRET_KEY_BASE:latest,RAILS_MASTER_KEY=RAILS_MASTER_KEY:latest" --memory 512Mi --cpu 1 --min-instances 0 --max-instances 3 --timeout 300 --cpu-boost --command "./docker-entrypoint.sh"`
 
 ### 🧹 コードベース整理（2026年2月）
 - **不要ファイル削除**: scripts/フォルダ、cookies.txt、fix_database.sh等を整理
 - **vendor/bundle除外**: gitから9,499ファイルを除外（200MB軽量化）
-- **ドキュメント統合**: docs/ 15ファイル→8ファイルに整理
-- **テスト全通過**: モデル156テスト + コントローラー37テスト = 193テスト全通過
-- **バグ修正**: seeds.rb 5件、フィクスチャ9件、モデル/コントローラーの private method問題等を修正
+- **ドキュメント統合**: docs/ 15ファイル→11ファイルに整理
+- **テスト全通過**: 196 runs, 344 assertions, 0 failures, 0 errors
+- **バグ修正**: button_to turbo-method修正、progress bar count→size修正、seeds.rb等
 
 ### ⚡ パフォーマンス最適化
+- **非同期バッジ切り替え**: Badge Stimulusコントローラーで楽観的UI更新
+- **非同期レベル変更**: Level Stimulusコントローラーでリロード不要
 - **Turbo 8高速化**: プリロード機能・プログレスバー最適化・キャッシュ強化
 - **CSS軽量化**: アニメーション0.15s・GPU最適化・will-change活用
-- **JavaScript最適化**: 遅延読み込み・即座フィードバック・60FPS対応
 - **Rails 8対応**: `turbo-method`・`turbo-confirm`完全移行
 
 ### 🎯 攻略情報システム
@@ -55,15 +71,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **フィルタ・検索機能**: ゲーム別・難易度別・タグ別検索
 
 ### 📊 進行記録・統計システム
-- **マイルストーン管理**: ジムバッジ・ストーリー進行の自動追跡
+- **マイルストーン管理**: ジムバッジ・ストーリー進行の自動追跡（非同期切り替え対応）
 - **イベントログ**: ポケモン捕獲・死亡・レベルアップの詳細記録
 - **統計ダッシュボード**: Chart.jsを使った視覚的な統計表示
 - **詳細分析**: 月別データ・人気ポケモン・生存率分析
-
-### 🔧 インフラ・デプロイ改善
-- **PostgreSQL prepared statement対策**: 重複エラー完全解決
-- **Supabase接続最適化**: Transaction Pooler（ポート6543）+ SSL + prepared_statements無効化
-- **Cloud Runデプロイ**: `gcloud run deploy --source .` でビルド＆デプロイ
 
 ## 📚 ドキュメント一覧
 
@@ -129,50 +140,49 @@ bin/rubocop                 # コード品質チェック
 bin/rubocop -a              # 自動修正可能な問題を修正
 ```
 
-### デプロイメント (Render.com)
+### デプロイメント (Cloud Run)
 ```bash
-# Gitプッシュで自動デプロイ
+# Gitプッシュ + Cloud Runデプロイ
 git add .
-git commit -m "Update features"
+git commit -m "機能追加: ○○機能を実装"
 git push origin main
 
-# render.yamlの設定で自動ビルド・デプロイが実行される
-# buildCommand: bundle install && SECRET_KEY_BASE=dummy rails assets:precompile
-# startCommand: rails db:migrate && rails server
+# Cloud Runデプロイ
+gcloud run deploy bros-nuzlocke-tracker \
+  --source . \
+  --region asia-northeast1 \
+  --allow-unauthenticated \
+  --set-env-vars "RAILS_ENV=production,RAILS_SERVE_STATIC_FILES=true,RAILS_LOG_TO_STDOUT=true" \
+  --update-secrets "DATABASE_URL=DATABASE_URL:latest,SECRET_KEY_BASE=SECRET_KEY_BASE:latest,RAILS_MASTER_KEY=RAILS_MASTER_KEY:latest" \
+  --memory 512Mi --cpu 1 \
+  --min-instances 0 --max-instances 3 \
+  --timeout 300 --cpu-boost \
+  --command "./docker-entrypoint.sh"
 ```
 
 ## デプロイメント構成
 
-### 現在: Render.com + Supabase
+### 現在: Cloud Run + Supabase
 
 | 項目 | 設定 |
 |------|------|
-| **Platform** | Render.com (Web Service) |
-| **Database** | PostgreSQL (Supabase) |
+| **Platform** | Google Cloud Run (asia-northeast1) |
+| **Database** | PostgreSQL (Supabase Transaction Pooler) |
 | **Static Files** | Rails配信 (RAILS_SERVE_STATIC_FILES=true) |
-| **SSL** | Render自動管理 |
-| **Assets** | ビルド時プリコンパイル |
+| **SSL** | Cloud Run自動管理 |
+| **Assets** | Dockerビルド時プリコンパイル |
+| **Secrets** | Secret Manager (DATABASE_URL, SECRET_KEY_BASE, RAILS_MASTER_KEY) |
 
-### 環境変数 (render.yaml)
-- `RAILS_ENV=production`
-- `RAILS_SERVE_STATIC_FILES=true`
-- `SECRET_KEY_BASE` (自動生成)
-- `DATABASE_URL` (PostgreSQL接続文字列)
+### リソース構成
+- **メモリ**: 512Mi / **CPU**: 1
+- **インスタンス**: min=0, max=3（コスト優先）
+- **CPU Boost**: 有効（コールドスタート対策）
+- **タイムアウト**: 300秒
 
 ### ビルドプロセス
-1. `bundle install` - Ruby dependencies
-2. `rails assets:precompile` - アセットコンパイル（SECRET_KEY_BASE=dummy, DATABASE_URL=空でDB接続スキップ）
-3. `rails db:migrate` - DB migration（起動時）
-
-### デプロイ先の選択肢（移行検討中）
-
-| 項目 | Render.com（現在） | Cloud Run（移行予定） |
-|------|-------------------|---------------------|
-| 料金 | Starter plan | 従量課金 |
-| スケーリング | 手動 | 自動 |
-| コンテナ | 不要 | Docker必要 |
-| DB | Supabase外部接続 | Cloud SQL or Supabase |
-| CI/CD | Gitプッシュ自動 | Cloud Build |
+1. `gcloud run deploy --source .` - Dockerfile自動検出
+2. Dockerマルチステージビルド（380MB）
+3. `docker-entrypoint.sh` - DB migrate + Puma起動
 
 ## アーキテクチャとコード構造
 
@@ -239,15 +249,19 @@ EventLog (イベントログ)
 ```ruby
 # ネストしたリソース構造
 resources :challenges do
+  member { get :progress; get :overlay }  # 進捗ページ + OBSオーバーレイ
   resources :pokemons do
-    member { patch :toggle_party, :mark_as_dead, :mark_as_boxed }
-    collection { get :party }
+    member { patch :toggle_party, :mark_as_dead, :mark_as_boxed, :update_level, :evolve }
+    collection { get :party }  # → index にリダイレクト
   end
   resources :rules, except: [:new, :create] do
     collection { patch :update_multiple; post :create_custom; get :violations_check }
   end
   resources :battle_records, except: [:destroy] do
     member { get :participants }
+  end
+  resources :milestones, only: [] do
+    member { patch :toggle_complete }  # バッジ非同期切り替え（JSON対応）
   end
   # チームビルダー
   get 'team_builder', 'team_builder/analyze', 'team_builder/suggest'
@@ -261,6 +275,16 @@ end
 
 # 統計・ダッシュボード
 get "statistics", "dashboard"
+```
+
+### 主要ページフロー
+```
+チャレンジ一覧 → [🎮 プレイ] → 統合プレイダッシュボード (pokemons#index)
+                                  ├── バッジ・四天王（非同期トグル）
+                                  ├── パーティ管理（レベル非同期変更）
+                                  ├── 控え・BOX・墓場
+                                  ├── [✨ 捕獲] → ポケモン登録
+                                  └── [📺 OBS] → OBSオーバーレイURL
 ```
 
 ### フロントエンド構成
@@ -334,10 +358,10 @@ bin/rails assets:precompile
 bin/rubocop -a                # 自動修正
 ```
 
-### Render デプロイエラー
-- `render.yaml`の設定確認
-- 環境変数の設定確認
-- ビルドログでエラー箇所を特定
+### Cloud Run デプロイエラー
+- `gcloud run deploy` ログ確認
+- Secret Managerの値確認: `gcloud secrets versions access latest --secret=SECRET_NAME`
+- ビルドログ: Cloud Console → Cloud Build → 履歴
 
 ### PostgreSQL prepared statement重複エラー（2026年2月時点 対策済み）
 ```bash
@@ -370,5 +394,5 @@ bin/rubocop -a                # 自動修正
 ---
 
 🎉 このプロジェクトでClaude Codeを活用して、効率的なNuzlockeチャレンジ管理アプリの開発を進めましょう！✨
-Renderでのデプロイも自動化されてるから、開発に集中できるよ〜💪 何か困ったことがあったら、おねえちゃんに聞いてね💖
-（2026年2月更新）
+Cloud Runでのデプロイはコマンド一発！開発に集中できるよ〜💪 何か困ったことがあったら、おねえちゃんに聞いてね💖
+（2026年2月15日更新 - revision 00015）

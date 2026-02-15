@@ -143,6 +143,36 @@ git push origin main
 - **Database**: PostgreSQL (Supabase)
 - **環境変数**: 自動設定（DATABASE_URL等）
 
+## 🚀 最新アップデート（2026年2月15日 revision 00015）
+
+- **統合プレイダッシュボード**: ポケモン管理＋進捗＋パーティ管理を1ページに集約
+- **バッジ・四天王・チャンピオンの非同期切り替え**: Badge Stimulusコントローラーでページリロード不要
+- **チャレンジ一覧→直接プレイ画面**: 「🎮 プレイ」ボタンで即アクセス
+- **PokeAPIスプライト画像**: 全ページに公式スプライト表示
+- **Cloud Runデプロイ**: GCP asia-northeast1, revision 00015
+
+### ☁️ Cloud Runデプロイ手順
+
+```bash
+git add .
+git commit -m "機能追加: 統合ダッシュボード/バッジ非同期化"
+git push origin main
+
+gcloud run deploy bros-nuzlocke-tracker \
+  --source . \
+  --region asia-northeast1 \
+  --allow-unauthenticated \
+  --set-env-vars "RAILS_ENV=production,RAILS_SERVE_STATIC_FILES=true,RAILS_LOG_TO_STDOUT=true" \
+  --update-secrets "DATABASE_URL=DATABASE_URL:latest,SECRET_KEY_BASE=SECRET_KEY_BASE:latest,RAILS_MASTER_KEY=RAILS_MASTER_KEY:latest" \
+  --memory 512Mi --cpu 1 \
+  --min-instances 0 --max-instances 3 \
+  --timeout 300 --cpu-boost \
+  --command "./docker-entrypoint.sh"
+```
+
+- サービスURL: https://bros-nuzlocke-tracker-509206780612.asia-northeast1.run.app
+- revision: 00015
+
 ## 📁 プロジェクト構成
 
 ```
